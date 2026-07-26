@@ -8,14 +8,10 @@
 export function HeroBackdrop({ children }: { children: React.ReactNode }) {
   return (
     <section className="relative isolate w-full overflow-hidden bg-[#0b1020]">
-      <div className="tz-pedal-drift tz-pedal-drift--back" aria-hidden />
-      <div className="tz-pedal-drift tz-pedal-drift--front" aria-hidden />
+      <div className="tz-pedal-drift" aria-hidden />
 
-      {/*
-        Contrast scrim. The pattern runs at a much higher opacity now, so the
-        centre is darkened harder than the edges — the pedals stay clearly
-        visible across the full width while the copy keeps its contrast.
-      */}
+      {/* Contrast scrim: darkens hardest behind the copy, lightest at the
+          edges, so the pedals stay visible across the full width. */}
       <div
         aria-hidden
         className="absolute inset-0 bg-radial-[at_50%_50%] from-[#0b1020]/94 via-[#0b1020]/70 to-[#0b1020]/35"

@@ -186,6 +186,12 @@ role="presentation"
                 </Panel>
 
                 <Panel>
+                  {!detail.controlsKnown && (
+                    <p className="tz-body text-sm text-stone-500">
+                      We haven&apos;t confirmed this pedal&apos;s control layout yet,
+                      so rather than guess we&apos;re leaving it blank.
+                    </p>
+                  )}
                   <ul className="space-y-2.5">
                     {detail.controls.map((control) => (
                       <li key={control.name} className="flex gap-3">
@@ -204,14 +210,19 @@ role="presentation"
                   {detail.artists.length > 0 ? (
                     <>
                       <p className="tz-body mb-3 text-sm text-stone-600">
-                        Players associated with the {originalName} — the circuit this
-                        pedal copies.
+                        {detail.artistsAreForOriginal
+                          ? `No documented users of this clone specifically — these players are associated with the ${originalName}, the circuit it copies.`
+                          : "Known users of this pedal."}
                       </p>
                       <ul className="flex flex-wrap gap-2">
                         {detail.artists.map((artist) => (
                           <li
                             key={artist}
-                            className="bg-linear-to-br from-stone-800 to-stone-900 px-3 py-1.5 text-xs font-bold text-white"
+                            className={`px-3 py-1.5 text-xs font-bold ${
+                              detail.artistsAreForOriginal
+                                ? "bg-stone-100 text-stone-600"
+                                : "bg-linear-to-br from-stone-800 to-stone-900 text-white"
+                            }`}
                           >
                             {artist}
                           </li>

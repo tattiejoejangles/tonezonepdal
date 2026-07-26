@@ -44,3 +44,6 @@ next-env.d.ts
 /button.mp4
 /inspo.webp
 /Pedals.xlsx
+
+.vercel
+.env*

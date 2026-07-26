@@ -5,9 +5,14 @@ import { useMemo, useState } from "react";
 
 import { FilterBar } from "./FilterBar";
 import { HeroBackdrop } from "./HeroBackdrop";
+import { CloneCard } from "./CloneCard";
 import { OriginalCard } from "./OriginalCard";
 import { SearchBar } from "./SearchBar";
-import { filterCatalogue, type PriceFilterId } from "@/lib/filter";
+import {
+  filterAlternatives,
+  filterCatalogue,
+  type PriceFilterId,
+} from "@/lib/filter";
 import type { OriginalWithAlternatives } from "@/lib/types";
 
 /**
@@ -48,6 +53,15 @@ export function Directory({
     [catalogue, query, priceFilter],
   );
 
+  // Clones are searchable in their own right — people look up "Behringer
+  // TO800" as often as "Tube Screamer".
+  const cloneResults = useMemo(
+    () => filterAlternatives(catalogue, { query, priceFilter }),
+    [catalogue, query, priceFilter],
+  );
+
+  const total = results.length + cloneResults.length;
+
   return (
     <div>
       {/* Full-bleed: the hero spans the viewport, not the content column. */}
@@ -81,18 +95,40 @@ export function Directory({
           onPriceFilterChange={setPriceFilter}
           resultLabel={
             searching
-              ? `${results.length} ${results.length === 1 ? "match" : "matches"}`
+              ? `${total} ${total === 1 ? "match" : "matches"}`
               : undefined
           }
         />
 
         {!searching ? (
           idleContent
-        ) : results.length > 0 ? (
-          <div className="tz-rise grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3">
-            {results.map((result, index) => (
-              <OriginalCard key={result.id} result={result} priority={index < 3} />
-            ))}
+        ) : total > 0 ? (
+          <div className="tz-rise space-y-10">
+            {results.length > 0 && (
+              <section>
+                <h2 className="tz-eyebrow mb-4 text-stone-500">
+                  Original pedals ({results.length})
+                </h2>
+                <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3">
+                  {results.map((result, index) => (
+                    <OriginalCard key={result.id} result={result} priority={index < 3} />
+                  ))}
+                </div>
+              </section>
+            )}
+
+            {cloneResults.length > 0 && (
+              <section>
+                <h2 className="tz-eyebrow mb-4 text-stone-500">
+                  Budget clones ({cloneResults.length})
+                </h2>
+                <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3">
+                  {cloneResults.map((result) => (
+                    <CloneCard key={result.alternative.id} result={result} />
+                  ))}
+                </div>
+              </section>
+            )}
           </div>
         ) : (
           <div className="tz-chamfer bg-white/70 px-6 py-16 text-center ring-1 ring-stone-200">

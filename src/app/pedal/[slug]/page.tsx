@@ -85,13 +85,13 @@ export default async function PedalPage({
     : null;
 
   const artists = pedal.artists ?? [];
-  const originalDetail = getDetail(pedal, pedal.category, artists);
+  const originalDetail = getDetail(pedal, artists);
 
   // Details are resolved on the server and handed to the client panel, so the
   // modal has everything it needs without another round trip.
   const items = pedal.alternatives.map((alternative) => ({
     alternative,
-    detail: getDetail(alternative, pedal.category, artists),
+    detail: getDetail(alternative, artists),
   }));
 
   return (

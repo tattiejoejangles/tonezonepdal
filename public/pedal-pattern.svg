@@ -1,58 +1,84 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="620" height="440" viewBox="0 0 620 440">
+<svg xmlns="http://www.w3.org/2000/svg" width="880" height="620" viewBox="0 0 880 620">
+  <!--
+    Seamless tile for the hero backdrop.
+
+    Every pedal sits fully inside the viewBox with margin to spare. The previous
+    version placed shapes at negative coordinates and past the right edge, where
+    the viewBox clipped them — that hard cut at each repeat is what made the
+    backdrop look like several separate panels butted together rather than one
+    continuous field.
+  -->
   <defs>
-    <!-- Compact isometric stompbox: dark top plate, three knobs, footswitch. -->
-    <symbol id="box" viewBox="0 0 130 104">
-      <ellipse cx="66" cy="93" rx="52" ry="11" fill="#04060f" opacity="0.55" />
-      <polygon points="65,6 124,40 65,74 6,40" fill="currentColor" />
-      <polygon points="6,40 65,74 65,92 6,58" fill="currentColor" opacity="0.55" />
-      <polygon points="124,40 65,74 65,92 124,58" fill="currentColor" opacity="0.32" />
-      <polygon points="65,22 101,42 65,62 29,42" fill="#141a33" />
-      <polygon points="65,25 97,42 65,59 33,42" fill="#1d2547" />
-      <ellipse cx="42" cy="29" rx="4.6" ry="2.8" fill="#0d1226" />
-      <ellipse cx="53" cy="23" rx="4.6" ry="2.8" fill="#0d1226" />
-      <ellipse cx="64" cy="17" rx="4.6" ry="2.8" fill="#0d1226" />
-      <ellipse cx="65" cy="67" rx="8" ry="4.6" fill="#0d1226" />
+    <linearGradient id="topFace" x1="0" y1="0" x2="0.6" y2="1">
+      <stop offset="0%" stop-color="#fff" stop-opacity="0.28" />
+      <stop offset="100%" stop-color="#fff" stop-opacity="0" />
+    </linearGradient>
+
+    <!-- Compact stompbox, drawn in a 2:1 isometric projection. -->
+    <symbol id="box" viewBox="0 0 150 128">
+      <ellipse cx="75" cy="112" rx="58" ry="13" fill="#05070f" opacity="0.45" />
+
+      <!-- side walls -->
+      <path d="M8 46 L75 84 L75 108 L8 70 Z" fill="currentColor" opacity="0.5" />
+      <path d="M142 46 L75 84 L75 108 L142 70 Z" fill="currentColor" opacity="0.3" />
+      <!-- top face -->
+      <path d="M75 8 L142 46 L75 84 L8 46 Z" fill="currentColor" />
+      <path d="M75 8 L142 46 L75 84 L8 46 Z" fill="url(#topFace)" />
+
+      <!-- inset control plate -->
+      <path d="M75 26 L112 47 L75 68 L38 47 Z" fill="#0d1224" opacity="0.55" />
+
+      <!-- knobs, with indicator lines -->
+      <g fill="#0b1020">
+        <ellipse cx="52" cy="38" rx="7" ry="4.2" />
+        <ellipse cx="75" cy="25.5" rx="7" ry="4.2" />
+        <ellipse cx="98" cy="38" rx="7" ry="4.2" />
+      </g>
+      <g stroke="#e8edf7" stroke-width="1.4" stroke-linecap="round" opacity="0.85">
+        <line x1="52" y1="38" x2="49" y2="35.4" />
+        <line x1="75" y1="25.5" x2="78" y2="23" />
+        <line x1="98" y1="38" x2="98" y2="34.6" />
+      </g>
+
+      <!-- LED -->
+      <ellipse cx="75" cy="15.5" rx="4" ry="2.4" fill="#f8fafc" opacity="0.9" />
+
+      <!-- footswitch -->
+      <ellipse cx="75" cy="74" rx="13" ry="7.5" fill="#0b1020" opacity="0.75" />
+      <ellipse cx="75" cy="72.5" rx="8.5" ry="5" fill="#cbd5e1" opacity="0.55" />
     </symbol>
 
-    <!-- Wah / expression pedal: long tapered wedge with a treadle plate. -->
-    <symbol id="wah" viewBox="0 0 150 108">
-      <ellipse cx="76" cy="96" rx="62" ry="11" fill="#04060f" opacity="0.55" />
-      <polygon points="98,4 142,30 52,82 8,56" fill="currentColor" />
-      <polygon points="8,56 52,82 52,96 8,70" fill="currentColor" opacity="0.55" />
-      <polygon points="142,30 52,82 52,96 142,44" fill="currentColor" opacity="0.32" />
-      <polygon points="96,14 130,33 54,77 22,58" fill="#151b36" />
-      <polygon points="95,18 124,34 55,73 27,57" fill="#1e2649" />
+    <!-- Wah / expression pedal: a long tapered treadle. -->
+    <symbol id="wah" viewBox="0 0 170 132">
+      <ellipse cx="86" cy="116" rx="66" ry="13" fill="#05070f" opacity="0.45" />
+      <path d="M10 62 L62 92 L62 114 L10 84 Z" fill="currentColor" opacity="0.5" />
+      <path d="M158 34 L62 92 L62 114 L158 56 Z" fill="currentColor" opacity="0.3" />
+      <path d="M112 6 L158 34 L62 92 L10 62 Z" fill="currentColor" />
+      <path d="M112 6 L158 34 L62 92 L10 62 Z" fill="url(#topFace)" />
+      <path d="M110 20 L142 38 L64 84 L32 65 Z" fill="#0d1224" opacity="0.5" />
+      <g stroke="#e8edf7" stroke-width="1.2" opacity="0.35">
+        <line x1="98" y1="30" x2="70" y2="47" />
+        <line x1="106" y1="35" x2="78" y2="52" />
+        <line x1="114" y1="40" x2="86" y2="57" />
+      </g>
     </symbol>
   </defs>
 
-  <g>
-    <!-- row 1 -->
-    <use href="#box" x="-30" y="-6"  width="130" height="104" color="#f26430" />
-    <use href="#box" x="90"  y="10"  width="130" height="104" color="#12b886" />
-    <use href="#wah" x="215" y="-14" width="150" height="108" color="#8f9bb3" />
-    <use href="#box" x="370" y="4"   width="130" height="104" color="#17b8c4" />
-    <use href="#box" x="492" y="-8"  width="130" height="104" color="#e2483f" />
+  <!-- Row 1 -->
+  <use href="#box" x="24"  y="16"  width="150" height="128" color="#f4703a" />
+  <use href="#box" x="240" y="34"  width="150" height="128" color="#16b57f" />
+  <use href="#wah" x="452" y="8"   width="170" height="132" color="#9aa6bd" />
+  <use href="#box" x="678" y="30"  width="150" height="128" color="#1fb6c9" />
 
-    <!-- row 2 -->
-    <use href="#box" x="-46" y="112" width="130" height="104" color="#2f7fe0" />
-    <use href="#box" x="60"  y="130" width="130" height="104" color="#e8c020" />
-    <use href="#box" x="182" y="118" width="130" height="104" color="#c9339e" />
-    <use href="#wah" x="300" y="128" width="150" height="108" color="#aab4c8" />
-    <use href="#box" x="452" y="120" width="130" height="104" color="#39c05a" />
-    <use href="#box" x="560" y="136" width="130" height="104" color="#17b8c4" />
+  <!-- Row 2 -->
+  <use href="#box" x="126" y="222" width="150" height="128" color="#eec22a" />
+  <use href="#box" x="344" y="240" width="150" height="128" color="#cf3fa4" />
+  <use href="#box" x="560" y="228" width="150" height="128" color="#3d86e6" />
+  <use href="#wah" x="18"  y="236" width="170" height="132" color="#b6c0d2" />
 
-    <!-- row 3 -->
-    <use href="#box" x="-24" y="246" width="130" height="104" color="#17a8b8" />
-    <use href="#wah" x="86"  y="238" width="150" height="108" color="#94a0b8" />
-    <use href="#box" x="240" y="252" width="130" height="104" color="#f26430" />
-    <use href="#box" x="360" y="238" width="130" height="104" color="#c9339e" />
-    <use href="#box" x="482" y="250" width="130" height="104" color="#2f7fe0" />
-
-    <!-- row 4 (bleeds into the next tile, keeping the repeat continuous) -->
-    <use href="#box" x="-40" y="364" width="130" height="104" color="#e8c020" />
-    <use href="#box" x="96"  y="376" width="130" height="104" color="#e2483f" />
-    <use href="#box" x="222" y="362" width="130" height="104" color="#12b886" />
-    <use href="#wah" x="344" y="370" width="150" height="108" color="#8f9bb3" />
-    <use href="#box" x="500" y="364" width="130" height="104" color="#17b8c4" />
-  </g>
+  <!-- Row 3 -->
+  <use href="#box" x="52"  y="440" width="150" height="128" color="#3fc763" />
+  <use href="#box" x="268" y="458" width="150" height="128" color="#e6483f" />
+  <use href="#box" x="486" y="446" width="150" height="128" color="#17a9bb" />
+  <use href="#box" x="700" y="462" width="150" height="128" color="#f4703a" />
 </svg>

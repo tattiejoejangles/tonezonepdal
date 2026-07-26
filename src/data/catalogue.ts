@@ -1,12 +1,13 @@
 import type {
   Alternative,
   Category,
+  Control,
   OriginalWithAlternatives,
   PedalDetail,
 } from "@/lib/types";
 import { getSupabase } from "@/lib/supabase";
 
-import { controlsFor, VERDICTS } from "./details";
+import { ALTERNATIVE_ARTISTS, controlsFor, VERDICTS } from "./details";
 import generatedDetails from "./details.generated.json";
 import generatedImages from "./images.generated.json";
 import { alternatives, originals } from "./pedals";
@@ -41,6 +42,7 @@ interface OriginalRow {
   aliases: string[] | null;
   popularity: number;
   search_query: string | null;
+  controls: Control[] | null;
 }
 
 interface AlternativeRow {
@@ -61,6 +63,8 @@ interface AlternativeRow {
   search_query: string | null;
   verdict: string | null;
   gallery: string[] | null;
+  controls: Control[] | null;
+  artists: string[] | null;
 }
 
 /** A hand-entered URL always beats one the scraper found. */
@@ -87,6 +91,7 @@ function mapOriginal(row: OriginalRow, alts: AlternativeRow[]): OriginalWithAlte
     aliases: row.aliases ?? [],
     popularity: row.popularity,
     searchQuery: row.search_query ?? undefined,
+    controls: row.controls ?? [],
     alternatives: alts
       .filter((alt) => alt.original_id === row.id)
       .map(mapAlternative)
@@ -112,6 +117,8 @@ function mapAlternative(row: AlternativeRow): Alternative {
     searchQuery: row.search_query ?? undefined,
     verdict: row.verdict ?? undefined,
     gallery: row.gallery ?? [],
+    controls: row.controls ?? [],
+    artists: row.artists ?? [],
   };
 }
 
@@ -123,6 +130,7 @@ function localCatalogue(): OriginalWithAlternatives[] {
   return originals.map((original) => ({
     ...original,
     imageUrl: original.imageUrl ?? images[original.slug]?.url ?? null,
+    controls: controlsFor(original.slug),
     alternatives: alternatives
       .filter((alt) => alt.originalId === original.id)
       .sort((a, b) => a.priceGBP - b.priceGBP)
@@ -131,6 +139,8 @@ function localCatalogue(): OriginalWithAlternatives[] {
         imageUrl: alt.imageUrl ?? images[alt.slug]?.url ?? null,
         verdict: VERDICTS[alt.slug],
         gallery: details[alt.slug]?.images ?? [],
+        controls: controlsFor(alt.slug),
+        artists: ALTERNATIVE_ARTISTS[alt.slug] ?? [],
       })),
   }));
 }
@@ -167,8 +177,16 @@ export async function getOriginalBySlug(
 }
 
 /**
- * Everything the pedal modal shows. Controls stay in code — they describe the
- * circuit, not the listing, and don't need to be editable per row.
+ * Everything the pedal modal and detail pages show.
+ *
+ * Controls come from the record itself and are only shown when verified —
+ * `controlsKnown` lets the UI say "not confirmed yet" rather than print a
+ * plausible-looking guess.
+ *
+ * Artists prefer the pedal's own documented users. Budget clones almost never
+ * have any, so we fall back to the original's players and flag that with
+ * `artistsAreForOriginal` so the UI can label it honestly instead of implying
+ * Hendrix played a £29 Behringer.
  */
 export function getDetail(
   pedal: {
@@ -176,18 +194,49 @@ export function getDetail(
     imageUrl: string | null;
     verdict?: string;
     gallery?: string[];
+    controls?: Control[];
+    artists?: string[];
   },
-  category: Category,
-  artists: string[],
+  originalArtists: string[],
 ): PedalDetail {
   const gallery = [pedal.imageUrl, ...(pedal.gallery ?? [])].filter(
     (url): url is string => Boolean(url),
   );
 
+  const own = pedal.artists ?? [];
+  const controls = pedal.controls?.length ? pedal.controls : controlsFor(pedal.slug);
+
   return {
-    controls: controlsFor(pedal.slug, category),
-    artists,
+    controls,
+    controlsKnown: controls.length > 0,
+    artists: own.length > 0 ? own : originalArtists,
+    artistsAreForOriginal: own.length === 0,
     images: [...new Set(gallery)],
     verdict: pedal.verdict ?? VERDICTS[pedal.slug],
   };
+}
+
+/** A clone plus the original it copies, for the clone's own page. */
+export interface AlternativeWithOriginal {
+  alternative: Alternative;
+  original: OriginalWithAlternatives;
+}
+
+export async function getAlternativeBySlug(
+  slug: string,
+): Promise<AlternativeWithOriginal | undefined> {
+  const catalogue = await getCatalogue();
+  for (const original of catalogue) {
+    const alternative = original.alternatives.find((alt) => alt.slug === slug);
+    if (alternative) return { alternative, original };
+  }
+  return undefined;
+}
+
+/** Every clone, flattened, for search and static params. */
+export async function getAllAlternatives(): Promise<AlternativeWithOriginal[]> {
+  const catalogue = await getCatalogue();
+  return catalogue.flatMap((original) =>
+    original.alternatives.map((alternative) => ({ alternative, original })),
+  );
 }

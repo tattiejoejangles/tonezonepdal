@@ -164,45 +164,33 @@ input[type="search"]::-webkit-search-cancel-button {
 }
 
 /* ---------------------------------------------------------------------------
-   Hero backdrop: two layers of the isometric pedal tile drifting diagonally at
-   different speeds and scales, which breaks up the obvious grid repeat.
+   Hero backdrop.
+
+   ONE layer, not two. Two tiles at different scales and speeds read as
+   separate animations sliding over each other rather than a single field of
+   pedals, which is exactly the "6-8 animations beside each other" effect.
+
+   The tile is large (880x620) and every pedal sits fully inside it, so no
+   shape is clipped at a repeat boundary. Drifting by exactly one tile makes
+   the loop seamless.
    --------------------------------------------------------------------------- */
 .tz-pedal-drift {
   position: absolute;
-  inset: -25%;
+  inset: -12%;
   background-image: url("/pedal-pattern.svg");
   background-repeat: repeat;
+  background-size: 880px 620px;
+  opacity: 0.42;
+  animation: tz-drift 120s linear infinite;
   will-change: background-position;
 }
 
-.tz-pedal-drift--back {
-  background-size: 460px 326px;
-  opacity: 0.34;
-  animation: tz-drift-back 96s linear infinite;
-}
-
-.tz-pedal-drift--front {
-  background-size: 700px 497px;
-  opacity: 0.5;
-  animation: tz-drift-front 58s linear infinite;
-}
-
-/* Each layer travels exactly one tile so the loop is seamless. */
-@keyframes tz-drift-back {
+@keyframes tz-drift {
   from {
     background-position: 0 0;
   }
   to {
-    background-position: 460px 326px;
-  }
-}
-
-@keyframes tz-drift-front {
-  from {
-    background-position: 0 0;
-  }
-  to {
-    background-position: 700px 497px;
+    background-position: 880px 620px;
   }
 }
 
@@ -251,8 +239,7 @@ input[type="search"]::-webkit-search-cancel-button {
 
 /* Respect users who'd rather not have things moving. */
 @media (prefers-reduced-motion: reduce) {
-  .tz-pedal-drift--back,
-  .tz-pedal-drift--front,
+  .tz-pedal-drift,
   .tz-rise,
   .tz-pop,
   .tz-fade {

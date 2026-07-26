@@ -20,7 +20,7 @@ import { readFile } from "node:fs/promises";
 
 import { createClient } from "@supabase/supabase-js";
 
-import { VERDICTS } from "../src/data/details.ts";
+import { ALTERNATIVE_ARTISTS, CONTROLS, VERDICTS } from "../src/data/details.ts";
 import { alternatives, originals } from "../src/data/pedals.ts";
 
 const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
@@ -68,6 +68,7 @@ const originalRows = originals.map((p) => ({
   aliases: p.aliases ?? [],
   popularity: p.popularity,
   search_query: p.searchQuery ?? null,
+  controls: CONTROLS[p.slug] ?? [],
 }));
 
 const alternativeRows = alternatives.map((p) => ({
@@ -88,6 +89,8 @@ const alternativeRows = alternatives.map((p) => ({
   search_query: p.searchQuery ?? null,
   verdict: VERDICTS[p.slug] ?? null,
   gallery: details[p.slug]?.images ?? [],
+  controls: CONTROLS[p.slug] ?? [],
+  artists: ALTERNATIVE_ARTISTS[p.slug] ?? [],
 }));
 
 async function push(table, rows) {

@@ -7,6 +7,12 @@
  * now means the migration is a swap of the data module, not a rewrite.
  */
 
+/** A knob, switch or socket, explained. */
+export interface Control {
+  name: string;
+  what: string;
+}
+
 /** A retailer we send affiliate traffic to. */
 export type RetailerId = "amazon" | "reverb" | "gear4music";
 
@@ -48,6 +54,8 @@ export interface Original {
   aliases?: string[];
   /** Players strongly associated with this pedal. */
   artists?: string[];
+  /** Verified knob/switch layout. Absent means we haven't confirmed it. */
+  controls?: Control[];
 }
 
 /** A budget pedal that gets you close to an `Original` for less money. */
@@ -75,6 +83,13 @@ export interface Alternative {
   verdict?: string;
   /** Extra product shots for the modal gallery. Stored in Supabase. */
   gallery?: string[];
+  /**
+   * Players known to use this specific clone — not the original it copies.
+   * Usually empty: budget clones rarely have documented famous users.
+   */
+  artists?: string[];
+  /** Verified knob/switch layout. Absent means we haven't confirmed it. */
+  controls?: Control[];
 }
 
 /** An original joined with its alternatives — the unit the UI renders. */
@@ -82,16 +97,14 @@ export interface OriginalWithAlternatives extends Original {
   alternatives: Alternative[];
 }
 
-/** A knob, switch or socket, explained. */
-export interface Control {
-  name: string;
-  what: string;
-}
-
 /** Everything the detail modal shows beyond the basic record. */
 export interface PedalDetail {
   controls: Control[];
+  /** True when `controls` is verified data rather than an empty placeholder. */
+  controlsKnown: boolean;
   artists: string[];
+  /** Whose artists these are — this pedal's, or the original it clones. */
+  artistsAreForOriginal: boolean;
   /** Extra product shots for the modal gallery. */
   images: string[];
   /**

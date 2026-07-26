@@ -1,75 +1,28 @@
-import type { Category, Control } from "@/lib/types";
+import type { Control } from "@/lib/types";
 
 /**
- * The "what does each knob actually do" data behind the pedal modal.
+ * Verified control layouts, keyed by slug.
  *
- * Most pedals in a family share a control layout, so controls are resolved
- * from the effect category and only overridden where a specific pedal differs
- * — that's a handful of entries instead of 54 near-identical lists, and adding
- * a new pedal gets sensible controls for free.
+ * This used to fall back to a generic set per effect category, which produced
+ * confidently wrong output — the Biyang AD-10 was being shown "Time / Feedback
+ * / Level" when its knobs are actually Time / Repeat / Mix. A guess presented
+ * as fact is worse than no data, so there is no fallback now: a pedal missing
+ * from this map simply shows no control list, and the UI says so.
+ *
+ * Add entries as you confirm them. These seed the `controls` column in
+ * Supabase via `npm run db:push`, and can also be edited there directly.
  */
-
-const BY_CATEGORY: Record<Category, Control[]> = {
-  overdrive: [
-    { name: "Drive", what: "How hard the clipping stage is pushed. Low settings act as a clean boost." },
-    { name: "Tone", what: "Rolls off treble as you turn it down. Most of the character sits between 10 and 2 o'clock." },
-    { name: "Level", what: "Output volume. Set it above unity to push the front end of a valve amp." },
-  ],
-  distortion: [
-    { name: "Dist", what: "Amount of hard clipping. Unlike overdrive, this stays saturated even at low settings." },
-    { name: "Tone", what: "Tilts between dark and cutting. Aggressive at the top of its range." },
-    { name: "Level", what: "Output volume — usually needs backing off, as these run hot." },
-  ],
-  fuzz: [
-    { name: "Volume", what: "Output level." },
-    { name: "Treble", what: "Cuts or boosts the top end, separately from the bass control." },
-    { name: "Bass", what: "Cuts or boosts the low end, letting you scoop or thicken the fuzz." },
-    { name: "Gain switch", what: "Two fuzz modes — the second is the wilder, octave-flavoured setting." },
-  ],
-  delay: [
-    { name: "Time", what: "Gap between repeats, from tight slapback to long trails." },
-    { name: "Feedback", what: "How many repeats before the echo dies away. Past 3 o'clock it self-oscillates." },
-    { name: "Level", what: "How loud the repeats sit against your dry signal." },
-  ],
-  modulation: [
-    { name: "Rate", what: "Speed of the modulation sweep." },
-    { name: "Depth", what: "How far the pitch is pushed either side of centre." },
-  ],
-  octave: [
-    { name: "Direct", what: "Level of your unaffected dry signal." },
-    { name: "Oct 1", what: "Level of the note one octave below what you play." },
-    { name: "Oct 2", what: "Level of the note two octaves below — thick, synth-like bass." },
-  ],
-  eq: [
-    { name: "7 frequency sliders", what: "Cut or boost each band by up to 15dB — 100Hz through 6.4kHz." },
-    { name: "Level", what: "Overall output, so you can use the pedal as a clean solo boost." },
-  ],
-  reverb: [
-    { name: "Level", what: "How much reverb is mixed in with the dry signal." },
-    { name: "Tone", what: "Brightness of the reverb tail." },
-    { name: "Time", what: "Length of the decay." },
-  ],
-};
-
-/** Pedals whose layout genuinely differs from the family default. */
-const OVERRIDES: Record<string, Control[]> = {
+export const CONTROLS: Record<string, Control[]> = {
+  // --- Originals ---------------------------------------------------------
   "ibanez-tube-screamer": [
-    { name: "Overdrive", what: "Drives the JRC4558 clipping stage. The famous mid-hump is there at every setting." },
+    { name: "Overdrive", what: "Drives the JRC4558 clipping stage. The mid-hump is there at every setting." },
     { name: "Tone", what: "Treble roll-off. Below noon it gets thick and dark quickly." },
-    { name: "Level", what: "Output volume. Most players run this high and Overdrive low as a boost." },
+    { name: "Level", what: "Output volume. Most players run this high and Overdrive low, as a boost." },
   ],
-  "digitech-bad-monkey": [
+  "boss-bd-2-blues-driver": [
+    { name: "Gain", what: "Amount of breakup. Stays touch-sensitive across the whole range." },
+    { name: "Tone", what: "Bright and open at the top; it can get glassy and thin past 2 o'clock." },
     { name: "Level", what: "Output volume." },
-    { name: "Gain", what: "Amount of overdrive." },
-    { name: "Low", what: "Dedicated bass control — the main thing the original Tube Screamer lacks." },
-    { name: "High", what: "Dedicated treble control, so you can shape both ends independently." },
-    { name: "Mixer out", what: "A second output with cab simulation, for going straight to a desk." },
-  ],
-  "mooer-green-mile": [
-    { name: "Volume", what: "Output level." },
-    { name: "Tone", what: "Treble roll-off." },
-    { name: "Gain", what: "Drive amount." },
-    { name: "Mode switch", what: "Warm for classic Tube Screamer, Hot for more gain than the original offers." },
   ],
   "boss-bf-2-flanger": [
     { name: "Manual", what: "Sets the centre point of the sweep — where the notch sits." },
@@ -81,27 +34,26 @@ const OVERRIDES: Record<string, Control[]> = {
     { name: "Rate", what: "Speed of the chorus wobble." },
     { name: "Depth", what: "Intensity. Low and slow is the classic 80s clean setting." },
   ],
-  "mooer-ensemble-chorus": [
-    { name: "Level", what: "Blend of the chorus against your dry signal — a control the CE-2 doesn't have." },
-    { name: "Rate", what: "Modulation speed." },
-    { name: "Depth", what: "Modulation intensity." },
-  ],
   "boss-dd-2-dd-3-digital-delay": [
-    { name: "E.Level", what: "Volume of the repeats." },
+    { name: "E.Level", what: "Volume of the repeats against your dry signal." },
     { name: "F.Back", what: "Number of repeats." },
-    { name: "D.Time", what: "Delay time, up to around 800ms." },
-    { name: "Mode", what: "Selects the delay range, plus the Hold setting for infinite repeats." },
+    { name: "D.Time", what: "Delay time within the selected range." },
+    { name: "Mode", what: "Selects the delay range, plus Hold for infinite repeats." },
   ],
-  "mooer-reecho": [
-    { name: "Level", what: "Volume of the repeats." },
-    { name: "F.Back", what: "Number of repeats." },
-    { name: "Time", what: "Delay time." },
-    { name: "Mode", what: "Analog, Real Echo and Tape voicings — more range than the single-voice DD-3." },
+  "boss-dm-2-dm-3-analog-delay": [
+    { name: "Repeat Rate", what: "Delay time, roughly 20–300ms." },
+    { name: "Intensity", what: "Number of repeats before the echo dies away." },
+    { name: "Echo", what: "Volume of the repeats." },
+  ],
+  "boss-ds-1-distortion": [
+    { name: "Dist", what: "Hard-clipping amount. Stays saturated even backed right off." },
+    { name: "Tone", what: "Very wide range — harsh at the top, muffled at the bottom." },
+    { name: "Level", what: "Output volume." },
   ],
   "boss-ge-7-graphic-equalizer": [
     { name: "100Hz / 200Hz", what: "Low end — cut to tighten a boomy amp." },
     { name: "400Hz / 800Hz", what: "Low mids, where boxiness lives." },
-    { name: "1.6kHz / 3.2kHz", what: "Presence and bite. Boost here for solos that cut through." },
+    { name: "1.6kHz / 3.2kHz", what: "Presence and bite. Boost here for solos that cut." },
     { name: "6.4kHz", what: "Air and fizz." },
     { name: "Level", what: "Overall output — push it for a clean volume boost." },
   ],
@@ -109,7 +61,94 @@ const OVERRIDES: Record<string, Control[]> = {
     { name: "Volume", what: "Output level." },
     { name: "Treble", what: "Top-end cut and boost." },
     { name: "Bass", what: "Low-end cut and boost." },
-    { name: "Gain 1 / Gain 2", what: "Two fuzz modes. Gain 2 is the saturated, octave-tinged roar it's famous for." },
+    { name: "Gain 1 / Gain 2", what: "Two fuzz modes. Gain 2 is the saturated, octave-tinged roar." },
+  ],
+  "boss-hm-2-heavy-metal": [
+    { name: "Dist", what: "Distortion amount. The famous setting is simply everything at maximum." },
+    { name: "Level", what: "Output volume." },
+    { name: "Colour Low", what: "Adds low-mid weight and the chest-thump in the buzzsaw tone." },
+    { name: "Colour High", what: "Adds the razor edge on top." },
+  ],
+  "boss-oc-2-oc-3-octave": [
+    { name: "Direct Level", what: "Level of your unaffected dry signal." },
+    { name: "OCT 1", what: "Level of the note one octave below." },
+    { name: "OCT 2", what: "Level of the note two octaves below — thick synth bass." },
+  ],
+  "boss-vb-2-vibrato": [
+    { name: "Rate", what: "Speed of the pitch wobble." },
+    { name: "Depth", what: "How far the pitch bends either side of centre." },
+    { name: "Rise Time", what: "How gradually the vibrato eases in after you engage it." },
+  ],
+  "carl-martin-plexitone": [
+    { name: "Level", what: "Output volume for each channel." },
+    { name: "Gain", what: "Drive amount." },
+    { name: "Tone", what: "Overall brightness." },
+    { name: "Two footswitches", what: "Low-gain crunch and high-gain lead, switchable independently." },
+  ],
+  "demeter-tremulator": [
+    { name: "Speed", what: "Rate of the volume pulse." },
+    { name: "Depth", what: "How far the volume drops on each pulse." },
+  ],
+  "dod-boneshaker": [
+    { name: "Level / Gain", what: "Output volume and distortion amount." },
+    { name: "Low / High", what: "Shelving bass and treble." },
+    { name: "Mid + Freq", what: "Sweepable midrange — pick the frequency, then cut or boost it." },
+  ],
+  "dod-carcosa-fuzz": [
+    { name: "Volume / Fuzz", what: "Output level and fuzz amount." },
+    { name: "Tone", what: "Brightness." },
+    { name: "Bias", what: "Starves the circuit for gated, dying-battery splutter." },
+    { name: "Hali / Demhe", what: "Two voicings — scooped and aggressive, or thicker in the mids." },
+  ],
+  "dunlop-fuzz-face": [
+    { name: "Volume", what: "Output level." },
+    { name: "Fuzz", what: "Fuzz amount. Most of the magic is near maximum, cleaned up from the guitar." },
+  ],
+  "electro-harmonix-big-muff-pi": [
+    { name: "Volume", what: "Output level." },
+    { name: "Tone", what: "Sweeps between scooped-dark and thin-bright, with a mid dip in the middle." },
+    { name: "Sustain", what: "Fuzz and compression amount — this is what gives the endless sustain." },
+  ],
+  "electro-harmonix-black-russian-big-muff": [
+    { name: "Volume", what: "Output level." },
+    { name: "Tone", what: "Darker overall range than the NYC version." },
+    { name: "Sustain", what: "Fuzz amount." },
+  ],
+  "electro-harmonix-green-russian-big-muff": [
+    { name: "Volume", what: "Output level." },
+    { name: "Tone", what: "Less severe mid scoop than a standard Muff." },
+    { name: "Sustain", what: "Fuzz amount." },
+  ],
+
+  // --- Alternatives, where the layout genuinely differs ------------------
+  "biyang-ad10-delay": [
+    { name: "Time", what: "Delay time. The AD-10 is a true bucket-brigade circuit, so it's short." },
+    { name: "Repeat", what: "Number of repeats — the AD-10 labels this Repeat, not Feedback." },
+    { name: "Mix", what: "Blend of delayed signal against dry — labelled Mix, not Level." },
+  ],
+  "digitech-bad-monkey": [
+    { name: "Level", what: "Output volume." },
+    { name: "Gain", what: "Amount of overdrive." },
+    { name: "Low", what: "Dedicated bass control — the thing a Tube Screamer lacks." },
+    { name: "High", what: "Dedicated treble control." },
+    { name: "Mixer out", what: "Second output with cab simulation, for going to a desk." },
+  ],
+  "mooer-green-mile": [
+    { name: "Volume", what: "Output level." },
+    { name: "Tone", what: "Treble roll-off." },
+    { name: "Gain", what: "Drive amount." },
+    { name: "Mode switch", what: "Warm for classic Tube Screamer, Hot for more gain than the original." },
+  ],
+  "mooer-ensemble-chorus": [
+    { name: "Level", what: "Blend of chorus against dry — a control the CE-2 doesn't have." },
+    { name: "Rate", what: "Modulation speed." },
+    { name: "Depth", what: "Modulation intensity." },
+  ],
+  "mooer-reecho": [
+    { name: "Level", what: "Volume of the repeats." },
+    { name: "F.Back", what: "Number of repeats." },
+    { name: "Time", what: "Delay time." },
+    { name: "Mode", what: "Analog, Real Echo and Tape voicings." },
   ],
   "behringer-sf300-super-fuzz": [
     { name: "Volume", what: "Output level." },
@@ -117,21 +156,10 @@ const OVERRIDES: Record<string, Control[]> = {
     { name: "Bass", what: "Low-end shaping." },
     { name: "Mode switch", what: "Boost, Fuzz 1 and Fuzz 2 — mirrors the FZ-2's gain modes." },
   ],
-  "boss-hm-2-heavy-metal": [
-    { name: "Dist", what: "Distortion amount. The famous setting is simply everything at maximum." },
-    { name: "Level", what: "Output volume." },
-    { name: "Colour Low", what: "Adds low-mid weight and the chest-thump in the buzzsaw tone." },
-    { name: "Colour High", what: "Adds the razor edge on top. Both at max is the Swedish death metal sound." },
-  ],
   "behringer-hm300-heavy-distortion": [
     { name: "Dist", what: "Distortion amount." },
     { name: "Level", what: "Output volume." },
-    { name: "Low / High", what: "Two-band Colour EQ, same layout as the HM-2 it copies." },
-  ],
-  "boss-ds-1-distortion": [
-    { name: "Dist", what: "Hard-clipping amount. Stays saturated even backed right off." },
-    { name: "Tone", what: "Very wide range — harsh at the top, muffled at the bottom." },
-    { name: "Level", what: "Output volume." },
+    { name: "Low / High", what: "Two-band Colour EQ, same layout as the HM-2." },
   ],
   "danelectro-fish-n-chips": [
     { name: "7 sliders", what: "Cut or boost seven bands across the guitar range." },
@@ -141,12 +169,32 @@ const OVERRIDES: Record<string, Control[]> = {
     { name: "Drive", what: "Overdrive amount." },
     { name: "Tone", what: "Treble roll-off." },
     { name: "Level", what: "Output volume." },
-    { name: "Op-amp socket", what: "Swap the chip — JRC4558, TL072 or RC4558 — to retune the drive's character." },
+    { name: "Op-amp socket", what: "Swap the chip to retune the drive's character." },
+  ],
+  "mosky-big-fuzz": [
+    { name: "Volume / Tone / Sustain", what: "Standard Muff layout." },
+    { name: "Mode selector", what: "Switches between several Muff variants in one box." },
   ],
 };
 
-export function controlsFor(slug: string, category: Category): Control[] {
-  return OVERRIDES[slug] ?? BY_CATEGORY[category];
+/**
+ * Players documented as using a specific budget clone.
+ *
+ * Deliberately sparse. Budget clones almost never have verifiable famous
+ * users, and inventing them would be worse than showing nothing — so a pedal
+ * missing here falls back to the original's players, clearly labelled as such
+ * in the UI rather than implied to be users of the clone.
+ */
+export const ALTERNATIVE_ARTISTS: Record<string, string[]> = {
+  // Behringer's HM-2 clone is widely used in the Swedish death metal revival,
+  // where the vintage original is scarce and expensive.
+  "behringer-hm300-heavy-distortion": ["Bands in the HM-2 death metal revival"],
+  // The SF300 is a long-running favourite in doom and stoner circles.
+  "behringer-sf300-super-fuzz": ["Widely used across doom and stoner rock"],
+};
+
+export function controlsFor(slug: string): Control[] {
+  return CONTROLS[slug] ?? [];
 }
 
 /**

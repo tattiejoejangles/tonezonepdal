@@ -175,3 +175,59 @@ function sortResults(results: DirectoryResult[], sort: SortId): DirectoryResult[
       });
   }
 }
+
+/** A clone matched by search, with the original it copies for context. */
+export interface CloneResult {
+  alternative: Alternative;
+  original: OriginalWithAlternatives;
+  saving: Savings;
+  relevance: number;
+}
+
+/**
+ * Searches the clones themselves.
+ *
+ * People search for "Behringer TO800" as often as "Tube Screamer", so clones
+ * need to be findable in their own right rather than only as a row inside
+ * their original's page.
+ */
+export function filterAlternatives(
+  catalogue: OriginalWithAlternatives[],
+  { query, priceFilter }: Omit<DirectoryOptions, "sort">,
+): CloneResult[] {
+  const normalizedQuery = normalize(query);
+  const ceiling = priceCeiling(priceFilter);
+  if (!normalizedQuery) return [];
+
+  const terms = normalizedQuery.split(" ").filter(Boolean);
+  const results: CloneResult[] = [];
+
+  for (const original of catalogue) {
+    for (const alternative of original.alternatives) {
+      if (alternative.priceGBP > ceiling) continue;
+
+      const name = normalize(alternative.name);
+      const brand = normalize(alternative.brand);
+      const haystack = [name, brand, ...(alternative.aliases ?? []).map(normalize)].join(" ");
+      if (!terms.every((term) => haystack.includes(term))) continue;
+
+      let relevance = 1;
+      if (name.includes(normalizedQuery)) relevance += 100;
+      if (name.startsWith(normalizedQuery)) relevance += 60;
+      if (brand.includes(normalizedQuery)) relevance += 25;
+
+      results.push({
+        alternative,
+        original,
+        saving: calculateSavings(original.priceGBP, alternative.priceGBP),
+        relevance,
+      });
+    }
+  }
+
+  return results.sort((a, b) =>
+    b.relevance !== a.relevance
+      ? b.relevance - a.relevance
+      : a.alternative.priceGBP - b.alternative.priceGBP,
+  );
+}
