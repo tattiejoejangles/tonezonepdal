@@ -39,3 +39,8 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# Working files, not part of the app
+/button.mp4
+/inspo.webp
+/Pedals.xlsx

@@ -1,0 +1,58 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="620" height="440" viewBox="0 0 620 440">
+  <defs>
+    <!-- Compact isometric stompbox: dark top plate, three knobs, footswitch. -->
+    <symbol id="box" viewBox="0 0 130 104">
+      <ellipse cx="66" cy="93" rx="52" ry="11" fill="#04060f" opacity="0.55" />
+      <polygon points="65,6 124,40 65,74 6,40" fill="currentColor" />
+      <polygon points="6,40 65,74 65,92 6,58" fill="currentColor" opacity="0.55" />
+      <polygon points="124,40 65,74 65,92 124,58" fill="currentColor" opacity="0.32" />
+      <polygon points="65,22 101,42 65,62 29,42" fill="#141a33" />
+      <polygon points="65,25 97,42 65,59 33,42" fill="#1d2547" />
+      <ellipse cx="42" cy="29" rx="4.6" ry="2.8" fill="#0d1226" />
+      <ellipse cx="53" cy="23" rx="4.6" ry="2.8" fill="#0d1226" />
+      <ellipse cx="64" cy="17" rx="4.6" ry="2.8" fill="#0d1226" />
+      <ellipse cx="65" cy="67" rx="8" ry="4.6" fill="#0d1226" />
+    </symbol>
+
+    <!-- Wah / expression pedal: long tapered wedge with a treadle plate. -->
+    <symbol id="wah" viewBox="0 0 150 108">
+      <ellipse cx="76" cy="96" rx="62" ry="11" fill="#04060f" opacity="0.55" />
+      <polygon points="98,4 142,30 52,82 8,56" fill="currentColor" />
+      <polygon points="8,56 52,82 52,96 8,70" fill="currentColor" opacity="0.55" />
+      <polygon points="142,30 52,82 52,96 142,44" fill="currentColor" opacity="0.32" />
+      <polygon points="96,14 130,33 54,77 22,58" fill="#151b36" />
+      <polygon points="95,18 124,34 55,73 27,57" fill="#1e2649" />
+    </symbol>
+  </defs>
+
+  <g>
+    <!-- row 1 -->
+    <use href="#box" x="-30" y="-6"  width="130" height="104" color="#f26430" />
+    <use href="#box" x="90"  y="10"  width="130" height="104" color="#12b886" />
+    <use href="#wah" x="215" y="-14" width="150" height="108" color="#8f9bb3" />
+    <use href="#box" x="370" y="4"   width="130" height="104" color="#17b8c4" />
+    <use href="#box" x="492" y="-8"  width="130" height="104" color="#e2483f" />
+
+    <!-- row 2 -->
+    <use href="#box" x="-46" y="112" width="130" height="104" color="#2f7fe0" />
+    <use href="#box" x="60"  y="130" width="130" height="104" color="#e8c020" />
+    <use href="#box" x="182" y="118" width="130" height="104" color="#c9339e" />
+    <use href="#wah" x="300" y="128" width="150" height="108" color="#aab4c8" />
+    <use href="#box" x="452" y="120" width="130" height="104" color="#39c05a" />
+    <use href="#box" x="560" y="136" width="130" height="104" color="#17b8c4" />
+
+    <!-- row 3 -->
+    <use href="#box" x="-24" y="246" width="130" height="104" color="#17a8b8" />
+    <use href="#wah" x="86"  y="238" width="150" height="108" color="#94a0b8" />
+    <use href="#box" x="240" y="252" width="130" height="104" color="#f26430" />
+    <use href="#box" x="360" y="238" width="130" height="104" color="#c9339e" />
+    <use href="#box" x="482" y="250" width="130" height="104" color="#2f7fe0" />
+
+    <!-- row 4 (bleeds into the next tile, keeping the repeat continuous) -->
+    <use href="#box" x="-40" y="364" width="130" height="104" color="#e8c020" />
+    <use href="#box" x="96"  y="376" width="130" height="104" color="#e2483f" />
+    <use href="#box" x="222" y="362" width="130" height="104" color="#12b886" />
+    <use href="#wah" x="344" y="370" width="150" height="108" color="#8f9bb3" />
+    <use href="#box" x="500" y="364" width="130" height="104" color="#17b8c4" />
+  </g>
+</svg>

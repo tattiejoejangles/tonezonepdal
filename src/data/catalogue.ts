@@ -1,0 +1,193 @@
+import type {
+  Alternative,
+  Category,
+  OriginalWithAlternatives,
+  PedalDetail,
+} from "@/lib/types";
+import { getSupabase } from "@/lib/supabase";
+
+import { controlsFor, VERDICTS } from "./details";
+import generatedDetails from "./details.generated.json";
+import generatedImages from "./images.generated.json";
+import { alternatives, originals } from "./pedals";
+
+/**
+ * The catalogue the UI renders.
+ *
+ * Supabase is the source of truth: it holds the same records plus the
+ * `image_url` column you fill in by hand, so a pasted URL appears on the site
+ * without a redeploy.
+ *
+ * If Supabase is unreachable or unconfigured we fall back to the copy bundled
+ * in src/data. That means a database outage degrades the site to slightly
+ * stale data rather than taking it down, and it keeps local development
+ * working with no credentials.
+ */
+
+interface OriginalRow {
+  id: string;
+  slug: string;
+  name: string;
+  brand: string;
+  category: Category;
+  price_gbp: number | string;
+  blurb: string;
+  description: string | null;
+  image_url: string | null;
+  auto_image_url: string | null;
+  image_credit: string | null;
+  tags: string[] | null;
+  artists: string[] | null;
+  aliases: string[] | null;
+  popularity: number;
+  search_query: string | null;
+}
+
+interface AlternativeRow {
+  id: string;
+  slug: string;
+  original_id: string;
+  name: string;
+  brand: string;
+  price_gbp: number | string;
+  blurb: string;
+  image_url: string | null;
+  auto_image_url: string | null;
+  pros: string[] | null;
+  cons: string[] | null;
+  aliases: string[] | null;
+  popularity: number;
+  match_quality: number;
+  search_query: string | null;
+  verdict: string | null;
+  gallery: string[] | null;
+}
+
+/** A hand-entered URL always beats one the scraper found. */
+const pickImage = (row: { image_url: string | null; auto_image_url: string | null }) =>
+  row.image_url ?? row.auto_image_url ?? null;
+
+const num = (value: number | string) =>
+  typeof value === "number" ? value : Number.parseFloat(value);
+
+function mapOriginal(row: OriginalRow, alts: AlternativeRow[]): OriginalWithAlternatives {
+  return {
+    id: row.id,
+    slug: row.slug,
+    name: row.name,
+    brand: row.brand,
+    category: row.category,
+    priceGBP: num(row.price_gbp),
+    blurb: row.blurb,
+    description: row.description ?? "",
+    imageUrl: pickImage(row),
+    imageCredit: row.image_credit ?? undefined,
+    tags: row.tags ?? [],
+    artists: row.artists ?? [],
+    aliases: row.aliases ?? [],
+    popularity: row.popularity,
+    searchQuery: row.search_query ?? undefined,
+    alternatives: alts
+      .filter((alt) => alt.original_id === row.id)
+      .map(mapAlternative)
+      .sort((a, b) => a.priceGBP - b.priceGBP),
+  };
+}
+
+function mapAlternative(row: AlternativeRow): Alternative {
+  return {
+    id: row.id,
+    slug: row.slug,
+    originalId: row.original_id,
+    name: row.name,
+    brand: row.brand,
+    priceGBP: num(row.price_gbp),
+    blurb: row.blurb,
+    imageUrl: pickImage(row),
+    pros: row.pros ?? [],
+    cons: row.cons ?? [],
+    aliases: row.aliases ?? [],
+    popularity: row.popularity,
+    matchQuality: row.match_quality,
+    searchQuery: row.search_query ?? undefined,
+    verdict: row.verdict ?? undefined,
+    gallery: row.gallery ?? [],
+  };
+}
+
+/** The bundled copy, used when Supabase can't be reached. */
+function localCatalogue(): OriginalWithAlternatives[] {
+  const images = generatedImages as Record<string, { url: string } | undefined>;
+  const details = generatedDetails as Record<string, { images?: string[] } | undefined>;
+
+  return originals.map((original) => ({
+    ...original,
+    imageUrl: original.imageUrl ?? images[original.slug]?.url ?? null,
+    alternatives: alternatives
+      .filter((alt) => alt.originalId === original.id)
+      .sort((a, b) => a.priceGBP - b.priceGBP)
+      .map((alt) => ({
+        ...alt,
+        imageUrl: alt.imageUrl ?? images[alt.slug]?.url ?? null,
+        verdict: VERDICTS[alt.slug],
+        gallery: details[alt.slug]?.images ?? [],
+      })),
+  }));
+}
+
+export async function getCatalogue(): Promise<OriginalWithAlternatives[]> {
+  const supabase = getSupabase();
+  if (!supabase) return localCatalogue();
+
+  try {
+    const [originalsResult, alternativesResult] = await Promise.all([
+      supabase.from("originals").select("*").order("popularity", { ascending: false }),
+      supabase.from("alternatives").select("*"),
+    ]);
+
+    if (originalsResult.error) throw originalsResult.error;
+    if (alternativesResult.error) throw alternativesResult.error;
+
+    const rows = (originalsResult.data ?? []) as OriginalRow[];
+    if (rows.length === 0) return localCatalogue();
+
+    const alts = (alternativesResult.data ?? []) as AlternativeRow[];
+    return rows.map((row) => mapOriginal(row, alts));
+  } catch (error) {
+    console.error("[catalogue] Supabase unavailable, using bundled data:", error);
+    return localCatalogue();
+  }
+}
+
+export async function getOriginalBySlug(
+  slug: string,
+): Promise<OriginalWithAlternatives | undefined> {
+  const catalogue = await getCatalogue();
+  return catalogue.find((entry) => entry.slug === slug);
+}
+
+/**
+ * Everything the pedal modal shows. Controls stay in code — they describe the
+ * circuit, not the listing, and don't need to be editable per row.
+ */
+export function getDetail(
+  pedal: {
+    slug: string;
+    imageUrl: string | null;
+    verdict?: string;
+    gallery?: string[];
+  },
+  category: Category,
+  artists: string[],
+): PedalDetail {
+  const gallery = [pedal.imageUrl, ...(pedal.gallery ?? [])].filter(
+    (url): url is string => Boolean(url),
+  );
+
+  return {
+    controls: controlsFor(pedal.slug, category),
+    artists,
+    images: [...new Set(gallery)],
+    verdict: pedal.verdict ?? VERDICTS[pedal.slug],
+  };
+}

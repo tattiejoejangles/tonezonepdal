@@ -1,0 +1,381 @@
+{
+  "ibanez-tube-screamer": {
+    "images": [
+      "https://thumbs.static-thomann.de/thumb/thumb600x600/pics/prod/104010.jpg",
+      "https://thumbs.static-thomann.de/thumb/thumb600x600/pics/prod/260799.jpg",
+      "https://m.media-amazon.com/images/I/61PjURRbI7L._AC_SL600_.jpg",
+      "https://m.media-amazon.com/images/I/71-Q1XnVHiL._AC_SL600_.jpg"
+    ]
+  },
+  "boss-bd-2-blues-driver": {
+    "images": [
+      "https://thumbs.static-thomann.de/thumb/thumb600x600/pics/prod/103955.jpg",
+      "https://m.media-amazon.com/images/I/61XI0g8xP7L._AC_SL600_.jpg",
+      "https://m.media-amazon.com/images/I/612by8G1NeL._AC_SL600_.jpg",
+      "https://m.media-amazon.com/images/I/812gEt89djL._AC_SL600_.jpg"
+    ]
+  },
+  "boss-bf-2-flanger": {
+    "images": []
+  },
+  "boss-ce-2-chorus": {
+    "images": [
+      "https://thumbs.static-thomann.de/thumb/thumb600x600/pics/prod/393030.jpg",
+      "https://m.media-amazon.com/images/I/71PSkbIFPDL._AC_SL600_.jpg",
+      "https://m.media-amazon.com/images/I/51CAJTR9DXL._AC_SL600_.jpg",
+      "https://m.media-amazon.com/images/I/51V2-nC0PJL._AC_SL600_.jpg"
+    ]
+  },
+  "boss-dd-2-dd-3-digital-delay": {
+    "images": [
+      "https://m.media-amazon.com/images/I/61y5oAYxizL._AC_SL600_.jpg"
+    ]
+  },
+  "boss-dm-2-dm-3-analog-delay": {
+    "images": [
+      "https://thumbs.static-thomann.de/thumb/thumb600x600/pics/prod/345724.jpg",
+      "https://m.media-amazon.com/images/I/614XgLbAtrL._AC_SL600_.jpg",
+      "https://m.media-amazon.com/images/I/51CAJTR9DXL._AC_SL600_.jpg"
+    ]
+  },
+  "boss-ds-1-distortion": {
+    "images": [
+      "https://thumbs.static-thomann.de/thumb/thumb600x600/pics/prod/102371.jpg",
+      "https://thumbs.static-thomann.de/thumb/thumb600x600/pics/prod/552256.jpg",
+      "https://m.media-amazon.com/images/I/71WAFbpOI-L._AC_SL600_.jpg"
+    ]
+  },
+  "boss-ge-7-graphic-equalizer": {
+    "images": [
+      "https://thumbs.static-thomann.de/thumb/thumb600x600/pics/prod/103963.jpg",
+      "https://m.media-amazon.com/images/I/61YnYDYbPyL._AC_SL600_.jpg"
+    ]
+  },
+  "boss-fz-2-hyper-fuzz": {
+    "images": []
+  },
+  "boss-hm-2-heavy-metal": {
+    "images": [
+      "https://thumbs.static-thomann.de/thumb/thumb600x600/pics/prod/522244.jpg",
+      "https://m.media-amazon.com/images/I/61rCTHP0NbL._AC_SL600_.jpg",
+      "https://m.media-amazon.com/images/I/71dlxeLPrsL._AC_SL600_.jpg"
+    ]
+  },
+  "behringer-to800-vintage-overdrive": {
+    "images": [
+      "https://thumbs.static-thomann.de/thumb/thumb600x600/pics/prod/183774.jpg",
+      "https://m.media-amazon.com/images/I/71sJub23+WL._AC_SL600_.jpg",
+      "https://m.media-amazon.com/images/I/51AO6KdL3dL._AC_SL600_.jpg",
+      "https://m.media-amazon.com/images/I/61V9Ok+lKmL._AC_SL600_.jpg"
+    ]
+  },
+  "joyo-jf-01-vintage-overdrive": {
+    "images": [
+      "https://m.media-amazon.com/images/I/617HHxdZEoL._AC_SL600_.jpg"
+    ]
+  },
+  "mooer-green-mile": {
+    "images": [
+      "https://thumbs.static-thomann.de/thumb/thumb600x600/pics/prod/309295.jpg",
+      "https://m.media-amazon.com/images/I/5126kA+ttOL._AC_SL600_.jpg",
+      "https://m.media-amazon.com/images/I/4155vAh6UIL._AC_SL600_.jpg"
+    ]
+  },
+  "biyang-od-8": {
+    "images": []
+  },
+  "digitech-bad-monkey": {
+    "images": [
+      "https://thumbs.static-thomann.de/thumb/thumb600x600/pics/prod/632331.jpg",
+      "https://m.media-amazon.com/images/I/81LrQVdKRLL._AC_SL600_.jpg"
+    ]
+  },
+  "tone-city-cream": {
+    "images": [
+      "https://thumbs.static-thomann.de/thumb/thumb600x600/pics/prod/537704.jpg",
+      "https://thumbs.static-thomann.de/thumb/thumb600x600/pics/prod/624438.jpg"
+    ]
+  },
+  "caline-cp-73": {
+    "images": []
+  },
+  "daphon-e20od": {
+    "images": []
+  },
+  "digitech-screaming-blues": {
+    "images": []
+  },
+  "behringer-blues-overdrive-bo100": {
+    "images": []
+  },
+  "biyang-bl-8-blue": {
+    "images": []
+  },
+  "mooer-blues-mood": {
+    "images": [
+      "https://thumbs.static-thomann.de/thumb/thumb600x600/pics/prod/315657.jpg",
+      "https://m.media-amazon.com/images/I/71ZOp3S7WcL._AC_SL600_.jpg"
+    ]
+  },
+  "eno-bf-2-flanger": {
+    "images": []
+  },
+  "behringer-ultra-flanger-uf100": {
+    "images": []
+  },
+  "digitech-turbo-flanger": {
+    "images": []
+  },
+  "daphon-e20fl": {
+    "images": []
+  },
+  "tc-electronic-thunderstorm-flanger": {
+    "images": [
+      "https://thumbs.static-thomann.de/thumb/thumb600x600/pics/prod/400165.jpg",
+      "https://m.media-amazon.com/images/I/51BRU1vGgzL._AC_SL600_.jpg"
+    ]
+  },
+  "eno-chorus": {
+    "images": [
+      "https://m.media-amazon.com/images/I/61Iim4NTKQL._AC_SL600_.jpg"
+    ]
+  },
+  "biyang-ch10-chorus": {
+    "images": []
+  },
+  "joyo-jf-37-analog-chorus": {
+    "images": [
+      "https://thumbs.static-thomann.de/thumb/thumb600x600/pics/prod/529964.jpg",
+      "https://m.media-amazon.com/images/I/61rUexeVpHL._AC_SL600_.jpg"
+    ]
+  },
+  "mooer-ensemble-chorus": {
+    "images": [
+      "https://m.media-amazon.com/images/I/51vChAHnPIL._AC_SL600_.jpg",
+      "https://m.media-amazon.com/images/I/61zK-MmUInL._AC_SL600_.jpg"
+    ]
+  },
+  "digitech-multi-chorus": {
+    "images": []
+  },
+  "behringer-ultra-chorus-uc200": {
+    "images": [
+      "https://thumbs.static-thomann.de/thumb/thumb600x600/pics/prod/111469.jpg",
+      "https://m.media-amazon.com/images/I/71GhT59TzbL._AC_SL600_.jpg",
+      "https://m.media-amazon.com/images/I/61wgfg61nUL._AC_SL600_.jpg",
+      "https://m.media-amazon.com/images/I/516WFKGZ05L._AC_SL600_.jpg"
+    ]
+  },
+  "daphon-e20ch": {
+    "images": []
+  },
+  "tone-city-angel-wing": {
+    "images": [
+      "https://thumbs.static-thomann.de/thumb/thumb600x600/pics/prod/536647.jpg",
+      "https://m.media-amazon.com/images/I/511xxRA48aL._AC_SL600_.jpg"
+    ]
+  },
+  "joyo-jf-08-digital-delay": {
+    "images": []
+  },
+  "mooer-reecho": {
+    "images": [
+      "https://thumbs.static-thomann.de/thumb/thumb600x600/pics/prod/309291.jpg",
+      "https://thumbs.static-thomann.de/thumb/thumb600x600/pics/prod/355109.jpg",
+      "https://m.media-amazon.com/images/I/61xdh1xyRsL._AC_SL600_.jpg",
+      "https://m.media-amazon.com/images/I/51wZTHz+HeL._AC_SL600_.jpg"
+    ]
+  },
+  "caline-cp-17": {
+    "images": [
+      "https://m.media-amazon.com/images/I/61SQaAq7J1L._AC_SL600_.jpg"
+    ]
+  },
+  "behringer-dd400-digital-delay": {
+    "images": []
+  },
+  "eno-ad6-delay": {
+    "images": []
+  },
+  "biyang-ad10-delay": {
+    "images": []
+  },
+  "mooer-anaecho": {
+    "images": [
+      "https://m.media-amazon.com/images/I/51wZTHz+HeL._AC_SL600_.jpg"
+    ]
+  },
+  "daphon-e20dl": {
+    "images": []
+  },
+  "eno-trinity": {
+    "images": []
+  },
+  "mooer-ultra-drive": {
+    "images": [
+      "https://thumbs.static-thomann.de/thumb/thumb600x600/pics/prod/454468.jpg",
+      "https://m.media-amazon.com/images/I/61V9EsRf8JL._AC_SL600_.jpg"
+    ]
+  },
+  "danelectro-fab-1-distortion": {
+    "images": []
+  },
+  "digitech-hot-head": {
+    "images": []
+  },
+  "daphon-e20ds": {
+    "images": []
+  },
+  "biyang-eq7": {
+    "images": []
+  },
+  "behringer-eq700": {
+    "images": [
+      "https://thumbs.static-thomann.de/thumb/thumb600x600/pics/prod/183479.jpg",
+      "https://thumbs.static-thomann.de/thumb/thumb600x600/pics/prod/183515.jpg",
+      "https://m.media-amazon.com/images/I/618I2dfZitL._AC_SL600_.jpg",
+      "https://m.media-amazon.com/images/I/51AWjIi6QkL._AC_SL600_.jpg"
+    ]
+  },
+  "danelectro-fish-n-chips": {
+    "images": []
+  },
+  "daphon-e20ge": {
+    "images": []
+  },
+  "behringer-sf300-super-fuzz": {
+    "images": [
+      "https://thumbs.static-thomann.de/thumb/thumb600x600/pics/prod/115985.jpg",
+      "https://m.media-amazon.com/images/I/71BUcnNZ6fL._AC_SL600_.jpg"
+    ]
+  },
+  "behringer-hm300-heavy-distortion": {
+    "images": [
+      "https://thumbs.static-thomann.de/thumb/thumb600x600/pics/prod/204415.jpg",
+      "https://m.media-amazon.com/images/I/811hgVpK21L._AC_SL600_.jpg",
+      "https://m.media-amazon.com/images/I/51AO6KdL3dL._AC_SL600_.jpg"
+    ]
+  },
+  "boss-oc-2-oc-3-octave": {
+    "images": []
+  },
+  "boss-vb-2-vibrato": {
+    "images": [
+      "https://thumbs.static-thomann.de/thumb/thumb600x600/pics/prod/379482.jpg"
+    ]
+  },
+  "carl-martin-plexitone": {
+    "images": [
+      "https://thumbs.static-thomann.de/thumb/thumb600x600/pics/prod/300939.jpg"
+    ]
+  },
+  "demeter-tremulator": {
+    "images": []
+  },
+  "dod-boneshaker": {
+    "images": []
+  },
+  "eno-octaver-oct-1": {
+    "images": []
+  },
+  "behringer-super-octaver-so400": {
+    "images": []
+  },
+  "mooer-pure-octave": {
+    "images": [
+      "https://thumbs.static-thomann.de/thumb/thumb600x600/pics/prod/315629.jpg",
+      "https://thumbs.static-thomann.de/thumb/thumb600x600/pics/prod/573087.jpg"
+    ]
+  },
+  "tc-electronic-nether-octaver": {
+    "images": [
+      "https://thumbs.static-thomann.de/thumb/thumb600x600/pics/prod/435997.jpg"
+    ]
+  },
+  "behringer-uv300-ultra-vibrato": {
+    "images": [
+      "https://thumbs.static-thomann.de/thumb/thumb600x600/pics/prod/115986.jpg"
+    ]
+  },
+  "joyo-jf-32-hot-plexi": {
+    "images": []
+  },
+  "caline-englishman": {
+    "images": []
+  },
+  "tone-city-golden-plexi": {
+    "images": [
+      "https://thumbs.static-thomann.de/thumb/thumb600x600/pics/prod/622905.jpg"
+    ]
+  },
+  "mosky-plexi-distortion": {
+    "images": []
+  },
+  "joyo-jf-09-tremolo": {
+    "images": []
+  },
+  "mooer-trelicopter": {
+    "images": [
+      "https://thumbs.static-thomann.de/thumb/thumb600x600/pics/prod/312674.jpg"
+    ]
+  },
+  "danelectro-cool-cat-tremolo": {
+    "images": []
+  },
+  "ginean-massive-distortion": {
+    "images": []
+  },
+  "dod-carcosa-fuzz": {
+    "images": [
+      "https://thumbs.static-thomann.de/thumb/thumb600x600/pics/prod/402789.jpg"
+    ]
+  },
+  "dunlop-fuzz-face": {
+    "images": []
+  },
+  "electro-harmonix-big-muff-pi": {
+    "images": [
+      "https://thumbs.static-thomann.de/thumb/thumb600x600/pics/prod/212802.jpg",
+      "https://thumbs.static-thomann.de/thumb/thumb600x600/pics/prod/638051.jpg",
+      "https://thumbs.static-thomann.de/thumb/thumb600x600/pics/prod/191809.jpg",
+      "https://thumbs.static-thomann.de/thumb/thumb600x600/pics/prod/645308.jpg"
+    ]
+  },
+  "electro-harmonix-black-russian-big-muff": {
+    "images": []
+  },
+  "electro-harmonix-green-russian-big-muff": {
+    "images": [
+      "https://thumbs.static-thomann.de/thumb/thumb600x600/pics/prod/420472.jpg"
+    ]
+  },
+  "ginean-hairy-show-fuzz": {
+    "images": []
+  },
+  "jrr-gesi-face": {
+    "images": []
+  },
+  "mas-effects-tiny-fuzz": {
+    "images": []
+  },
+  "biyang-fz-10-fuzz-star": {
+    "images": []
+  },
+  "eno-bmf": {
+    "images": []
+  },
+  "behringer-vintage-distortion": {
+    "images": []
+  },
+  "mosky-big-fuzz": {
+    "images": []
+  },
+  "eno-bmf-black-russian": {
+    "images": []
+  },
+  "tone-city-matcha-cream": {
+    "images": [
+      "https://thumbs.static-thomann.de/thumb/thumb600x600/pics/prod/537704.jpg"
+    ]
+  }
+}
