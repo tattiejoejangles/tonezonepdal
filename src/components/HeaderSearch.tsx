@@ -3,31 +3,44 @@
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 
+import { SearchSuggestions, useSuggestions } from "./SearchSuggestions";
+import type { SearchIndex } from "@/lib/search-index";
+
 /**
  * Compact search in the site header.
  *
- * Submitting pushes the term into the URL as `?q=`, which the home page
- * directory reads. Going through the URL rather than shared state means
+ * Typing suggests matching pedals and clicking one goes straight to its page.
+ * Submitting instead pushes the term into the URL as `?q=`, which the home
+ * page directory reads. Going through the URL rather than shared state means
  * results are linkable, the back button behaves, and it works from a pedal
  * page as well as the home page.
  *
  * Deliberately does NOT read the current `?q=` with useSearchParams: this
  * component lives in the root layout, and useSearchParams would opt every
  * statically rendered page into client-side rendering for the whole boundary.
- * The header box starting empty is a fair trade for keeping pedal pages static.
+ * The header box starting empty is a fair trade for keeping pedal pages
+ * static. The suggestion index arrives as a prop for the same reason — it is
+ * built on the server, so nothing here forces a page to render on the client.
  */
-export function HeaderSearch() {
+export function HeaderSearch({ index }: { index: SearchIndex }) {
   const router = useRouter();
   const [value, setValue] = useState("");
+  const suggest = useSuggestions(index, value);
 
   function submit(event: React.FormEvent) {
     event.preventDefault();
+    suggest.dismiss();
     const trimmed = value.trim();
     router.push(trimmed ? `/?q=${encodeURIComponent(trimmed)}#directory` : "/");
   }
 
   return (
-    <form onSubmit={submit} role="search" className="relative w-full max-w-xs">
+    <form
+      onSubmit={submit}
+      role="search"
+      className="relative w-full max-w-xs"
+      {...suggest.containerProps}
+    >
       <label htmlFor="header-search" className="sr-only">
         Search pedals
       </label>
@@ -51,8 +64,21 @@ export function HeaderSearch() {
         value={value}
         onChange={(event) => setValue(event.target.value)}
         placeholder="Search pedals…"
+        autoComplete="off"
+        {...suggest.inputProps}
         className="w-full border border-stone-200 bg-stone-50 py-2 pr-3 pl-9 text-sm font-medium text-stone-800 transition-colors outline-none placeholder:text-stone-400 focus:border-amber-500 focus:bg-white"
       />
+
+      {suggest.open && (
+        <SearchSuggestions
+          suggestions={suggest.suggestions}
+          active={suggest.active}
+          listId={suggest.listId}
+          onHover={suggest.setActive}
+          onSelect={suggest.dismiss}
+          panelClassName="sm:left-auto sm:w-96"
+        />
+      )}
     </form>
   );
 }

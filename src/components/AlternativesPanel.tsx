@@ -104,6 +104,7 @@ export function AlternativesPanel({
           detail={open.detail}
           originalName={originalName}
           originalPrice={originalPrice}
+          href={`/clone/${open.alternative.slug}`}
           onClose={() => setOpenSlug(null)}
         />
       )}

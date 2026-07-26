@@ -3,9 +3,9 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 
 import { AlternativesPanel } from "@/components/AlternativesPanel";
+import { CheapestAlternative } from "@/components/CheapestAlternative";
 import { PedalImage } from "@/components/PedalImage";
 import { RetailerButtons } from "@/components/RetailerButtons";
-import { SavingsBadge } from "@/components/SavingsBadge";
 import { getCatalogue, getDetail, getOriginalBySlug } from "@/data/catalogue";
 import { calculateSavings, formatPrice } from "@/lib/format";
 
@@ -80,10 +80,6 @@ export default async function PedalPage({
   if (!pedal) notFound();
 
   const cheapest = pedal.alternatives[0];
-  const bestSaving = cheapest
-    ? calculateSavings(pedal.priceGBP, cheapest.priceGBP)
-    : null;
-
   const artists = pedal.artists ?? [];
   const originalDetail = getDetail(pedal, artists);
 
@@ -105,9 +101,11 @@ export default async function PedalPage({
         </Link>
       </nav>
 
-      {/* Product hero: image left, the buy decision on the right. */}
+      {/* Product hero: photo, the pitch, then the buy stack in its own lane.
+          The stack is three tall pills — beside the text it costs no height,
+          below it, it added ~200px to every pedal page. */}
       <section className="tz-chamfer overflow-hidden bg-white shadow-sm ring-1 ring-stone-200/70">
-        <div className="grid gap-8 p-6 sm:p-8 md:grid-cols-[minmax(0,380px)_1fr] md:gap-10">
+        <div className="grid gap-8 p-6 sm:p-8 md:grid-cols-[minmax(0,340px)_1fr] md:gap-10 lg:grid-cols-[minmax(0,300px)_1fr_minmax(0,14rem)] lg:gap-6">
           <div>
             <div className="relative aspect-square overflow-hidden bg-white ring-1 ring-stone-100">
               <PedalImage
@@ -137,17 +135,13 @@ export default async function PedalPage({
               <span className="text-sm text-stone-400">typical UK price</span>
             </div>
 
-            {cheapest && bestSaving && (
-              <div className="border-l-2 border-emerald-500 bg-emerald-50/70 p-4">
-                <p className="text-sm font-medium text-emerald-900">
-                  Cheapest alternative:{" "}
-                  <span className="font-bold">{cheapest.name}</span> at{" "}
-                  <span className="font-bold">{formatPrice(cheapest.priceGBP)}</span>
-                </p>
-                <div className="mt-2.5">
-                  <SavingsBadge saving={bestSaving} comparedTo={pedal.name} size="lg" />
-                </div>
-              </div>
+            {cheapest && (
+              <CheapestAlternative
+                alternative={cheapest}
+                detail={getDetail(cheapest, artists)}
+                originalName={pedal.name}
+                originalPrice={pedal.priceGBP}
+              />
             )}
 
             <p className="tz-body text-sm text-stone-600">{pedal.description}</p>
@@ -176,10 +170,13 @@ export default async function PedalPage({
               </div>
             )}
 
-            <div className="mt-auto space-y-2 border-t border-stone-100 pt-5">
-              <p className="tz-eyebrow text-stone-400">Buy the original</p>
-              <RetailerButtons pedal={pedal} />
-            </div>
+          </div>
+
+          {/* Spans the full width while the grid is two columns, becomes the
+              third column once there's room for it. */}
+          <div className="space-y-2 border-t border-stone-100 pt-5 md:col-span-2 lg:col-span-1 lg:border-t-0 lg:pt-0">
+            <p className="tz-eyebrow text-stone-400">Buy the original</p>
+            <RetailerButtons pedal={pedal} />
           </div>
         </div>
       </section>

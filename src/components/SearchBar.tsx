@@ -1,15 +1,22 @@
 "use client";
 
+import { SearchSuggestions, useSuggestions } from "./SearchSuggestions";
+import type { SearchIndex } from "@/lib/search-index";
+
 export function SearchBar({
   value,
   onChange,
+  index,
   tone = "light",
 }: {
   value: string;
   onChange: (value: string) => void;
+  /** Pedals to suggest as you type. */
+  index: SearchIndex;
   tone?: "light" | "dark";
 }) {
   const dark = tone === "dark";
+  const suggest = useSuggestions(index, value);
 
   return (
     <div className="w-full">
@@ -17,7 +24,7 @@ export function SearchBar({
         Search for a pedal
       </label>
 
-      <div className="group relative">
+      <div className="group relative" {...suggest.containerProps}>
         {/* Glow that wakes up on focus. */}
         <div
           aria-hidden
@@ -47,6 +54,7 @@ export function SearchBar({
             onChange={(event) => onChange(event.target.value)}
             placeholder="Search a pedal — “Tube Screamer”, “HM-2”, “delay”…"
             autoComplete="off"
+            {...suggest.inputProps}
             className={`w-full rounded-full border-0 py-4 pr-24 pl-14 text-base font-medium outline-none ${
               dark
                 ? "bg-[#151c30] text-white placeholder:text-stone-500"
@@ -68,6 +76,17 @@ export function SearchBar({
             </button>
           )}
         </div>
+
+        {suggest.open && (
+          <SearchSuggestions
+            suggestions={suggest.suggestions}
+            active={suggest.active}
+            listId={suggest.listId}
+            onHover={suggest.setActive}
+            onSelect={suggest.dismiss}
+            tone={tone}
+          />
+        )}
       </div>
     </div>
   );

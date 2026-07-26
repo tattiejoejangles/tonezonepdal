@@ -1,4 +1,5 @@
 import type { Alternative, OriginalWithAlternatives } from "./types";
+import type { SearchIndex } from "./search-index";
 import { calculateSavings, type Savings } from "./format";
 
 /**
@@ -9,15 +10,7 @@ import { calculateSavings, type Savings } from "./format";
  * useMemo and renders whatever comes back.
  */
 
-export type PriceFilterId = "all" | "under-30" | "under-50" | "under-100";
 export type SortId = "match" | "price-asc" | "price-desc" | "popular";
-
-export const PRICE_FILTERS: { id: PriceFilterId; label: string; max: number }[] = [
-  { id: "all", label: "All Prices", max: Number.POSITIVE_INFINITY },
-  { id: "under-30", label: "Under £30", max: 30 },
-  { id: "under-50", label: "Under £50", max: 50 },
-  { id: "under-100", label: "Under £100", max: 100 },
-];
 
 export const SORT_OPTIONS: { id: SortId; label: string }[] = [
   { id: "match", label: "Closest Match" },
@@ -28,13 +21,45 @@ export const SORT_OPTIONS: { id: SortId; label: string }[] = [
 
 export interface DirectoryOptions {
   query: string;
-  priceFilter: PriceFilterId;
+  /**
+   * Exact brand name, or null for all. Matches an original's own brand and a
+   * clone's own brand — so "Boss" returns Boss originals and "Behringer"
+   * returns Behringer clones, rather than one implying the other.
+   */
+  brand?: string | null;
   /**
    * Optional: the home page doesn't offer sorting (it's organised by genre),
    * so it falls back to cheapest-first. Sorting lives on the detail page,
    * where it reorders a single pedal's clones.
    */
   sort?: SortId;
+}
+
+/** A brand and how many pedals carry it, for the directory's brand picker. */
+export interface BrandOption {
+  brand: string;
+  count: number;
+}
+
+/**
+ * Every brand in the catalogue, most pedals first.
+ *
+ * Deliberately mixes the expensive makers with the budget ones. They're the
+ * same question from the shopper's side — "show me the Boss pedals" and "show
+ * me what Behringer do" are both just a brand.
+ */
+export function brandOptions(catalogue: OriginalWithAlternatives[]): BrandOption[] {
+  const counts = new Map<string, number>();
+  const bump = (brand: string) => counts.set(brand, (counts.get(brand) ?? 0) + 1);
+
+  for (const entry of catalogue) {
+    bump(entry.brand);
+    for (const alt of entry.alternatives) bump(alt.brand);
+  }
+
+  return [...counts.entries()]
+    .map(([brand, count]) => ({ brand, count }))
+    .sort((a, b) => (b.count !== a.count ? b.count - a.count : a.brand.localeCompare(b.brand)));
 }
 
 export interface DirectoryResult extends OriginalWithAlternatives {
@@ -54,22 +79,36 @@ export function normalize(value: string): string {
     .trim();
 }
 
-function priceCeiling(id: PriceFilterId): number {
-  return PRICE_FILTERS.find((filter) => filter.id === id)?.max ?? Number.POSITIVE_INFINITY;
+/**
+ * The searchable text of an original.
+ *
+ * Taken as loose fields rather than a whole `Original` so the same scoring
+ * serves both the full catalogue and the compact client search index, which
+ * carries these fields and nothing else.
+ */
+export interface OriginalFields {
+  name: string;
+  brand: string;
+  tags: string[];
+  cloneNames: string[];
+  cloneBrands: string[];
 }
 
 /**
  * Relevance score for one original against a normalized query.
- * Returns 0 when the entry doesn't match at all.
+ * Returns 0 when it doesn't match at all.
  */
-export function scoreEntry(entry: OriginalWithAlternatives, normalizedQuery: string): number {
+export function scoreOriginalFields(
+  fields: OriginalFields,
+  normalizedQuery: string,
+): number {
   if (!normalizedQuery) return 0;
 
-  const name = normalize(entry.name);
-  const brand = normalize(entry.brand);
-  const tags = entry.tags.map(normalize);
-  const altNames = entry.alternatives.map((alt) => normalize(alt.name));
-  const altBrands = entry.alternatives.map((alt) => normalize(alt.brand));
+  const name = normalize(fields.name);
+  const brand = normalize(fields.brand);
+  const tags = fields.tags.map(normalize);
+  const altNames = fields.cloneNames.map(normalize);
+  const altBrands = fields.cloneBrands.map(normalize);
 
   const haystack = [name, brand, ...tags, ...altNames, ...altBrands].join(" ");
   const terms = normalizedQuery.split(" ").filter(Boolean);
@@ -90,6 +129,49 @@ export function scoreEntry(entry: OriginalWithAlternatives, normalizedQuery: str
   return score;
 }
 
+/** The searchable text of a clone. See `OriginalFields` for why it's loose. */
+export interface CloneFields {
+  name: string;
+  brand: string;
+  aliases: string[];
+}
+
+/**
+ * Relevance score for one clone against a normalized query.
+ * Returns 0 when it doesn't match at all.
+ */
+export function scoreCloneFields(fields: CloneFields, normalizedQuery: string): number {
+  if (!normalizedQuery) return 0;
+
+  const name = normalize(fields.name);
+  const brand = normalize(fields.brand);
+  const haystack = [name, brand, ...fields.aliases.map(normalize)].join(" ");
+  const terms = normalizedQuery.split(" ").filter(Boolean);
+
+  if (!terms.every((term) => haystack.includes(term))) return 0;
+
+  let score = 1;
+  if (name.includes(normalizedQuery)) score += 100;
+  if (name.startsWith(normalizedQuery)) score += 60;
+  if (brand.includes(normalizedQuery)) score += 25;
+
+  return score;
+}
+
+/** Relevance score for one original from the full catalogue. */
+export function scoreEntry(entry: OriginalWithAlternatives, normalizedQuery: string): number {
+  return scoreOriginalFields(
+    {
+      name: entry.name,
+      brand: entry.brand,
+      tags: entry.tags,
+      cloneNames: entry.alternatives.map((alt) => alt.name),
+      cloneBrands: entry.alternatives.map((alt) => alt.brand),
+    },
+    normalizedQuery,
+  );
+}
+
 function sortAlternatives(alternatives: Alternative[], sort: SortId): Alternative[] {
   const sorted = [...alternatives];
 
@@ -107,31 +189,31 @@ function sortAlternatives(alternatives: Alternative[], sort: SortId): Alternativ
 }
 
 /**
- * Filters and sorts the catalogue.
+ * Filters and sorts the catalogue's originals.
  *
- * The price filter applies to *alternatives*, not originals — every original
- * here costs three figures, so filtering them by price would return nothing.
- * An original survives only if at least one of its alternatives fits the
- * budget, and its list is narrowed to the ones that do.
+ * The brand filter tests the original's own brand. Picking a budget maker like
+ * Behringer therefore returns nothing here — correctly, since Behringer don't
+ * make any of these originals — and the clones surface through
+ * `filterAlternatives` instead.
  */
 export function filterCatalogue(
   catalogue: OriginalWithAlternatives[],
-  { query, priceFilter, sort = "price-asc" }: DirectoryOptions,
+  { query, brand = null, sort = "price-asc" }: DirectoryOptions,
 ): DirectoryResult[] {
   const normalizedQuery = normalize(query);
-  const ceiling = priceCeiling(priceFilter);
 
   const results: DirectoryResult[] = [];
 
   for (const entry of catalogue) {
+    if (brand && entry.brand !== brand) continue;
+
     const relevance = scoreEntry(entry, normalizedQuery);
     if (normalizedQuery && relevance === 0) continue;
 
-    const affordable = entry.alternatives.filter((alt) => alt.priceGBP <= ceiling);
-    if (affordable.length === 0) continue;
+    if (entry.alternatives.length === 0) continue;
 
-    const ordered = sortAlternatives(affordable, sort);
-    const cheapest = affordable.reduce((lowest, alt) =>
+    const ordered = sortAlternatives(entry.alternatives, sort);
+    const cheapest = entry.alternatives.reduce((lowest, alt) =>
       alt.priceGBP < lowest.priceGBP ? alt : lowest,
     );
 
@@ -193,28 +275,30 @@ export interface CloneResult {
  */
 export function filterAlternatives(
   catalogue: OriginalWithAlternatives[],
-  { query, priceFilter }: Omit<DirectoryOptions, "sort">,
+  { query, brand = null }: Omit<DirectoryOptions, "sort">,
 ): CloneResult[] {
   const normalizedQuery = normalize(query);
-  const ceiling = priceCeiling(priceFilter);
-  if (!normalizedQuery) return [];
 
-  const terms = normalizedQuery.split(" ").filter(Boolean);
+  // Idle directory: no query and no brand means nothing to list here.
+  if (!normalizedQuery && !brand) return [];
+
   const results: CloneResult[] = [];
 
   for (const original of catalogue) {
     for (const alternative of original.alternatives) {
-      if (alternative.priceGBP > ceiling) continue;
+      if (brand && alternative.brand !== brand) continue;
 
-      const name = normalize(alternative.name);
-      const brand = normalize(alternative.brand);
-      const haystack = [name, brand, ...(alternative.aliases ?? []).map(normalize)].join(" ");
-      if (!terms.every((term) => haystack.includes(term))) continue;
-
-      let relevance = 1;
-      if (name.includes(normalizedQuery)) relevance += 100;
-      if (name.startsWith(normalizedQuery)) relevance += 60;
-      if (brand.includes(normalizedQuery)) relevance += 25;
+      const relevance = scoreCloneFields(
+        {
+          name: alternative.name,
+          brand: alternative.brand,
+          aliases: alternative.aliases ?? [],
+        },
+        normalizedQuery,
+      );
+      // Scoring only rejects on a query. Brand-only browsing has no query to
+      // score against, so every clone of that brand belongs in the results.
+      if (normalizedQuery && relevance === 0) continue;
 
       results.push({
         alternative,
@@ -230,4 +314,69 @@ export function filterAlternatives(
       ? b.relevance - a.relevance
       : a.alternative.priceGBP - b.alternative.priceGBP,
   );
+}
+
+/** One row in the search box's suggestion dropdown. */
+export interface Suggestion {
+  kind: "original" | "clone";
+  /** Where the row navigates to. */
+  href: string;
+  name: string;
+  brand: string;
+  priceGBP: number;
+  imageUrl: string | null;
+  /** Clones only: the original this copies. */
+  originalName?: string;
+  relevance: number;
+}
+
+/**
+ * Pedals to offer as you type, originals and clones ranked together.
+ *
+ * Both halves are scored by the same functions the directory uses, so a
+ * suggestion and an on-page result agree about what "behr" means. Ranking them
+ * in one list rather than two fixed blocks is what makes that query behave:
+ * the Behringer clones match on brand and outrank the pedals they copy, which
+ * only match indirectly.
+ *
+ * Returns nothing for an empty query. That is deliberate and load-bearing —
+ * the dropdown must stay shut until a character is typed.
+ */
+export function searchSuggestions(
+  index: SearchIndex,
+  query: string,
+  limit = 8,
+): Suggestion[] {
+  const normalizedQuery = normalize(query);
+  if (!normalizedQuery) return [];
+
+  const matches: Suggestion[] = [];
+
+  for (const entry of index) {
+    const relevance =
+      entry.kind === "original"
+        ? scoreOriginalFields(entry, normalizedQuery)
+        : scoreCloneFields(entry, normalizedQuery);
+
+    if (relevance === 0) continue;
+
+    matches.push({
+      kind: entry.kind,
+      href:
+        entry.kind === "original" ? `/pedal/${entry.slug}` : `/clone/${entry.slug}`,
+      name: entry.name,
+      brand: entry.brand,
+      priceGBP: entry.priceGBP,
+      imageUrl: entry.imageUrl,
+      originalName: entry.kind === "clone" ? entry.originalName : undefined,
+      relevance,
+    });
+  }
+
+  // Cheapest first among equally relevant pedals — this is a budget site.
+  return matches
+    .sort((a, b) =>
+      b.relevance !== a.relevance ? b.relevance - a.relevance : a.priceGBP - b.priceGBP,
+    )
+    .slice(0, limit);
 }

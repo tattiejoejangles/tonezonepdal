@@ -15,8 +15,17 @@
   --tz-night: #0b1020;
 }
 
+html {
+  /* iOS Safari inflates text in landscape without this. */
+  -webkit-text-size-adjust: 100%;
+}
+
 body {
   min-height: 100vh;
+  /* iOS counts 100vh as the height *behind* the toolbars, so a full-height
+     page ends up taller than the visible area. dvh tracks the real viewport;
+     the vh line above stays as the fallback for browsers without it. */
+  min-height: 100dvh;
   background:
     radial-gradient(1100px 520px at 6% -10%, #fff1dd 0%, transparent 58%),
     radial-gradient(900px 460px at 94% -6%, #e6f2ec 0%, transparent 52%),
@@ -27,6 +36,18 @@ body {
 
 input[type="search"]::-webkit-search-cancel-button {
   appearance: none;
+}
+
+/* iOS Safari zooms the whole viewport when a focused field's font-size is
+   under 16px, and never zooms back out. Several controls are deliberately
+   14px on desktop for density, so lift them to 16px on phone-width screens
+   only — below `sm` is where touch keyboards live. */
+@media (max-width: 639px) {
+  input,
+  select,
+  textarea {
+    font-size: 16px;
+  }
 }
 
 /* ---------------------------------------------------------------------------
@@ -164,6 +185,92 @@ input[type="search"]::-webkit-search-cancel-button {
 }
 
 /* ---------------------------------------------------------------------------
+   Ambient background.
+
+   A slow wash of colour behind every page — enough to stop a long white
+   column feeling static, not enough to pull the eye off the content. Three
+   soft radial blobs on very long, mismatched cycles (54s / 68s / 82s) so the
+   composite never visibly repeats.
+
+   Deliberately NO `filter: blur()`. Blurring a viewport-sized fixed layer is
+   one of the reliable ways to make iOS Safari drop frames; a radial-gradient
+   with a transparent falloff is already soft and costs nothing. Only
+   `transform` animates, so this stays on the compositor and never triggers
+   layout or paint.
+   --------------------------------------------------------------------------- */
+.tz-ambient {
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+.tz-ambient > span {
+  position: absolute;
+  display: block;
+  border-radius: 50%;
+  will-change: transform;
+}
+
+.tz-ambient__a {
+  width: 70vmax;
+  height: 70vmax;
+  top: -26vmax;
+  left: -18vmax;
+  background: radial-gradient(circle, rgba(255, 214, 160, 0.5) 0%, rgba(255, 214, 160, 0) 66%);
+  animation: tz-float-a 54s ease-in-out infinite;
+}
+
+.tz-ambient__b {
+  width: 62vmax;
+  height: 62vmax;
+  top: -18vmax;
+  right: -20vmax;
+  background: radial-gradient(circle, rgba(167, 216, 194, 0.42) 0%, rgba(167, 216, 194, 0) 66%);
+  animation: tz-float-b 68s ease-in-out infinite;
+}
+
+.tz-ambient__c {
+  width: 78vmax;
+  height: 78vmax;
+  bottom: -40vmax;
+  left: 18vmax;
+  background: radial-gradient(circle, rgba(196, 205, 235, 0.34) 0%, rgba(196, 205, 235, 0) 68%);
+  animation: tz-float-c 82s ease-in-out infinite;
+}
+
+@keyframes tz-float-a {
+  0%,
+  100% {
+    transform: translate3d(0, 0, 0) scale(1);
+  }
+  50% {
+    transform: translate3d(6vw, 5vh, 0) scale(1.14);
+  }
+}
+
+@keyframes tz-float-b {
+  0%,
+  100% {
+    transform: translate3d(0, 0, 0) scale(1.1);
+  }
+  50% {
+    transform: translate3d(-7vw, 6vh, 0) scale(1);
+  }
+}
+
+@keyframes tz-float-c {
+  0%,
+  100% {
+    transform: translate3d(0, 0, 0) scale(1);
+  }
+  50% {
+    transform: translate3d(5vw, -6vh, 0) scale(1.18);
+  }
+}
+
+/* ---------------------------------------------------------------------------
    Hero backdrop.
 
    ONE layer, not two. Two tiles at different scales and speeds read as
@@ -242,7 +349,8 @@ input[type="search"]::-webkit-search-cancel-button {
   .tz-pedal-drift,
   .tz-rise,
   .tz-pop,
-  .tz-fade {
+  .tz-fade,
+  .tz-ambient > span {
     animation: none;
   }
 

@@ -1,3 +1,5 @@
+import Link from "next/link";
+
 import { PedalImage } from "./PedalImage";
 import { ProsCons } from "./ProsCons";
 import { RetailerButtons } from "./RetailerButtons";
@@ -5,6 +7,16 @@ import { SavingsBadge } from "./SavingsBadge";
 import { calculateSavings, formatPrice } from "@/lib/format";
 import type { Alternative } from "@/lib/types";
 
+/**
+ * A clone on an original's page.
+ *
+ * The whole card opens that clone's own page, but it also contains a "More
+ * info" button and outbound retailer links — and an anchor can't legally wrap
+ * either. So navigation is a transparent link stretched across the card, with
+ * the genuinely interactive parts lifted above it. Clicking anywhere blank
+ * goes to the pedal; clicking a control does what that control has always
+ * done.
+ */
 export function AlternativeCard({
   alternative,
   originalPrice,
@@ -25,7 +37,17 @@ export function AlternativeCard({
       {/* Accent edge that fills in on hover. */}
       <span className="absolute inset-x-0 top-0 h-1 origin-left scale-x-0 bg-linear-to-r from-amber-400 via-orange-500 to-rose-500 transition-transform duration-300 group-hover:scale-x-100" />
 
-      <div className="flex flex-col gap-5 p-5 sm:flex-row sm:p-6">
+      {/* Stretched link: covers the card, sits under the controls below. */}
+      <Link
+        href={`/clone/${alternative.slug}`}
+        aria-label={`View the ${alternative.name}`}
+        className="absolute inset-0 z-10 focus-visible:ring-2 focus-visible:ring-amber-500 focus-visible:outline-none"
+      />
+
+      <div className="flex flex-col gap-5 p-5 sm:p-6 lg:flex-row lg:items-start lg:gap-6">
+        {/* Photo and copy keep their own side-by-side split from sm up; the
+            buy lane only peels off once the card is wide enough at lg. */}
+        <div className="flex min-w-0 flex-1 flex-col gap-5 sm:flex-row">
         <div className="relative h-40 w-full shrink-0 overflow-hidden bg-white sm:h-44 sm:w-40">
           <div className="h-full w-full transition-transform duration-500 group-hover:scale-105">
             <PedalImage
@@ -46,7 +68,7 @@ export function AlternativeCard({
           <div className="flex flex-wrap items-start justify-between gap-x-4 gap-y-2">
             <div className="min-w-0">
               <p className="tz-eyebrow text-amber-700">{alternative.brand}</p>
-              <h3 className="tz-heading mt-1 text-lg text-stone-900">
+              <h3 className="tz-heading mt-1 text-lg text-stone-900 transition-colors group-hover:text-amber-700">
                 {alternative.name}
               </h3>
               <p className="tz-body mt-1.5 text-sm text-stone-500">{alternative.blurb}</p>
@@ -69,7 +91,7 @@ export function AlternativeCard({
               <button
                 type="button"
                 onClick={onOpen}
-                className="tz-btn ml-auto bg-linear-to-b from-stone-800 to-stone-950 px-3 py-1.5 text-[11px] tracking-wider text-white uppercase"
+                className="tz-btn relative z-20 ml-auto bg-linear-to-b from-stone-800 to-stone-950 px-3 py-1.5 text-[11px] tracking-wider text-white uppercase"
               >
                 More info
                 <svg viewBox="0 0 24 24" className="h-3 w-3" fill="none" stroke="currentColor" strokeWidth="3">
@@ -80,10 +102,13 @@ export function AlternativeCard({
           </div>
 
           <ProsCons pros={alternative.pros} cons={alternative.cons} />
+        </div>
+        </div>
 
-          <div className="border-t border-stone-100 pt-4">
-            <RetailerButtons pedal={alternative} size="sm" />
-          </div>
+        {/* Buy stack in its own lane rather than under the pros and cons,
+            which made every card ~170px taller. */}
+        <div className="relative z-20 shrink-0 border-t border-stone-100 pt-4 lg:w-52 lg:border-t-0 lg:border-l lg:border-stone-100 lg:pt-0 lg:pl-5">
+          <RetailerButtons pedal={alternative} size="sm" />
         </div>
       </div>
     </article>

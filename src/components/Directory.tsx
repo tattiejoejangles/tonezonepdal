@@ -8,11 +8,8 @@ import { HeroBackdrop } from "./HeroBackdrop";
 import { CloneCard } from "./CloneCard";
 import { OriginalCard } from "./OriginalCard";
 import { SearchBar } from "./SearchBar";
-import {
-  filterAlternatives,
-  filterCatalogue,
-  type PriceFilterId,
-} from "@/lib/filter";
+import { brandOptions, filterAlternatives, filterCatalogue } from "@/lib/filter";
+import { buildSearchIndex } from "@/lib/search-index";
 import type { OriginalWithAlternatives } from "@/lib/types";
 
 /**
@@ -36,7 +33,7 @@ export function Directory({
 
   const [query, setQuery] = useState(urlQuery);
   const [lastUrlQuery, setLastUrlQuery] = useState(urlQuery);
-  const [priceFilter, setPriceFilter] = useState<PriceFilterId>("all");
+  const [brand, setBrand] = useState<string | null>(null);
 
   // Searching from the header pushes ?q= and lands here. Adjusting during
   // render rather than in an effect — this is the documented way to reset
@@ -46,21 +43,27 @@ export function Directory({
     setQuery(urlQuery);
   }
 
-  const searching = query.trim() !== "" || priceFilter !== "all";
+  const searching = query.trim() !== "" || brand !== null;
 
   const results = useMemo(
-    () => filterCatalogue(catalogue, { query, priceFilter }),
-    [catalogue, query, priceFilter],
+    () => filterCatalogue(catalogue, { query, brand }),
+    [catalogue, query, brand],
   );
 
   // Clones are searchable in their own right — people look up "Behringer
   // TO800" as often as "Tube Screamer".
   const cloneResults = useMemo(
-    () => filterAlternatives(catalogue, { query, priceFilter }),
-    [catalogue, query, priceFilter],
+    () => filterAlternatives(catalogue, { query, brand }),
+    [catalogue, query, brand],
   );
 
+  const brands = useMemo(() => brandOptions(catalogue), [catalogue]);
+
   const total = results.length + cloneResults.length;
+
+  // Derived from the catalogue this page already holds, so the hero box costs
+  // no extra payload — unlike the header, which is handed one by the layout.
+  const searchIndex = useMemo(() => buildSearchIndex(catalogue), [catalogue]);
 
   return (
     <div>
@@ -81,7 +84,12 @@ export function Directory({
           </p>
 
           <div className="mx-auto mt-9 max-w-xl">
-            <SearchBar value={query} onChange={setQuery} tone="dark" />
+            <SearchBar
+              value={query}
+              onChange={setQuery}
+              index={searchIndex}
+              tone="dark"
+            />
           </div>
         </div>
       </HeroBackdrop>
@@ -91,8 +99,9 @@ export function Directory({
         className="mx-auto max-w-6xl scroll-mt-20 space-y-8 px-4 py-10 sm:px-6"
       >
         <FilterBar
-          priceFilter={priceFilter}
-          onPriceFilterChange={setPriceFilter}
+          brands={brands}
+          brand={brand}
+          onBrandChange={setBrand}
           resultLabel={
             searching
               ? `${total} ${total === 1 ? "match" : "matches"}`
@@ -134,14 +143,14 @@ export function Directory({
           <div className="tz-chamfer bg-white/70 px-6 py-16 text-center ring-1 ring-stone-200">
             <p className="text-lg font-bold text-stone-800">Nothing matches yet</p>
             <p className="tz-body mx-auto mt-2 max-w-md text-sm text-stone-500">
-              Try a broader price band, or search the original by name — “Tube
+              Try a different brand, or search the original by name — “Tube
               Screamer”, “BD-2”, “chorus”.
             </p>
             <button
               type="button"
               onClick={() => {
                 setQuery("");
-                setPriceFilter("all");
+                setBrand(null);
               }}
               className="tz-btn mt-5 bg-linear-to-b from-stone-800 to-stone-950 px-6 py-3 text-sm tracking-wide text-white"
             >

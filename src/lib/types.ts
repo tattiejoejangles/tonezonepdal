@@ -16,16 +16,25 @@ export interface Control {
 /** A retailer we send affiliate traffic to. */
 export type RetailerId = "amazon" | "reverb" | "gear4music";
 
-/** Effect family, used to group the directory into genre sections. */
-export type Category =
-  | "overdrive"
-  | "distortion"
-  | "fuzz"
-  | "delay"
-  | "modulation"
-  | "octave"
-  | "eq"
-  | "reverb";
+/**
+ * Effect family, used to group the directory into genre sections.
+ *
+ * A const array rather than a bare union so the admin form can render the
+ * options from the same source the type comes from — the values must match
+ * the `category` CHECK constraint on the Supabase table exactly.
+ */
+export const CATEGORIES = [
+  "overdrive",
+  "distortion",
+  "fuzz",
+  "delay",
+  "modulation",
+  "octave",
+  "eq",
+  "reverb",
+] as const;
+
+export type Category = (typeof CATEGORIES)[number];
 
 /** An expensive, sought-after pedal that people want a cheaper version of. */
 export interface Original {

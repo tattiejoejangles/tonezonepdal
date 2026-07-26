@@ -15,8 +15,15 @@ export function FindOfDayCard({ find }: { find: DailyFind }) {
   return (
     <section aria-labelledby="find-of-day">
       <div className="mb-4 flex items-center gap-3">
-        <span className="flex h-9 w-9 items-center justify-center bg-linear-to-br from-amber-400 to-orange-600 text-base">
-          ⚡
+        <span className="flex h-9 w-9 items-center justify-center bg-linear-to-br from-amber-400 to-orange-600">
+          <svg
+            viewBox="0 0 24 24"
+            aria-hidden
+            className="h-5 w-5 text-white"
+            fill="currentColor"
+          >
+            <path d="M13 2 4.5 13.2a.6.6 0 0 0 .48.96H10l-1 7.84 8.5-11.2a.6.6 0 0 0-.48-.96H12l1-7.84Z" />
+          </svg>
         </span>
         <div>
           <h2 id="find-of-day" className="text-xl font-bold text-stone-900">
@@ -31,7 +38,9 @@ export function FindOfDayCard({ find }: { find: DailyFind }) {
       <div className="tz-chamfer relative overflow-hidden bg-linear-to-br from-stone-900 via-[#141b2e] to-stone-800 text-white shadow-xl">
         <div className="absolute -top-20 -right-20 h-64 w-64 rounded-full bg-amber-500/20 blur-3xl" />
 
-        <div className="relative grid gap-7 p-6 sm:p-8 lg:grid-cols-[240px_1fr]">
+        {/* Three columns on desktop: photo, the pitch, then the buy stack in a
+            lane of its own. Collapses to one column on narrow screens. */}
+        <div className="relative grid gap-7 p-6 sm:p-8 lg:grid-cols-[240px_1fr_minmax(0,17rem)] lg:items-center">
           <div className="relative aspect-square w-full max-w-[240px] bg-white">
             <PedalImage
               src={alternative.imageUrl}
@@ -87,9 +96,10 @@ export function FindOfDayCard({ find }: { find: DailyFind }) {
               </span>
             </p>
 
-            <div className="max-w-2xl">
-              <RetailerButtons pedal={alternative} size="lg" />
-            </div>
+          </div>
+
+          <div className="lg:self-center">
+            <RetailerButtons pedal={alternative} size="lg" />
           </div>
         </div>
       </div>

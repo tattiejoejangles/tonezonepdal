@@ -1,3 +1,5 @@
+import { cache } from "react";
+
 import type {
   Alternative,
   Category,
@@ -5,6 +7,7 @@ import type {
   OriginalWithAlternatives,
   PedalDetail,
 } from "@/lib/types";
+import { buildSearchIndex, type SearchIndex } from "@/lib/search-index";
 import { getSupabase } from "@/lib/supabase";
 
 import { ALTERNATIVE_ARTISTS, controlsFor, VERDICTS } from "./details";
@@ -145,7 +148,14 @@ function localCatalogue(): OriginalWithAlternatives[] {
   }));
 }
 
-export async function getCatalogue(): Promise<OriginalWithAlternatives[]> {
+/**
+ * Cached per request: the root layout, the page and `getOriginalBySlug` all
+ * want the catalogue while rendering the same request, and without this each
+ * one would hit Supabase separately.
+ */
+export const getCatalogue = cache(loadCatalogue);
+
+async function loadCatalogue(): Promise<OriginalWithAlternatives[]> {
   const supabase = getSupabase();
   if (!supabase) return localCatalogue();
 
@@ -168,6 +178,14 @@ export async function getCatalogue(): Promise<OriginalWithAlternatives[]> {
     return localCatalogue();
   }
 }
+
+/**
+ * The compact catalogue the header search box carries on every page.
+ * See src/lib/search-index.ts for what it deliberately leaves out.
+ */
+export const getSearchIndex = cache(async function getSearchIndex(): Promise<SearchIndex> {
+  return buildSearchIndex(await getCatalogue());
+});
 
 export async function getOriginalBySlug(
   slug: string,

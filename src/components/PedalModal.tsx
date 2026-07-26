@@ -1,6 +1,8 @@
 "use client";
 
+import Link from "next/link";
 import { useCallback, useEffect, useId, useRef, useState } from "react";
+import { createPortal } from "react-dom";
 
 import { PedalImage } from "./PedalImage";
 import { ProsCons } from "./ProsCons";
@@ -14,6 +16,8 @@ interface Props {
   detail: PedalDetail;
   originalName: string;
   originalPrice: number;
+  /** When set, the footer offers a way out to this pedal's own page. */
+  href?: string;
   onClose: () => void;
 }
 
@@ -24,6 +28,7 @@ export function PedalModal({
   detail,
   originalName,
   originalPrice,
+  href,
   onClose,
 }: Props) {
   const [slide, setSlide] = useState(0);
@@ -58,12 +63,27 @@ export function PedalModal({
     };
   }, []);
 
-  return (
+  // A portal needs a DOM to land in. This dialog only ever mounts in response
+  // to a click, so there's no server pass to guard against beyond this.
+  if (typeof document === "undefined") return null;
+
+  /**
+   * Rendered into <body> rather than in place.
+   *
+   * `.tz-chamfer` styles cards with `clip-path`, and clip-path clips every
+   * descendant — including `position: fixed` ones. Opened from inside the hero
+   * card, this dialog was being clipped to that card instead of covering the
+   * viewport. A portal escapes the clip regardless of which card opens it.
+   */
+  return createPortal(
     <div
       className="tz-fade fixed inset-0 z-50 flex items-end justify-center bg-stone-950/70 p-0 backdrop-blur-sm sm:items-center sm:p-6"
       onClick={onClose}
 role="presentation"
     >
+      {/* dvh, not vh: on iOS the toolbars overlay a vh-sized panel, which
+          buries the footer buttons. overscroll-contain stops a scroll that
+          reaches the end of this panel from dragging the page behind it. */}
       <div
         ref={panelRef}
         role="dialog"
@@ -71,7 +91,7 @@ role="presentation"
         aria-labelledby={titleId}
         tabIndex={-1}
         onClick={(event) => event.stopPropagation()}
-        className="tz-pop relative max-h-[92vh] w-full max-w-4xl overflow-y-auto bg-white shadow-2xl outline-none sm:max-h-[88vh] sm:rounded-none"
+        className="tz-pop relative max-h-[92dvh] w-full max-w-4xl overflow-y-auto overscroll-contain bg-white shadow-2xl outline-none sm:max-h-[88dvh] sm:rounded-none"
       >
         <button
           type="button"
@@ -256,13 +276,26 @@ role="presentation"
               </div>
             </div>
 
-            <div className="mt-5 border-t border-stone-200 pt-4">
+            <div className="mt-5 space-y-3 border-t border-stone-200 pt-4">
+              {href && (
+                <Link
+                  href={href}
+                  onClick={onClose}
+                  className="tz-btn flex w-full items-center justify-center gap-2 bg-linear-to-b from-stone-800 to-stone-950 px-5 py-2.5 text-xs tracking-wider text-white uppercase"
+                >
+                  Go to pedal
+                  <svg viewBox="0 0 24 24" className="h-3.5 w-3.5" fill="none" stroke="currentColor" strokeWidth="3">
+                    <path d="m9 6 6 6-6 6" />
+                  </svg>
+                </Link>
+              )}
               <RetailerButtons pedal={alternative} size="sm" />
             </div>
           </div>
         </div>
       </div>
-    </div>
+    </div>,
+    document.body,
   );
 }
 

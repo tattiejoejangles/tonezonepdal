@@ -7,9 +7,16 @@ import type { RetailerId } from "@/lib/types";
  * coloured circular icon badge on the left, and a click that collapses the
  * pill into a spinner before restoring.
  *
+ * Stacked vertically, one full-width pill per row. A wrapping horizontal row
+ * broke into an uneven 2-then-1 shape at most widths; a column reads as a
+ * deliberate list of three places to buy.
+ *
  * The badge carries the retailer's colour rather than the pill, which keeps
  * the three buttons a consistent set while still telling them apart. Icons are
- * simple representative glyphs rather than copies of trademarked logos.
+ * simple representative glyphs rather than copies of trademarked logos —
+ * using a retailer's name in text is ordinary nominative use, but reproducing
+ * their logo is trademark use and each of these three gates that behind their
+ * own affiliate/brand programme.
  */
 
 const BRANDS: Record<
@@ -46,7 +53,9 @@ export function RetailerButtons({
   const links = buildRetailerLinks(pedal);
 
   return (
-    <div className="flex flex-wrap gap-3">
+    // Capped: full-width pills stretch to ~880px inside a wide card, which
+    // reads as three banners rather than three buttons.
+    <div className="flex max-w-sm flex-col gap-3">
       {links.map((link) => {
         const brand = BRANDS[link.id];
         return (
@@ -60,7 +69,7 @@ export function RetailerButtons({
             accent={brand.accent}
             iconTone={brand.iconTone}
             icon={brand.icon}
-            className="focus-visible:ring-2 focus-visible:ring-amber-500 focus-visible:ring-offset-2 focus-visible:outline-none"
+            className="w-full focus-visible:ring-2 focus-visible:ring-amber-500 focus-visible:ring-offset-2 focus-visible:outline-none"
           >
             {brand.cta} <span className="font-extrabold">{link.label}</span>
           </SpinButton>

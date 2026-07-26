@@ -3,8 +3,13 @@ import { GeistMono } from "geist/font/mono";
 import { GeistSans } from "geist/font/sans";
 import Link from "next/link";
 
+import { AmbientBackground } from "@/components/AmbientBackground";
 import { HeaderSearch } from "@/components/HeaderSearch";
+import { NavMenu } from "@/components/NavMenu";
 import { Wordmark } from "@/components/Wordmark";
+import { getSearchIndex } from "@/data/catalogue";
+import type { SearchIndex } from "@/lib/search-index";
+import { GENRES } from "@/lib/sections";
 import "./globals.css";
 
 export const metadata: Metadata = {
@@ -16,18 +21,23 @@ export const metadata: Metadata = {
     "Find cheap, well-reviewed clones of expensive guitar pedals. Honest pros and cons, real savings, and where to buy.",
 };
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  // Built on the server so the header's suggestions need no round trip, and so
+  // nothing in the header forces a page to render on the client.
+  const searchIndex = await getSearchIndex();
+
   return (
     <html
       lang="en"
       className={`${GeistSans.variable} ${GeistMono.variable} h-full antialiased`}
     >
       <body className="flex min-h-full flex-col font-sans">
-        <SiteHeader />
+        <AmbientBackground />
+        <SiteHeader searchIndex={searchIndex} />
         <main className="flex-1">{children}</main>
         <SiteFooter />
       </body>
@@ -35,14 +45,24 @@ export default function RootLayout({
   );
 }
 
-function SiteHeader() {
+function SiteHeader({ searchIndex }: { searchIndex: SearchIndex }) {
   return (
     <header className="sticky top-0 z-30 border-b border-stone-200/70 bg-white/85 backdrop-blur-md">
       <div className="mx-auto flex max-w-6xl items-center gap-4 px-4 py-3 sm:px-6">
         <Wordmark />
 
         <div className="ml-auto flex items-center gap-3">
-          <HeaderSearch />
+          <HeaderSearch index={searchIndex} />
+
+          {/* Genres live behind one menu so amps can join as a sibling later. */}
+          <NavMenu
+            label="Pedals"
+            items={GENRES.map((genre) => ({
+              href: `/pedals/${genre.id}`,
+              label: genre.label,
+              blurb: genre.blurb,
+            }))}
+          />
 
           <Link
             href="/#directory"

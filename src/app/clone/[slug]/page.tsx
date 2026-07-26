@@ -72,7 +72,7 @@ export default async function ClonePage({
       </nav>
 
       <section className="tz-chamfer overflow-hidden bg-white shadow-sm ring-1 ring-stone-200/70">
-        <div className="grid gap-8 p-6 sm:p-8 md:grid-cols-[minmax(0,380px)_1fr] md:gap-10">
+        <div className="grid gap-8 p-6 sm:p-8 md:grid-cols-[minmax(0,340px)_1fr] md:gap-10 lg:grid-cols-[minmax(0,300px)_1fr_minmax(0,14rem)] lg:gap-6">
           <div className="relative aspect-square overflow-hidden bg-white ring-1 ring-stone-100">
             <PedalImage
               src={alternative.imageUrl}
@@ -132,10 +132,12 @@ export default async function ClonePage({
               </div>
             )}
 
-            <div className="mt-auto space-y-2 border-t border-stone-100 pt-5">
-              <p className="tz-eyebrow text-stone-400">Buy this pedal</p>
-              <RetailerButtons pedal={alternative} />
-            </div>
+          </div>
+
+          {/* Full width at two columns, its own lane once there's room. */}
+          <div className="space-y-2 border-t border-stone-100 pt-5 md:col-span-2 lg:col-span-1 lg:border-t-0 lg:pt-0">
+            <p className="tz-eyebrow text-stone-400">Buy this pedal</p>
+            <RetailerButtons pedal={alternative} />
           </div>
         </div>
       </section>

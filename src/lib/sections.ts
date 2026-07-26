@@ -57,6 +57,20 @@ export const GENRES: Genre[] = [
   },
 ];
 
+export function findGenre(id: string): Genre | undefined {
+  return GENRES.find((genre) => genre.id === id);
+}
+
+/** Every original in one genre, most popular first. */
+export function entriesInGenre(
+  catalogue: OriginalWithAlternatives[],
+  genre: Genre,
+): OriginalWithAlternatives[] {
+  return catalogue
+    .filter((entry) => genre.categories.includes(entry.category))
+    .sort((a, b) => b.popularity - a.popularity);
+}
+
 export interface GenreGroup {
   genre: Genre;
   entries: OriginalWithAlternatives[];
