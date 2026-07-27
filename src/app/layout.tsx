@@ -65,6 +65,13 @@ function SiteHeader({ searchIndex }: { searchIndex: SearchIndex }) {
           />
 
           <Link
+            href="/saved"
+            className="text-xs font-bold tracking-wider whitespace-nowrap text-stone-500 uppercase transition-colors hover:text-amber-700"
+          >
+            Saved
+          </Link>
+
+          <Link
             href="/#directory"
             className="hidden text-xs font-bold tracking-wider text-stone-500 uppercase transition-colors hover:text-amber-700 sm:block"
           >

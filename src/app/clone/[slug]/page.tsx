@@ -2,6 +2,8 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 
+import { BookmarkButton } from "@/components/BookmarkButton";
+import { CloneRating } from "@/components/CloneRating";
 import { PedalImage } from "@/components/PedalImage";
 import { ProsCons } from "@/components/ProsCons";
 import { RetailerButtons } from "@/components/RetailerButtons";
@@ -103,6 +105,14 @@ export default async function ClonePage({
               <span className="bg-stone-100 px-3 py-1.5 text-[11px] font-bold text-stone-600">
                 {alternative.matchQuality}% TONAL MATCH
               </span>
+              <BookmarkButton kind="clone" slug={alternative.slug} />
+            </div>
+
+            <div className="border-t border-b border-stone-100 py-4">
+              <CloneRating
+                alternativeId={alternative.id}
+                originalName={original.name}
+              />
             </div>
 
             {/* The "real deal" cross-sell — deliberately a different colour to
@@ -152,22 +162,24 @@ export default async function ClonePage({
 
         <div className="space-y-6">
           <section className="tz-chamfer bg-white p-6 shadow-sm ring-1 ring-stone-200/70">
-            <h2 className="tz-heading mb-4 text-xl text-stone-900">Controls</h2>
-            {detail.controlsKnown ? (
-              <ul className="space-y-2.5">
-                {detail.controls.map((control) => (
-                  <li key={control.name} className="flex gap-3">
-                    <span className="mt-0.5 shrink-0 bg-stone-900 px-2 py-0.5 text-[10px] font-bold tracking-wide text-white uppercase">
-                      {control.name}
-                    </span>
-                    <span className="tz-body text-sm text-stone-600">{control.what}</span>
-                  </li>
+            <h2 className="tz-heading mb-4 text-xl text-stone-900">Specs</h2>
+            {detail.specsKnown ? (
+              <dl className="divide-y divide-stone-100">
+                {detail.specs.map((spec) => (
+                  <div key={spec.label} className="flex gap-4 py-2">
+                    <dt className="w-32 shrink-0 text-sm font-bold text-stone-500">
+                      {spec.label}
+                    </dt>
+                    <dd className="tz-body min-w-0 text-sm text-stone-700">
+                      {spec.value}
+                    </dd>
+                  </div>
                 ))}
-              </ul>
+              </dl>
             ) : (
               <p className="tz-body text-sm text-stone-500">
-                We haven&apos;t confirmed this pedal&apos;s control layout yet, so
-                rather than guess we&apos;re leaving it blank.
+                We haven&apos;t confirmed this pedal&apos;s specs yet, so rather
+                than guess we&apos;re leaving it blank.
               </p>
             )}
           </section>

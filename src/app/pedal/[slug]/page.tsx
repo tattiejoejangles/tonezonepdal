@@ -3,6 +3,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 
 import { AlternativesPanel } from "@/components/AlternativesPanel";
+import { BookmarkButton } from "@/components/BookmarkButton";
 import { CheapestAlternative } from "@/components/CheapestAlternative";
 import { PedalImage } from "@/components/PedalImage";
 import { RetailerButtons } from "@/components/RetailerButtons";
@@ -128,11 +129,12 @@ export default async function PedalPage({
               <p className="tz-body mt-3 text-base text-stone-600">{pedal.blurb}</p>
             </div>
 
-            <div className="flex flex-wrap items-baseline gap-x-3 gap-y-1">
+            <div className="flex flex-wrap items-center gap-x-3 gap-y-2">
               <span className="tz-heading text-3xl text-stone-900">
                 {formatPrice(pedal.priceGBP)}
               </span>
               <span className="text-sm text-stone-400">typical UK price</span>
+              <BookmarkButton kind="original" slug={pedal.slug} />
             </div>
 
             {cheapest && (
@@ -146,20 +148,19 @@ export default async function PedalPage({
 
             <p className="tz-body text-sm text-stone-600">{pedal.description}</p>
 
-            {originalDetail.controls.length > 0 && (
+            {originalDetail.specsKnown && (
               <div>
-                <p className="tz-eyebrow mb-2 text-stone-400">Controls</p>
-                <div className="flex flex-wrap gap-1.5">
-                  {originalDetail.controls.map((control) => (
-                    <span
-                      key={control.name}
-                      title={control.what}
-                      className="bg-stone-100 px-2.5 py-1 text-[11px] font-bold text-stone-700"
-                    >
-                      {control.name}
-                    </span>
+                <p className="tz-eyebrow mb-2 text-stone-400">Specs</p>
+                <dl className="divide-y divide-stone-100 border-y border-stone-100">
+                  {originalDetail.specs.map((spec) => (
+                    <div key={spec.label} className="flex gap-4 py-1.5 text-sm">
+                      <dt className="w-32 shrink-0 font-bold text-stone-500">
+                        {spec.label}
+                      </dt>
+                      <dd className="tz-body min-w-0 text-stone-700">{spec.value}</dd>
+                    </div>
                   ))}
-                </div>
+                </dl>
               </div>
             )}
 

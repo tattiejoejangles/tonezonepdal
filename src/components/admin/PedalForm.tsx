@@ -241,13 +241,15 @@ export function PedalForm({ originals }: { originals: OriginalOption[] }) {
       </div>
 
       <Field
-        label="Controls"
-        hint="One per line as: Name | what it does. Leave blank if unverified — the site says so rather than guessing."
+        label="Specs"
+        hint="One per line as: Label | value. Leave blank if unverified — the site says so rather than guessing."
       >
         <textarea
-          name="controls"
-          rows={4}
-          placeholder={"Drive | How hard it clips.\nTone | Treble roll-off."}
+          name="specs"
+          rows={5}
+          placeholder={
+            "Power | 9V DC centre-negative (2.1mm)\nCurrent draw | 30 mA\nBypass | True bypass\nConnections | 1/4\" mono in / out"
+          }
           className={inputClass}
         />
       </Field>

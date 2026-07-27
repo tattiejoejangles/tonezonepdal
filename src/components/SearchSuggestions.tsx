@@ -171,26 +171,15 @@ export function SearchSuggestions({
             </div>
 
             <div className="min-w-0 flex-1">
-              <div className="flex items-center gap-2">
-                <span
-                  className={`tz-eyebrow truncate ${
-                    dark ? "text-amber-400" : "text-amber-700"
-                  }`}
-                >
-                  {suggestion.brand}
-                </span>
-                <span
-                  className={`shrink-0 px-1.5 py-0.5 text-[9px] font-bold tracking-wider uppercase ${
-                    suggestion.kind === "clone"
-                      ? "bg-amber-400 text-stone-900"
-                      : dark
-                        ? "bg-white/10 text-stone-300"
-                        : "bg-stone-200 text-stone-600"
-                  }`}
-                >
-                  {suggestion.kind === "clone" ? "Clone" : "Original"}
-                </span>
-              </div>
+              {/* No Clone/Original pill: the "Alternative to …" line below
+                  already says which is which, without the visual noise. */}
+              <span
+                className={`tz-eyebrow block truncate ${
+                  dark ? "text-amber-400" : "text-amber-700"
+                }`}
+              >
+                {suggestion.brand}
+              </span>
 
               <p
                 className={`truncate text-sm font-bold ${

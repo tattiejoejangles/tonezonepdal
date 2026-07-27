@@ -42,14 +42,14 @@ const lines = (form: FormData, key: string) =>
     .filter(Boolean);
 
 /**
- * Controls, one per line as "Name | what it does".
- * Lines without a pipe are kept with an empty description rather than dropped,
- * so a half-filled entry is visible and fixable instead of silently vanishing.
+ * Specs, one per line as "Label | value".
+ * Lines without a pipe are kept with an empty value rather than dropped, so a
+ * half-filled entry is visible and fixable instead of silently vanishing.
  */
-function controls(form: FormData, key: string) {
+function specs(form: FormData, key: string) {
   return lines(form, key).map((line) => {
-    const [name, ...rest] = line.split("|");
-    return { name: name.trim(), what: rest.join("|").trim() };
+    const [label, ...rest] = line.split("|");
+    return { label: label.trim(), value: rest.join("|").trim() };
   });
 }
 
@@ -218,7 +218,7 @@ export async function createPedal(
       aliases: csv(form, "aliases"),
       popularity,
       search_query: text(form, "search_query") || null,
-      controls: controls(form, "controls"),
+      specs: specs(form, "specs"),
     });
 
     if (error) return fail(`Supabase refused it: ${error.message}`);
@@ -255,7 +255,7 @@ export async function createPedal(
     search_query: text(form, "search_query") || null,
     verdict: text(form, "verdict") || null,
     gallery: lines(form, "gallery"),
-    controls: controls(form, "controls"),
+    specs: specs(form, "specs"),
   });
 
   if (error) return fail(`Supabase refused it: ${error.message}`);

@@ -6,11 +6,12 @@ import type {
   Control,
   OriginalWithAlternatives,
   PedalDetail,
+  Spec,
 } from "@/lib/types";
 import { buildSearchIndex, type SearchIndex } from "@/lib/search-index";
 import { getSupabase } from "@/lib/supabase";
 
-import { ALTERNATIVE_ARTISTS, controlsFor, VERDICTS } from "./details";
+import { ALTERNATIVE_ARTISTS, VERDICTS } from "./details";
 import generatedDetails from "./details.generated.json";
 import generatedImages from "./images.generated.json";
 import { alternatives, originals } from "./pedals";
@@ -46,6 +47,7 @@ interface OriginalRow {
   popularity: number;
   search_query: string | null;
   controls: Control[] | null;
+  specs: Spec[] | null;
 }
 
 interface AlternativeRow {
@@ -67,6 +69,7 @@ interface AlternativeRow {
   verdict: string | null;
   gallery: string[] | null;
   controls: Control[] | null;
+  specs: Spec[] | null;
   artists: string[] | null;
 }
 
@@ -95,6 +98,7 @@ function mapOriginal(row: OriginalRow, alts: AlternativeRow[]): OriginalWithAlte
     popularity: row.popularity,
     searchQuery: row.search_query ?? undefined,
     controls: row.controls ?? [],
+    specs: row.specs ?? [],
     alternatives: alts
       .filter((alt) => alt.original_id === row.id)
       .map(mapAlternative)
@@ -121,6 +125,7 @@ function mapAlternative(row: AlternativeRow): Alternative {
     verdict: row.verdict ?? undefined,
     gallery: row.gallery ?? [],
     controls: row.controls ?? [],
+    specs: row.specs ?? [],
     artists: row.artists ?? [],
   };
 }
@@ -133,7 +138,6 @@ function localCatalogue(): OriginalWithAlternatives[] {
   return originals.map((original) => ({
     ...original,
     imageUrl: original.imageUrl ?? images[original.slug]?.url ?? null,
-    controls: controlsFor(original.slug),
     alternatives: alternatives
       .filter((alt) => alt.originalId === original.id)
       .sort((a, b) => a.priceGBP - b.priceGBP)
@@ -142,7 +146,6 @@ function localCatalogue(): OriginalWithAlternatives[] {
         imageUrl: alt.imageUrl ?? images[alt.slug]?.url ?? null,
         verdict: VERDICTS[alt.slug],
         gallery: details[alt.slug]?.images ?? [],
-        controls: controlsFor(alt.slug),
         artists: ALTERNATIVE_ARTISTS[alt.slug] ?? [],
       })),
   }));
@@ -197,8 +200,8 @@ export async function getOriginalBySlug(
 /**
  * Everything the pedal modal and detail pages show.
  *
- * Controls come from the record itself and are only shown when verified —
- * `controlsKnown` lets the UI say "not confirmed yet" rather than print a
+ * Specs come from the record itself and are only shown when present —
+ * `specsKnown` lets the UI say "not confirmed yet" rather than print a
  * plausible-looking guess.
  *
  * Artists prefer the pedal's own documented users. Budget clones almost never
@@ -212,7 +215,7 @@ export function getDetail(
     imageUrl: string | null;
     verdict?: string;
     gallery?: string[];
-    controls?: Control[];
+    specs?: Spec[];
     artists?: string[];
   },
   originalArtists: string[],
@@ -222,11 +225,11 @@ export function getDetail(
   );
 
   const own = pedal.artists ?? [];
-  const controls = pedal.controls?.length ? pedal.controls : controlsFor(pedal.slug);
+  const specs = pedal.specs ?? [];
 
   return {
-    controls,
-    controlsKnown: controls.length > 0,
+    specs,
+    specsKnown: specs.length > 0,
     artists: own.length > 0 ? own : originalArtists,
     artistsAreForOriginal: own.length === 0,
     images: [...new Set(gallery)],

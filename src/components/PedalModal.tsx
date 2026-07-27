@@ -21,7 +21,7 @@ interface Props {
   onClose: () => void;
 }
 
-const SLIDES = ["Overview", "Controls", "Artists"] as const;
+const SLIDES = ["Overview", "Specs", "Artists"] as const;
 
 export function PedalModal({
   alternative,
@@ -206,24 +206,25 @@ role="presentation"
                 </Panel>
 
                 <Panel>
-                  {!detail.controlsKnown && (
+                  {detail.specsKnown ? (
+                    <dl className="divide-y divide-stone-100">
+                      {detail.specs.map((spec) => (
+                        <div key={spec.label} className="flex gap-3 py-2">
+                          <dt className="w-28 shrink-0 text-xs font-bold text-stone-500">
+                            {spec.label}
+                          </dt>
+                          <dd className="tz-body min-w-0 text-sm text-stone-700">
+                            {spec.value}
+                          </dd>
+                        </div>
+                      ))}
+                    </dl>
+                  ) : (
                     <p className="tz-body text-sm text-stone-500">
-                      We haven&apos;t confirmed this pedal&apos;s control layout yet,
-                      so rather than guess we&apos;re leaving it blank.
+                      We haven&apos;t confirmed this pedal&apos;s specs yet, so
+                      rather than guess we&apos;re leaving it blank.
                     </p>
                   )}
-                  <ul className="space-y-2.5">
-                    {detail.controls.map((control) => (
-                      <li key={control.name} className="flex gap-3">
-                        <span className="mt-0.5 shrink-0 bg-stone-900 px-2 py-0.5 text-[10px] font-bold tracking-wide text-white uppercase">
-                          {control.name}
-                        </span>
-                        <span className="tz-body text-sm text-stone-600">
-                          {control.what}
-                        </span>
-                      </li>
-                    ))}
-                  </ul>
                 </Panel>
 
                 <Panel>

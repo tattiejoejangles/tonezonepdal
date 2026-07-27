@@ -13,6 +13,18 @@ export interface Control {
   what: string;
 }
 
+/**
+ * One line of the spec sheet — "Power", "9V DC centre-negative".
+ *
+ * Free-form label/value rather than fixed fields: what's worth stating varies
+ * by pedal, and an empty list is meaningful (the UI says specs aren't
+ * confirmed rather than printing a plausible guess).
+ */
+export interface Spec {
+  label: string;
+  value: string;
+}
+
 /** A retailer we send affiliate traffic to. */
 export type RetailerId = "amazon" | "reverb" | "gear4music";
 
@@ -65,6 +77,8 @@ export interface Original {
   artists?: string[];
   /** Verified knob/switch layout. Absent means we haven't confirmed it. */
   controls?: Control[];
+  /** Spec sheet rows. Empty means unconfirmed. */
+  specs?: Spec[];
 }
 
 /** A budget pedal that gets you close to an `Original` for less money. */
@@ -99,6 +113,8 @@ export interface Alternative {
   artists?: string[];
   /** Verified knob/switch layout. Absent means we haven't confirmed it. */
   controls?: Control[];
+  /** Spec sheet rows. Empty means unconfirmed. */
+  specs?: Spec[];
 }
 
 /** An original joined with its alternatives — the unit the UI renders. */
@@ -108,9 +124,10 @@ export interface OriginalWithAlternatives extends Original {
 
 /** Everything the detail modal shows beyond the basic record. */
 export interface PedalDetail {
-  controls: Control[];
-  /** True when `controls` is verified data rather than an empty placeholder. */
-  controlsKnown: boolean;
+  /** Spec sheet rows — power, connections and anything else confirmed. */
+  specs: Spec[];
+  /** True when `specs` is verified data rather than an empty placeholder. */
+  specsKnown: boolean;
   artists: string[];
   /** Whose artists these are — this pedal's, or the original it clones. */
   artistsAreForOriginal: boolean;
