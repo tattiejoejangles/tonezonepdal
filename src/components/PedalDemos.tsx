@@ -1,4 +1,8 @@
-import { findDemos, youtubeSearchUrl } from "@/lib/youtube";
+"use client";
+
+import { useEffect, useState } from "react";
+
+import type { Demo } from "@/lib/youtube";
 
 /**
  * Video demos for a pedal.
@@ -6,19 +10,52 @@ import { findDemos, youtubeSearchUrl } from "@/lib/youtube";
  * Hearing one is worth more than any amount of prose about how it sounds,
  * which is the whole reason this section exists.
  *
+ * Fetched on view rather than during the build. A build renders ~120 pedal and
+ * clone pages, and at 100 YouTube quota units per search that spent the entire
+ * 10,000/day free allowance in one deploy - every page then rendered "no
+ * demos" off the back of a 429. On view, only pedals someone looks at cost
+ * anything, and the route behind this caches hard at the CDN.
+ *
  * Embeds use youtube-nocookie.com, so watching one here doesn't drop tracking
- * cookies on a visitor who never asked for them. Iframes are lazy so three
- * players don't compete with the page for bandwidth on load.
+ * cookies on a visitor who never asked for them.
  */
-export async function PedalDemos({
-  brand,
-  name,
-}: {
-  brand: string;
-  name: string;
-}) {
-  const demos = await findDemos(brand, name);
-  const searchUrl = youtubeSearchUrl(brand, name);
+export function PedalDemos({ brand, name }: { brand: string; name: string }) {
+  const [state, setState] = useState<
+    | { status: "loading" }
+    | { status: "ready"; demos: Demo[]; configured: boolean }
+    | { status: "failed" }
+  >({ status: "loading" });
+
+  useEffect(() => {
+    let cancelled = false;
+    const query = `brand=${encodeURIComponent(brand)}&name=${encodeURIComponent(name)}`;
+
+    fetch(`/api/demos?${query}`)
+      .then((response) => (response.ok ? response.json() : Promise.reject()))
+      .then((data: { demos?: Demo[]; configured?: boolean }) => {
+        if (!cancelled) {
+          setState({
+            status: "ready",
+            demos: data.demos ?? [],
+            configured: Boolean(data.configured),
+          });
+        }
+      })
+      .catch(() => {
+        if (!cancelled) setState({ status: "failed" });
+      });
+
+    return () => {
+      cancelled = true;
+    };
+  }, [brand, name]);
+
+  const subject = name.toLowerCase().startsWith(brand.toLowerCase())
+    ? name
+    : `${brand} ${name}`;
+  const searchUrl = `https://www.youtube.com/results?search_query=${encodeURIComponent(`${subject} demo`)}`;
+
+  const demos = state.status === "ready" ? state.demos : [];
 
   return (
     <section aria-labelledby="demos" className="mt-10">
@@ -43,10 +80,22 @@ export async function PedalDemos({
         </a>
       </div>
 
-      {demos && demos.length > 0 ? (
+      {state.status === "loading" ? (
+        <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3" aria-hidden>
+          {[0, 1, 2].map((slot) => (
+            <div
+              key={slot}
+              className="tz-chamfer aspect-video w-full animate-pulse bg-stone-200/70"
+            />
+          ))}
+        </div>
+      ) : demos.length > 0 ? (
         <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
           {demos.map((demo) => (
-            <article key={demo.videoId} className="tz-chamfer tz-card overflow-hidden bg-white ring-1 ring-stone-200/60">
+            <article
+              key={demo.videoId}
+              className="tz-chamfer tz-card overflow-hidden bg-white ring-1 ring-stone-200/60"
+            >
               <div className="relative aspect-video w-full bg-stone-900">
                 <iframe
                   src={`https://www.youtube-nocookie.com/embed/${demo.videoId}`}
@@ -69,9 +118,9 @@ export async function PedalDemos({
       ) : (
         <div className="tz-chamfer bg-white/70 px-6 py-10 text-center ring-1 ring-stone-200">
           <p className="tz-body text-sm text-stone-600">
-            {demos === null
+            {state.status === "ready" && !state.configured
               ? "Video demos aren't switched on yet."
-              : "No demos found for this one."}
+              : "Couldn't load demos just now."}
           </p>
           <a
             href={searchUrl}
