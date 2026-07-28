@@ -10,7 +10,29 @@ export interface Genre {
   label: string;
   blurb: string;
   categories: Category[];
+  /**
+   * What one item in this genre is called. Defaults to "pedal"; amps are not
+   * pedals, and "Amps pedals - 5 PEDALS" reads like a bug.
+   */
+  noun?: string;
 }
+
+/** Singular and plural nouns for a genre's contents. */
+export function genreNoun(genre: Genre, count: number): string {
+  const noun = genre.noun ?? "pedal";
+  return count === 1 ? noun : `${noun}s`;
+}
+
+/** Categories that are not guitar pedals, so the pedal menu can exclude them. */
+export const NON_PEDAL_CATEGORIES: Category[] = ["amp"];
+
+export const AMPS_GENRE: Genre = {
+  id: "amps",
+  label: "Amps",
+  blurb: "Valve tone and clean headroom, without the boutique invoice.",
+  categories: ["amp"],
+  noun: "amp",
+};
 
 export const GENRES: Genre[] = [
   {
@@ -58,7 +80,7 @@ export const GENRES: Genre[] = [
 ];
 
 export function findGenre(id: string): Genre | undefined {
-  return GENRES.find((genre) => genre.id === id);
+  return [...GENRES, AMPS_GENRE].find((genre) => genre.id === id);
 }
 
 /** Every original in one genre, most popular first. */
@@ -76,9 +98,12 @@ export interface GenreGroup {
   entries: OriginalWithAlternatives[];
 }
 
-/** Groups the catalogue by genre, dropping genres with nothing in them yet. */
+/**
+ * Groups the catalogue by genre, dropping genres with nothing in them yet.
+ * Amps come last: they're the newest section and the least expected here.
+ */
 export function groupByGenre(catalogue: OriginalWithAlternatives[]): GenreGroup[] {
-  return GENRES.map((genre) => ({
+  return [...GENRES, AMPS_GENRE].map((genre) => ({
     genre,
     entries: catalogue.filter((entry) => genre.categories.includes(entry.category)),
   })).filter((group) => group.entries.length > 0);

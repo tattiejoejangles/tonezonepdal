@@ -1,7 +1,7 @@
 import { OriginalCard } from "./OriginalCard";
 import { calculateSavings } from "@/lib/format";
 import type { DirectoryResult } from "@/lib/filter";
-import type { GenreGroup } from "@/lib/sections";
+import { genreNoun, type GenreGroup } from "@/lib/sections";
 
 /**
  * One genre band on the home page. Originals are turned into DirectoryResults
@@ -46,7 +46,7 @@ export function GenreSection({ group }: { group: GenreGroup }) {
           <p className="tz-body mt-0.5 text-sm text-stone-500">{group.genre.blurb}</p>
         </div>
         <span className="tz-eyebrow shrink-0 text-stone-400">
-          {results.length} {results.length === 1 ? "pedal" : "pedals"}
+          {results.length} {genreNoun(group.genre, results.length)}
         </span>
       </div>
 

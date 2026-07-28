@@ -73,9 +73,21 @@ interface AlternativeRow {
   artists: string[] | null;
 }
 
-/** A hand-entered URL always beats one the scraper found. */
+/**
+ * A hand-entered URL always beats one the scraper found.
+ *
+ * Blank-checked rather than null-checked: `??` only falls through on null, so
+ * an `image_url` saved as an empty string - which is what an untouched form
+ * field or a cleared cell produces - would win over a perfectly good
+ * `auto_image_url` and show the "photo needed" plate instead.
+ */
+const blankToNull = (value: string | null) => {
+  const trimmed = value?.trim();
+  return trimmed ? trimmed : null;
+};
+
 const pickImage = (row: { image_url: string | null; auto_image_url: string | null }) =>
-  row.image_url ?? row.auto_image_url ?? null;
+  blankToNull(row.image_url) ?? blankToNull(row.auto_image_url);
 
 const num = (value: number | string) =>
   typeof value === "number" ? value : Number.parseFloat(value);

@@ -41,10 +41,16 @@ const RETAILERS: Record<RetailerId, RetailerConfig> = {
     tagParam: "aid",
     tag: ENV.reverb,
   },
+  /**
+   * Taken from Gear4music's own header search form, which is a GET to
+   * `/search/` with the phrase in `str_search_phrase`. Two earlier guesses
+   * were wrong: `/search?q=` matched nothing, and a `#/embedded/` fragment
+   * just landed on the homepage.
+   */
   gear4music: {
     label: "Gear4music",
-    searchBase: "https://www.gear4music.com/search",
-    queryParam: "q",
+    searchBase: "https://www.gear4music.com/search/",
+    queryParam: "str_search_phrase",
     tagParam: "affid",
     tag: ENV.gear4music,
   },
@@ -76,35 +82,23 @@ function wrapAwin(destination: string): string | null {
   );
 }
 
-/**
- * Gear4music's on-site search.
- *
- * `?q=` on /search returns "nothing matched your search" for every term - the
- * catalogue search runs client-side off the URL fragment instead. The `m=and`
- * flag requires every word to match, which is what stops a multi-word pedal
- * name returning the whole department.
- *
- * Written by hand rather than via `URL`, because everything after `#` is a
- * fragment: `searchParams` would put it in the wrong half of the URL.
- */
-function gear4musicSearch(query: string): string {
-  return `https://www.gear4music.com/#/embedded/m=and&q=${encodeURIComponent(query)}`;
-}
-
 export function buildRetailerLink(retailer: RetailerId, query: string): RetailerLink {
   const config = RETAILERS[retailer];
 
   const url = new URL(config.searchBase);
   url.searchParams.set(config.queryParam, query);
 
-  let href = retailer === "gear4music" ? gear4musicSearch(query) : url.toString();
+  let href = url.toString();
   let tracked = false;
 
   if (retailer === "gear4music") {
-    // Awin wraps the whole destination, fragment included, so it still works.
     const awin = wrapAwin(href);
     if (awin) {
       href = awin;
+      tracked = true;
+    } else if (config.tag) {
+      url.searchParams.set(config.tagParam, config.tag);
+      href = url.toString();
       tracked = true;
     }
   } else if (config.tag) {

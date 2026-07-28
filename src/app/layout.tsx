@@ -64,6 +64,13 @@ function SiteHeader({ searchIndex }: { searchIndex: SearchIndex }) {
           />
 
           <Link
+            href="/amps"
+            className="text-xs font-bold tracking-wider whitespace-nowrap text-stone-500 uppercase transition-colors hover:text-amber-700"
+          >
+            Amps
+          </Link>
+
+          <Link
             href="/saved"
             className="text-xs font-bold tracking-wider whitespace-nowrap text-stone-500 uppercase transition-colors hover:text-amber-700"
           >

@@ -44,6 +44,9 @@ export const CATEGORIES = [
   "octave",
   "eq",
   "reverb",
+  // Amps sit in the same model as pedals: an expensive original with cheaper
+  // alternatives against it. They get their own section rather than a genre.
+  "amp",
 ] as const;
 
 export type Category = (typeof CATEGORIES)[number];

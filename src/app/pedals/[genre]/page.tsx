@@ -6,13 +6,13 @@ import { OriginalCard } from "@/components/OriginalCard";
 import { getCatalogue } from "@/data/catalogue";
 import { calculateSavings } from "@/lib/format";
 import type { DirectoryResult } from "@/lib/filter";
-import { GENRES, entriesInGenre, findGenre } from "@/lib/sections";
+import { AMPS_GENRE, GENRES, entriesInGenre, findGenre, genreNoun } from "@/lib/sections";
 
 /** Regenerate every 5 minutes, in step with the pedal and clone pages. */
 export const revalidate = 300;
 
 export function generateStaticParams() {
-  return GENRES.map((genre) => ({ genre: genre.id }));
+  return [...GENRES, AMPS_GENRE].map((genre) => ({ genre: genre.id }));
 }
 
 export async function generateMetadata({
@@ -26,8 +26,8 @@ export async function generateMetadata({
   if (!genre) return { title: "Not found" };
 
   return {
-    title: `${genre.label} pedals`,
-    description: `${genre.blurb} Every ${genre.label.toLowerCase()} pedal on The Tone Zone, with the cheapest alternative to each.`,
+    title: genre.noun ? genre.label : `${genre.label} pedals`,
+    description: `${genre.blurb} Every ${genre.label.toLowerCase()} ${genreNoun(genre, 1)} on The Tone Zone, with the cheapest alternative to each.`,
   };
 }
 
@@ -73,7 +73,7 @@ export default async function GenrePage({
         </h1>
         <p className="tz-body mt-2.5 text-base text-stone-600">{genre.blurb}</p>
         <p className="tz-eyebrow mt-3 text-stone-400">
-          {results.length} {results.length === 1 ? "pedal" : "pedals"}
+          {results.length} {genreNoun(genre, results.length)}
         </p>
       </header>
 
