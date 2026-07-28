@@ -33,7 +33,7 @@ export function AlternativeCard({
   const saving = calculateSavings(originalPrice, alternative.priceGBP);
 
   return (
-    <article className="tz-chamfer group relative bg-white shadow-sm ring-1 ring-stone-200/70 transition-all duration-300 hover:shadow-xl hover:ring-amber-400/60">
+    <article className="tz-chamfer tz-card-hover group relative overflow-hidden bg-white tz-card ring-1 ring-stone-200/60 hover:ring-amber-400/50">
       {/* Accent edge that fills in on hover. */}
       <span className="absolute inset-x-0 top-0 h-1 origin-left scale-x-0 bg-linear-to-r from-amber-400 via-orange-500 to-rose-500 transition-transform duration-300 group-hover:scale-x-100" />
 
@@ -48,7 +48,7 @@ export function AlternativeCard({
         {/* Photo and copy keep their own side-by-side split from sm up; the
             buy lane only peels off once the card is wide enough at lg. */}
         <div className="flex min-w-0 flex-1 flex-col gap-5 sm:flex-row">
-        <div className="relative h-40 w-full shrink-0 overflow-hidden bg-white sm:h-44 sm:w-40">
+        <div className="tz-well relative h-40 w-full shrink-0 sm:h-44 sm:w-40">
           <div className="h-full w-full transition-transform duration-500 group-hover:scale-105">
             <PedalImage
               src={alternative.imageUrl}
@@ -58,7 +58,7 @@ export function AlternativeCard({
             />
           </div>
           {rank !== undefined && (
-            <span className="absolute top-2 left-2 flex h-7 w-7 items-center justify-center bg-stone-900/85 text-xs font-bold text-white">
+            <span className="absolute top-2 left-2 flex h-7 w-7 items-center justify-center rounded-full bg-stone-900/85 text-xs font-bold text-white">
               {rank}
             </span>
           )}
@@ -84,7 +84,7 @@ export function AlternativeCard({
 
           <div className="flex flex-wrap items-center gap-2">
             <SavingsBadge saving={saving} comparedTo={originalName} />
-            <span className="bg-stone-100 px-3 py-1.5 text-[11px] font-bold text-stone-600">
+            <span className="rounded-full bg-stone-100 px-3 py-1.5 text-[11px] font-bold text-stone-600">
               {alternative.matchQuality}% TONAL MATCH
             </span>
             {onOpen && (

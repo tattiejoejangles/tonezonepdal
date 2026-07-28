@@ -79,8 +79,8 @@ export function Directory({
           </h1>
 
           <p className="tz-body mx-auto mt-6 max-w-xl text-base text-stone-300 sm:text-lg">
-            Find the budget clone of any expensive pedal — with honest pros and cons,
-            and exactly what you save.
+            Find the budget alternative to any expensive pedal — with honest pros
+            and cons, and exactly what you save.
           </p>
 
           <div className="mx-auto mt-9 max-w-xl">
@@ -129,7 +129,7 @@ export function Directory({
             {cloneResults.length > 0 && (
               <section>
                 <h2 className="tz-eyebrow mb-4 text-stone-500">
-                  Budget clones ({cloneResults.length})
+                  Budget options ({cloneResults.length})
                 </h2>
                 <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3">
                   {cloneResults.map((result) => (

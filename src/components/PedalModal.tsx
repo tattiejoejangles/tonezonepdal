@@ -70,10 +70,11 @@ export function PedalModal({
   /**
    * Rendered into <body> rather than in place.
    *
-   * `.tz-chamfer` styles cards with `clip-path`, and clip-path clips every
-   * descendant — including `position: fixed` ones. Opened from inside the hero
-   * card, this dialog was being clipped to that card instead of covering the
-   * viewport. A portal escapes the clip regardless of which card opens it.
+   * Keeps the dialog out of whatever card opened it. Cards used to be cut
+   * with clip-path, which clips every descendant including `position: fixed`
+   * ones, and trapped this dialog inside the hero card. Cards are a plain
+   * radius now, but portalling is still the right call — it keeps the dialog
+   * clear of any future transform, filter or overflow on an ancestor.
    */
   return createPortal(
     <div
@@ -91,14 +92,13 @@ role="presentation"
         aria-labelledby={titleId}
         tabIndex={-1}
         onClick={(event) => event.stopPropagation()}
-        className="tz-pop relative max-h-[92dvh] w-full max-w-4xl overflow-y-auto overscroll-contain bg-white shadow-2xl outline-none sm:max-h-[88dvh] sm:rounded-none"
+        className="tz-pop relative max-h-[92dvh] w-full max-w-4xl overflow-y-auto overscroll-contain bg-white shadow-2xl outline-none sm:max-h-[88dvh] sm:rounded-2xl"
       >
         <button
           type="button"
           onClick={onClose}
           aria-label="Close"
-          className="absolute top-3 right-3 z-10 flex h-9 w-9 items-center justify-center bg-stone-900/85 text-white transition hover:bg-stone-900 hover:rotate-90"
-          style={{ clipPath: "polygon(8px 0,100% 0,100% calc(100% - 8px),calc(100% - 8px) 100%,0 100%,0 8px)" }}
+          className="absolute top-3 right-3 z-10 flex h-9 w-9 items-center justify-center rounded-full bg-stone-900/85 text-white transition hover:rotate-90 hover:bg-stone-900"
         >
           <svg viewBox="0 0 24 24" className="h-4 w-4" fill="none" stroke="currentColor" strokeWidth="2.5">
             <path d="m6 6 12 12M18 6 6 18" />
@@ -108,7 +108,7 @@ role="presentation"
         <div className="grid gap-0 md:grid-cols-[minmax(0,340px)_1fr]">
           {/* Gallery */}
           <div className="bg-stone-50 p-5">
-            <div className="relative aspect-square w-full bg-white">
+            <div className="tz-well relative aspect-square w-full">
               <PedalImage
                 src={images[image] ?? null}
                 name={alternative.name}
@@ -126,7 +126,7 @@ role="presentation"
                     type="button"
                     onClick={() => setImage(index)}
                     aria-label={`Image ${index + 1}`}
-                    className={`relative h-14 w-14 shrink-0 bg-white transition ${
+                    className={`relative h-14 w-14 shrink-0 overflow-hidden rounded-lg bg-white transition ${
                       index === image
                         ? "ring-2 ring-amber-500"
                         : "opacity-60 ring-1 ring-stone-300 hover:opacity-100"
@@ -157,7 +157,7 @@ role="presentation"
                 {formatPrice(alternative.priceGBP)}
               </span>
               <SavingsBadge saving={saving} comparedTo={originalName} size="sm" />
-              <span className="bg-stone-100 px-2.5 py-1 text-[11px] font-bold text-stone-600">
+              <span className="rounded-full bg-stone-100 px-2.5 py-1 text-[11px] font-bold text-stone-600">
                 {alternative.matchQuality}% MATCH
               </span>
             </div>
@@ -319,8 +319,7 @@ function ArrowButton({
       onClick={onClick}
       disabled={disabled}
       aria-label={dir === "left" ? "Previous" : "Next"}
-      className="flex h-8 w-8 items-center justify-center bg-stone-900 text-white transition enabled:hover:bg-amber-600 disabled:opacity-25"
-      style={{ clipPath: "polygon(6px 0,100% 0,100% calc(100% - 6px),calc(100% - 6px) 100%,0 100%,0 6px)" }}
+      className="flex h-8 w-8 items-center justify-center rounded-full bg-stone-900 text-white transition enabled:hover:bg-amber-600 disabled:opacity-25"
     >
       <svg viewBox="0 0 24 24" className="h-4 w-4" fill="none" stroke="currentColor" strokeWidth="2.5">
         <path d={dir === "left" ? "m15 6-6 6 6 6" : "m9 6 6 6-6 6"} />

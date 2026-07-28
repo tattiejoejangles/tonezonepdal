@@ -16,11 +16,11 @@ export function OriginalCard({
   return (
     <Link
       href={`/pedal/${result.slug}`}
-      className="tz-chamfer group relative flex flex-col overflow-hidden bg-white shadow-sm ring-1 ring-stone-200/70 transition-all duration-300 hover:-translate-y-1.5 hover:shadow-2xl hover:ring-amber-400/70 focus-visible:ring-2 focus-visible:ring-amber-500 focus-visible:outline-none"
+      className="tz-chamfer group relative flex flex-col overflow-hidden bg-white tz-card ring-1 ring-stone-200/60 transition-all duration-300 hover:-translate-y-1.5 hover:ring-amber-400/70 focus-visible:ring-2 focus-visible:ring-amber-500 focus-visible:outline-none"
     >
       <span className="absolute inset-x-0 top-0 z-10 h-1 origin-left scale-x-0 bg-linear-to-r from-amber-400 via-orange-500 to-rose-500 transition-transform duration-300 group-hover:scale-x-100" />
 
-      <div className="relative aspect-4/3 overflow-hidden bg-white">
+      <div className="tz-well relative aspect-4/3 rounded-none">
         <div className="h-full w-full transition-transform duration-500 group-hover:scale-108">
           <PedalImage
             src={result.imageUrl}

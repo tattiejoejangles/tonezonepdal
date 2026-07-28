@@ -57,7 +57,7 @@ export function SavedList({ index }: { index: SearchIndex }) {
       {items.map(({ mark, entry }) => (
         <li
           key={`${mark.kind}-${mark.slug}`}
-          className="tz-chamfer group relative flex items-center gap-4 bg-white p-4 shadow-sm ring-1 ring-stone-200/70 transition-shadow hover:shadow-lg"
+          className="tz-chamfer tz-card tz-card-hover group relative flex items-center gap-4 bg-white p-4 ring-1 ring-stone-200/60"
         >
           <Link
             href={entry.kind === "original" ? `/pedal/${entry.slug}` : `/clone/${entry.slug}`}
@@ -65,7 +65,7 @@ export function SavedList({ index }: { index: SearchIndex }) {
             aria-label={`View the ${entry.name}`}
           />
 
-          <div className="relative h-16 w-16 shrink-0 overflow-hidden bg-white ring-1 ring-stone-100">
+          <div className="tz-well relative h-16 w-16 shrink-0">
             <PedalImage
               src={entry.imageUrl}
               name={entry.name}

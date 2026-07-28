@@ -73,9 +73,9 @@ export default async function ClonePage({
         </Link>
       </nav>
 
-      <section className="tz-chamfer overflow-hidden bg-white shadow-sm ring-1 ring-stone-200/70">
+      <section className="tz-chamfer overflow-hidden bg-white tz-card ring-1 ring-stone-200/60">
         <div className="grid gap-8 p-6 sm:p-8 md:grid-cols-[minmax(0,340px)_1fr] md:gap-10 lg:grid-cols-[minmax(0,300px)_1fr_minmax(0,14rem)] lg:gap-6">
-          <div className="relative aspect-square overflow-hidden bg-white ring-1 ring-stone-100">
+          <div className="tz-well relative aspect-square">
             <PedalImage
               src={alternative.imageUrl}
               name={alternative.name}
@@ -83,8 +83,8 @@ export default async function ClonePage({
               priority
               sizes="(max-width: 768px) 100vw, 380px"
             />
-            <span className="tz-eyebrow absolute top-3 left-3 bg-amber-400 px-2.5 py-1 text-stone-900">
-              Budget clone
+            <span className="tz-eyebrow absolute top-3 left-3 rounded-full bg-amber-400 px-2.5 py-1 text-stone-900">
+              Budget
             </span>
           </div>
 
@@ -102,7 +102,7 @@ export default async function ClonePage({
                 {formatPrice(alternative.priceGBP)}
               </span>
               <SavingsBadge saving={saving} comparedTo={original.name} />
-              <span className="bg-stone-100 px-3 py-1.5 text-[11px] font-bold text-stone-600">
+              <span className="rounded-full bg-stone-100 px-3 py-1.5 text-[11px] font-bold text-stone-600">
                 {alternative.matchQuality}% TONAL MATCH
               </span>
               <BookmarkButton kind="clone" slug={alternative.slug} />
@@ -153,7 +153,7 @@ export default async function ClonePage({
       </section>
 
       <div className="mt-10 grid gap-6 lg:grid-cols-2">
-        <section className="tz-chamfer bg-white p-6 shadow-sm ring-1 ring-stone-200/70">
+        <section className="tz-chamfer bg-white p-6 tz-card ring-1 ring-stone-200/60">
           <h2 className="tz-heading mb-4 text-xl text-stone-900">
             How it compares to the {original.name}
           </h2>
@@ -161,7 +161,7 @@ export default async function ClonePage({
         </section>
 
         <div className="space-y-6">
-          <section className="tz-chamfer bg-white p-6 shadow-sm ring-1 ring-stone-200/70">
+          <section className="tz-chamfer bg-white p-6 tz-card ring-1 ring-stone-200/60">
             <h2 className="tz-heading mb-4 text-xl text-stone-900">Specs</h2>
             {detail.specsKnown ? (
               <dl className="divide-y divide-stone-100">
@@ -184,7 +184,7 @@ export default async function ClonePage({
             )}
           </section>
 
-          <section className="tz-chamfer bg-white p-6 shadow-sm ring-1 ring-stone-200/70">
+          <section className="tz-chamfer bg-white p-6 tz-card ring-1 ring-stone-200/60">
             <h2 className="tz-heading mb-3 text-xl text-stone-900">Players</h2>
             {detail.artists.length > 0 ? (
               <>

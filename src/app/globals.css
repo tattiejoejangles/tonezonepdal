@@ -9,10 +9,22 @@
 
 :root {
   color-scheme: light;
-  --tz-surface: #f7f5f1;
+  --tz-surface: #f6f6f7;
   --tz-ink: #1c1917;
   --tz-accent: #ea580c;
   --tz-night: #0b1020;
+
+  /* Card language: generous radius, hairline edge, shadow you feel rather
+     than see. Kept as variables so the whole surface treatment moves
+     together instead of drifting per component. */
+  --tz-radius: 1rem;
+  --tz-radius-lg: 1.25rem;
+  --tz-shadow:
+    0 1px 2px rgba(16, 15, 14, 0.04),
+    0 8px 24px -12px rgba(16, 15, 14, 0.12);
+  --tz-shadow-lift:
+    0 2px 4px rgba(16, 15, 14, 0.05),
+    0 18px 40px -18px rgba(16, 15, 14, 0.2);
 }
 
 html {
@@ -141,9 +153,7 @@ input[type="search"]::-webkit-search-cancel-button {
    SpinButton pins an explicit pixel width — see SpinButton.tsx.
    --------------------------------------------------------------------------- */
 .tz-pill {
-  box-shadow:
-    0 10px 22px -6px rgba(28, 25, 23, 0.28),
-    0 2px 6px -2px rgba(28, 25, 23, 0.16);
+  box-shadow: var(--tz-shadow);
   transition:
     width 420ms cubic-bezier(0.65, 0, 0.35, 1),
     transform 200ms cubic-bezier(0.2, 0.8, 0.2, 1),
@@ -152,9 +162,7 @@ input[type="search"]::-webkit-search-cancel-button {
 
 .tz-pill:hover {
   transform: translateY(-2px);
-  box-shadow:
-    0 16px 30px -8px rgba(28, 25, 23, 0.34),
-    0 3px 8px -2px rgba(28, 25, 23, 0.18);
+  box-shadow: var(--tz-shadow-lift);
 }
 
 .tz-pill:active {
@@ -172,16 +180,39 @@ input[type="search"]::-webkit-search-cancel-button {
   }
 }
 
-/* Chamfered container, used for cards and panels that should echo the buttons. */
+/**
+ * Card container.
+ *
+ * Was a chamfer cut with clip-path. Two reasons it is now a radius: the
+ * softer, rounder surface is the look we're after, and clip-path clips every
+ * descendant including `position: fixed` ones — which is what trapped the
+ * detail dialog inside whichever card opened it.
+ *
+ * The class name is unchanged deliberately: it is on ~20 elements, and one
+ * definition here moves all of them together.
+ */
 .tz-chamfer {
-  clip-path: polygon(
-    18px 0,
-    100% 0,
-    100% calc(100% - 18px),
-    calc(100% - 18px) 100%,
-    0 100%,
-    0 18px
-  );
+  border-radius: var(--tz-radius-lg);
+}
+
+/* Softer, more diffuse elevation than Tailwind's stepped shadow scale. */
+.tz-card {
+  box-shadow: var(--tz-shadow);
+  transition:
+    box-shadow 220ms ease,
+    transform 220ms cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+
+.tz-card-hover:hover {
+  box-shadow: var(--tz-shadow-lift);
+  transform: translateY(-2px);
+}
+
+/* Image wells: a tinted panel the product sits in, rather than white-on-white. */
+.tz-well {
+  background: #f2f2f3;
+  border-radius: var(--tz-radius);
+  overflow: hidden;
 }
 
 /* ---------------------------------------------------------------------------

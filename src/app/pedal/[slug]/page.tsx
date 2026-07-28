@@ -105,10 +105,10 @@ export default async function PedalPage({
       {/* Product hero: photo, the pitch, then the buy stack in its own lane.
           The stack is three tall pills — beside the text it costs no height,
           below it, it added ~200px to every pedal page. */}
-      <section className="tz-chamfer overflow-hidden bg-white shadow-sm ring-1 ring-stone-200/70">
+      <section className="tz-chamfer overflow-hidden bg-white tz-card ring-1 ring-stone-200/60">
         <div className="grid gap-8 p-6 sm:p-8 md:grid-cols-[minmax(0,340px)_1fr] md:gap-10 lg:grid-cols-[minmax(0,300px)_1fr_minmax(0,14rem)] lg:gap-6">
           <div>
-            <div className="relative aspect-square overflow-hidden bg-white ring-1 ring-stone-100">
+            <div className="tz-well relative aspect-square">
               <PedalImage
                 src={pedal.imageUrl}
                 name={pedal.name}

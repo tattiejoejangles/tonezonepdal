@@ -17,11 +17,11 @@ export function CloneCard({ result }: { result: CloneResult }) {
   return (
     <Link
       href={`/clone/${alternative.slug}`}
-      className="tz-chamfer group relative flex flex-col overflow-hidden bg-white shadow-sm ring-1 ring-amber-300/60 transition-all duration-300 hover:-translate-y-1.5 hover:shadow-2xl hover:ring-amber-500 focus-visible:ring-2 focus-visible:ring-amber-500 focus-visible:outline-none"
+      className="tz-chamfer group relative flex flex-col overflow-hidden bg-white shadow-sm ring-1 ring-amber-300/60 transition-all duration-300 hover:-translate-y-1.5 hover:ring-amber-500 focus-visible:ring-2 focus-visible:ring-amber-500 focus-visible:outline-none"
     >
       <span className="absolute inset-x-0 top-0 z-10 h-1 bg-linear-to-r from-amber-400 via-orange-500 to-rose-500" />
 
-      <div className="relative aspect-4/3 overflow-hidden bg-white">
+      <div className="tz-well relative aspect-4/3 rounded-none">
         <div className="h-full w-full transition-transform duration-500 group-hover:scale-108">
           <PedalImage
             src={alternative.imageUrl}
@@ -30,8 +30,8 @@ export function CloneCard({ result }: { result: CloneResult }) {
           />
         </div>
 
-        <span className="tz-eyebrow absolute top-3 left-3 bg-amber-400 px-2.5 py-1 text-stone-900 shadow-sm">
-          Budget clone
+        <span className="tz-eyebrow absolute top-3 left-3 rounded-full bg-amber-400 px-2.5 py-1 text-stone-900 shadow-sm">
+          Budget
         </span>
 
         {saving.percent > 0 && (
