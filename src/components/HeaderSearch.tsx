@@ -1,7 +1,7 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { useState } from "react";
+import { useRef, useState } from "react";
 
 import { SearchSuggestions, useSuggestions } from "./SearchSuggestions";
 import type { SearchIndex } from "@/lib/search-index";
@@ -19,12 +19,13 @@ import type { SearchIndex } from "@/lib/search-index";
  * component lives in the root layout, and useSearchParams would opt every
  * statically rendered page into client-side rendering for the whole boundary.
  * The header box starting empty is a fair trade for keeping pedal pages
- * static. The suggestion index arrives as a prop for the same reason — it is
+ * static. The suggestion index arrives as a prop for the same reason - it is
  * built on the server, so nothing here forces a page to render on the client.
  */
 export function HeaderSearch({ index }: { index: SearchIndex }) {
   const router = useRouter();
   const [value, setValue] = useState("");
+  const inputRef = useRef<HTMLInputElement>(null);
   const suggest = useSuggestions(index, value);
 
   function submit(event: React.FormEvent) {
@@ -60,6 +61,7 @@ export function HeaderSearch({ index }: { index: SearchIndex }) {
 
       <input
         id="header-search"
+        ref={inputRef}
         type="search"
         value={value}
         onChange={(event) => setValue(event.target.value)}
@@ -76,7 +78,8 @@ export function HeaderSearch({ index }: { index: SearchIndex }) {
           listId={suggest.listId}
           onHover={suggest.setActive}
           onSelect={suggest.dismiss}
-          panelClassName="sm:left-auto sm:w-96"
+          anchorRef={inputRef}
+          minWidth={360}
         />
       )}
     </form>

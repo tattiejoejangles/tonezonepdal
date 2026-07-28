@@ -4,7 +4,7 @@ import { cookies } from "next/headers";
 /**
  * Password gate for /admin.
  *
- * Deliberately minimal — this is a private authoring tool for one person, not
+ * Deliberately minimal - this is a private authoring tool for one person, not
  * a user account system. It exists because the admin route writes to Supabase
  * with the service-role key, and an unauthenticated write endpoint on a public
  * domain would let anyone edit the catalogue.

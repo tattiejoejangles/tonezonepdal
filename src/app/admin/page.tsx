@@ -22,7 +22,7 @@ export default async function AdminPage() {
 
   // The linking dropdown reads through the public catalogue rather than the
   // service-role client, so it still lists every original when the write key
-  // is missing — and falls back to the bundled copy if Supabase is down.
+  // is missing - and falls back to the bundled copy if Supabase is down.
   const catalogue = await getCatalogue();
   const originals: OriginalOption[] = catalogue
     .map(({ id, name, brand }) => ({ id, name, brand }))
@@ -64,6 +64,12 @@ export default async function AdminPage() {
       )}
 
       <PedalForm originals={originals} />
+
+      <p className="tz-body mt-10 border-t border-stone-200 pt-6 text-sm text-stone-500">
+        To change or delete a pedal, open its page on the site and use the{" "}
+        <span className="font-bold">Edit</span> button - it only appears while
+        you are signed in here.
+      </p>
     </div>
   );
 }

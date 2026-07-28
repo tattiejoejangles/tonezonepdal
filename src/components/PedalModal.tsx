@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useCallback, useEffect, useId, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 
+import { MatchBadge } from "./MatchBadge";
 import { PedalImage } from "./PedalImage";
 import { ProsCons } from "./ProsCons";
 import { RetailerButtons } from "./RetailerButtons";
@@ -73,7 +74,7 @@ export function PedalModal({
    * Keeps the dialog out of whatever card opened it. Cards used to be cut
    * with clip-path, which clips every descendant including `position: fixed`
    * ones, and trapped this dialog inside the hero card. Cards are a plain
-   * radius now, but portalling is still the right call — it keeps the dialog
+   * radius now, but portalling is still the right call - it keeps the dialog
    * clear of any future transform, filter or overflow on an ancestor.
    */
   return createPortal(
@@ -147,7 +148,7 @@ role="presentation"
 
           {/* Info */}
           <div className="flex flex-col p-5 sm:p-6">
-            <p className="tz-eyebrow text-amber-700">{alternative.brand}</p>
+            <p className="tz-brand text-amber-700">{alternative.brand}</p>
             <h2 id={titleId} className="tz-heading mt-1 text-2xl text-stone-900">
               {alternative.name}
             </h2>
@@ -157,9 +158,7 @@ role="presentation"
                 {formatPrice(alternative.priceGBP)}
               </span>
               <SavingsBadge saving={saving} comparedTo={originalName} size="sm" />
-              <span className="rounded-full bg-stone-100 px-2.5 py-1 text-[11px] font-bold text-stone-600">
-                {alternative.matchQuality}% MATCH
-              </span>
+              <MatchBadge match={alternative.matchQuality} size="sm" />
             </div>
 
             {/* Slide tabs */}
@@ -232,7 +231,7 @@ role="presentation"
                     <>
                       <p className="tz-body mb-3 text-sm text-stone-600">
                         {detail.artistsAreForOriginal
-                          ? `No documented users of this clone specifically — these players are associated with the ${originalName}, the circuit it copies.`
+                          ? `No documented users of this clone specifically - these players are associated with the ${originalName}, the circuit it copies.`
                           : "Known users of this pedal."}
                       </p>
                       <ul className="flex flex-wrap gap-2">

@@ -4,7 +4,7 @@ import type { Control } from "@/lib/types";
  * Verified control layouts, keyed by slug.
  *
  * This used to fall back to a generic set per effect category, which produced
- * confidently wrong output — the Biyang AD-10 was being shown "Time / Feedback
+ * confidently wrong output - the Biyang AD-10 was being shown "Time / Feedback
  * / Level" when its knobs are actually Time / Repeat / Mix. A guess presented
  * as fact is worse than no data, so there is no fallback now: a pedal missing
  * from this map simply shows no control list, and the UI says so.
@@ -25,7 +25,7 @@ export const CONTROLS: Record<string, Control[]> = {
     { name: "Level", what: "Output volume." },
   ],
   "boss-bf-2-flanger": [
-    { name: "Manual", what: "Sets the centre point of the sweep — where the notch sits." },
+    { name: "Manual", what: "Sets the centre point of the sweep - where the notch sits." },
     { name: "Depth", what: "How wide the sweep travels." },
     { name: "Rate", what: "Sweep speed." },
     { name: "Res", what: "Resonance. High settings ring metallically and eventually self-oscillate." },
@@ -41,21 +41,21 @@ export const CONTROLS: Record<string, Control[]> = {
     { name: "Mode", what: "Selects the delay range, plus Hold for infinite repeats." },
   ],
   "boss-dm-2-dm-3-analog-delay": [
-    { name: "Repeat Rate", what: "Delay time, roughly 20–300ms." },
+    { name: "Repeat Rate", what: "Delay time, roughly 20-300ms." },
     { name: "Intensity", what: "Number of repeats before the echo dies away." },
     { name: "Echo", what: "Volume of the repeats." },
   ],
   "boss-ds-1-distortion": [
     { name: "Dist", what: "Hard-clipping amount. Stays saturated even backed right off." },
-    { name: "Tone", what: "Very wide range — harsh at the top, muffled at the bottom." },
+    { name: "Tone", what: "Very wide range - harsh at the top, muffled at the bottom." },
     { name: "Level", what: "Output volume." },
   ],
   "boss-ge-7-graphic-equalizer": [
-    { name: "100Hz / 200Hz", what: "Low end — cut to tighten a boomy amp." },
+    { name: "100Hz / 200Hz", what: "Low end - cut to tighten a boomy amp." },
     { name: "400Hz / 800Hz", what: "Low mids, where boxiness lives." },
     { name: "1.6kHz / 3.2kHz", what: "Presence and bite. Boost here for solos that cut." },
     { name: "6.4kHz", what: "Air and fizz." },
-    { name: "Level", what: "Overall output — push it for a clean volume boost." },
+    { name: "Level", what: "Overall output - push it for a clean volume boost." },
   ],
   "boss-fz-2-hyper-fuzz": [
     { name: "Volume", what: "Output level." },
@@ -72,7 +72,7 @@ export const CONTROLS: Record<string, Control[]> = {
   "boss-oc-2-oc-3-octave": [
     { name: "Direct Level", what: "Level of your unaffected dry signal." },
     { name: "OCT 1", what: "Level of the note one octave below." },
-    { name: "OCT 2", what: "Level of the note two octaves below — thick synth bass." },
+    { name: "OCT 2", what: "Level of the note two octaves below - thick synth bass." },
   ],
   "boss-vb-2-vibrato": [
     { name: "Rate", what: "Speed of the pitch wobble." },
@@ -92,13 +92,13 @@ export const CONTROLS: Record<string, Control[]> = {
   "dod-boneshaker": [
     { name: "Level / Gain", what: "Output volume and distortion amount." },
     { name: "Low / High", what: "Shelving bass and treble." },
-    { name: "Mid + Freq", what: "Sweepable midrange — pick the frequency, then cut or boost it." },
+    { name: "Mid + Freq", what: "Sweepable midrange - pick the frequency, then cut or boost it." },
   ],
   "dod-carcosa-fuzz": [
     { name: "Volume / Fuzz", what: "Output level and fuzz amount." },
     { name: "Tone", what: "Brightness." },
     { name: "Bias", what: "Starves the circuit for gated, dying-battery splutter." },
-    { name: "Hali / Demhe", what: "Two voicings — scooped and aggressive, or thicker in the mids." },
+    { name: "Hali / Demhe", what: "Two voicings - scooped and aggressive, or thicker in the mids." },
   ],
   "dunlop-fuzz-face": [
     { name: "Volume", what: "Output level." },
@@ -107,7 +107,7 @@ export const CONTROLS: Record<string, Control[]> = {
   "electro-harmonix-big-muff-pi": [
     { name: "Volume", what: "Output level." },
     { name: "Tone", what: "Sweeps between scooped-dark and thin-bright, with a mid dip in the middle." },
-    { name: "Sustain", what: "Fuzz and compression amount — this is what gives the endless sustain." },
+    { name: "Sustain", what: "Fuzz and compression amount - this is what gives the endless sustain." },
   ],
   "electro-harmonix-black-russian-big-muff": [
     { name: "Volume", what: "Output level." },
@@ -123,13 +123,13 @@ export const CONTROLS: Record<string, Control[]> = {
   // --- Alternatives, where the layout genuinely differs ------------------
   "biyang-ad10-delay": [
     { name: "Time", what: "Delay time. The AD-10 is a true bucket-brigade circuit, so it's short." },
-    { name: "Repeat", what: "Number of repeats — the AD-10 labels this Repeat, not Feedback." },
-    { name: "Mix", what: "Blend of delayed signal against dry — labelled Mix, not Level." },
+    { name: "Repeat", what: "Number of repeats - the AD-10 labels this Repeat, not Feedback." },
+    { name: "Mix", what: "Blend of delayed signal against dry - labelled Mix, not Level." },
   ],
   "digitech-bad-monkey": [
     { name: "Level", what: "Output volume." },
     { name: "Gain", what: "Amount of overdrive." },
-    { name: "Low", what: "Dedicated bass control — the thing a Tube Screamer lacks." },
+    { name: "Low", what: "Dedicated bass control - the thing a Tube Screamer lacks." },
     { name: "High", what: "Dedicated treble control." },
     { name: "Mixer out", what: "Second output with cab simulation, for going to a desk." },
   ],
@@ -140,7 +140,7 @@ export const CONTROLS: Record<string, Control[]> = {
     { name: "Mode switch", what: "Warm for classic Tube Screamer, Hot for more gain than the original." },
   ],
   "mooer-ensemble-chorus": [
-    { name: "Level", what: "Blend of chorus against dry — a control the CE-2 doesn't have." },
+    { name: "Level", what: "Blend of chorus against dry - a control the CE-2 doesn't have." },
     { name: "Rate", what: "Modulation speed." },
     { name: "Depth", what: "Modulation intensity." },
   ],
@@ -154,7 +154,7 @@ export const CONTROLS: Record<string, Control[]> = {
     { name: "Volume", what: "Output level." },
     { name: "Treble", what: "Top-end shaping." },
     { name: "Bass", what: "Low-end shaping." },
-    { name: "Mode switch", what: "Boost, Fuzz 1 and Fuzz 2 — mirrors the FZ-2's gain modes." },
+    { name: "Mode switch", what: "Boost, Fuzz 1 and Fuzz 2 - mirrors the FZ-2's gain modes." },
   ],
   "behringer-hm300-heavy-distortion": [
     { name: "Dist", what: "Distortion amount." },
@@ -181,7 +181,7 @@ export const CONTROLS: Record<string, Control[]> = {
  * Players documented as using a specific budget clone.
  *
  * Deliberately sparse. Budget clones almost never have verifiable famous
- * users, and inventing them would be worse than showing nothing — so a pedal
+ * users, and inventing them would be worse than showing nothing - so a pedal
  * missing here falls back to the original's players, clearly labelled as such
  * in the UI rather than implied to be users of the clone.
  */
@@ -205,11 +205,11 @@ export function controlsFor(slug: string): Control[] {
  */
 export const VERDICTS: Record<string, string> = {
   "behringer-to800-vintage-overdrive":
-    "The consensus budget pick. Owners consistently say it sounds like a Tube Screamer and feels like a toy — the circuit is right, the box isn't. Most advise buying it, then rehousing it if you gig.",
+    "The consensus budget pick. Owners consistently say it sounds like a Tube Screamer and feels like a toy - the circuit is right, the box isn't. Most advise buying it, then rehousing it if you gig.",
   "joyo-jf-01-vintage-overdrive":
     "Widely recommended as the sensible upgrade over the Behringer: same idea, metal enclosure, true bypass. Noise at high gain is the recurring complaint.",
   "mooer-green-mile":
-    "Praised almost universally for build quality and the board space it saves. The Hot mode is what wins people over — it goes further than a real TS9.",
+    "Praised almost universally for build quality and the board space it saves. The Hot mode is what wins people over - it goes further than a real TS9.",
   "digitech-bad-monkey":
     "Something of a legend. Players rate it above the pedal it clones because of the separate bass and treble controls. Prices have climbed steadily since it was discontinued.",
   "behringer-hm300-heavy-distortion":

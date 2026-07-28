@@ -13,7 +13,7 @@ import type { SearchIndex } from "@/lib/search-index";
  * Bookmarks store only a kind and a slug. Everything shown here is resolved
  * against the search index the layout already builds, so a saved pedal always
  * displays its current price and photo rather than a snapshot from whenever it
- * was saved — and a pedal that has since been removed simply drops out.
+ * was saved - and a pedal that has since been removed simply drops out.
  */
 export function SavedList({ index }: { index: SearchIndex }) {
   const { bookmarks, remove, ready } = useBookmarks();
@@ -40,7 +40,7 @@ export function SavedList({ index }: { index: SearchIndex }) {
         <p className="tz-body mx-auto mt-2 max-w-md text-sm text-stone-500">
           Hit <span className="font-bold">Save</span> on any pedal and it lands
           here. Saved pedals live in this browser, so they stay private and need
-          no account — but they won&apos;t follow you to another device.
+          no account - but they won&apos;t follow you to another device.
         </p>
         <Link
           href="/"
@@ -75,7 +75,7 @@ export function SavedList({ index }: { index: SearchIndex }) {
           </div>
 
           <div className="min-w-0 flex-1">
-            <p className="tz-eyebrow text-amber-700">{entry.brand}</p>
+            <p className="tz-brand text-amber-700">{entry.brand}</p>
             <p className="tz-heading truncate text-base text-stone-900 group-hover:text-amber-700">
               {entry.name}
             </p>

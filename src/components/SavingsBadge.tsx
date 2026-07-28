@@ -4,7 +4,7 @@ import { formatPrice, type Savings } from "@/lib/format";
  * "Save £164 vs the Boss DM-2" rather than a bare "Save £164".
  *
  * The number on its own reads like a discount off this pedal's own price,
- * which isn't what it means — it's the gap against the original being cloned.
+ * which isn't what it means - it's the gap against the original being cloned.
  * Naming that pedal is the difference between a useful comparison and a
  * misleading claim.
  */

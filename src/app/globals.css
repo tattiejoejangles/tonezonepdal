@@ -53,7 +53,7 @@ input[type="search"]::-webkit-search-cancel-button {
 /* iOS Safari zooms the whole viewport when a focused field's font-size is
    under 16px, and never zooms back out. Several controls are deliberately
    14px on desktop for density, so lift them to 16px on phone-width screens
-   only — below `sm` is where touch keyboards live. */
+   only - below `sm` is where touch keyboards live. */
 @media (max-width: 639px) {
   input,
   select,
@@ -96,7 +96,21 @@ input[type="search"]::-webkit-search-cancel-button {
   font-size: 0.68rem;
 }
 
-/* Secondary controls — filters, reset, "More info". Same pill language as the
+/**
+ * Brand name above a pedal title.
+ *
+ * Was the wide-tracked uppercase eyebrow, which is the giveaway "generated
+ * layout" look and fights the product name directly beneath it. Sentence case
+ * at a normal-ish tracking reads as a manufacturer's name rather than a label.
+ */
+.tz-brand {
+  font-weight: 600;
+  letter-spacing: 0.01em;
+  font-size: 0.8125rem;
+  text-transform: none;
+}
+
+/* Secondary controls - filters, reset, "More info". Same pill language as the
    primary buttons, without the collapse-to-spinner, because these toggle or
    open something instantly and hiding their label would read as broken. */
 .tz-btn {
@@ -150,7 +164,7 @@ input[type="search"]::-webkit-search-cancel-button {
    with a coloured circular icon badge on the left.
 
    The width transition is what lets the pill collapse into a circle when
-   SpinButton pins an explicit pixel width — see SpinButton.tsx.
+   SpinButton pins an explicit pixel width - see SpinButton.tsx.
    --------------------------------------------------------------------------- */
 .tz-pill {
   box-shadow: var(--tz-shadow);
@@ -185,7 +199,7 @@ input[type="search"]::-webkit-search-cancel-button {
  *
  * Was a chamfer cut with clip-path. Two reasons it is now a radius: the
  * softer, rounder surface is the look we're after, and clip-path clips every
- * descendant including `position: fixed` ones — which is what trapped the
+ * descendant including `position: fixed` ones - which is what trapped the
  * detail dialog inside whichever card opened it.
  *
  * The class name is unchanged deliberately: it is on ~20 elements, and one
@@ -218,7 +232,7 @@ input[type="search"]::-webkit-search-cancel-button {
 /* ---------------------------------------------------------------------------
    Ambient background.
 
-   A slow wash of colour behind every page — enough to stop a long white
+   A slow wash of colour behind every page - enough to stop a long white
    column feeling static, not enough to pull the eye off the content. Three
    soft radial blobs on very long, mismatched cycles (54s / 68s / 82s) so the
    composite never visibly repeats.

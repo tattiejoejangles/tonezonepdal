@@ -15,7 +15,7 @@ import type { OriginalWithAlternatives } from "@/lib/types";
 /**
  * The interactive shell of the home page.
  *
- * When nothing is being searched or filtered it shows `idleContent` — the
+ * When nothing is being searched or filtered it shows `idleContent` - the
  * curated Find of the Day and genre sections rendered on the server. As soon
  * as the user types or picks a price band it switches to a flat result grid,
  * because genre grouping just gets in the way when you're hunting for one
@@ -36,7 +36,7 @@ export function Directory({
   const [brand, setBrand] = useState<string | null>(null);
 
   // Searching from the header pushes ?q= and lands here. Adjusting during
-  // render rather than in an effect — this is the documented way to reset
+  // render rather than in an effect - this is the documented way to reset
   // state when an external value changes, and it avoids a second render pass.
   if (urlQuery !== lastUrlQuery) {
     setLastUrlQuery(urlQuery);
@@ -50,7 +50,7 @@ export function Directory({
     [catalogue, query, brand],
   );
 
-  // Clones are searchable in their own right — people look up "Behringer
+  // Clones are searchable in their own right - people look up "Behringer
   // TO800" as often as "Tube Screamer".
   const cloneResults = useMemo(
     () => filterAlternatives(catalogue, { query, brand }),
@@ -62,7 +62,7 @@ export function Directory({
   const total = results.length + cloneResults.length;
 
   // Derived from the catalogue this page already holds, so the hero box costs
-  // no extra payload — unlike the header, which is handed one by the layout.
+  // no extra payload - unlike the header, which is handed one by the layout.
   const searchIndex = useMemo(() => buildSearchIndex(catalogue), [catalogue]);
 
   return (
@@ -79,7 +79,7 @@ export function Directory({
           </h1>
 
           <p className="tz-body mx-auto mt-6 max-w-xl text-base text-stone-300 sm:text-lg">
-            Find the budget alternative to any expensive pedal — with honest pros
+            Find the budget alternative to any expensive pedal - with honest pros
             and cons, and exactly what you save.
           </p>
 
@@ -143,7 +143,7 @@ export function Directory({
           <div className="tz-chamfer bg-white/70 px-6 py-16 text-center ring-1 ring-stone-200">
             <p className="text-lg font-bold text-stone-800">Nothing matches yet</p>
             <p className="tz-body mx-auto mt-2 max-w-md text-sm text-stone-500">
-              Try a different brand, or search the original by name — “Tube
+              Try a different brand, or search the original by name - “Tube
               Screamer”, “BD-2”, “chorus”.
             </p>
             <button

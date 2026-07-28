@@ -2,7 +2,8 @@
 
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useId, useMemo, useState } from "react";
+import { useCallback, useId, useMemo, useState } from "react";
+import { createPortal } from "react-dom";
 
 import { PedalImage } from "./PedalImage";
 import { searchSuggestions, type Suggestion } from "@/lib/filter";
@@ -14,7 +15,7 @@ import type { SearchIndex } from "@/lib/search-index";
  *
  * Both search boxes on the site use this: the hero box on the home page and
  * the compact one in the header. They look different and do different things
- * on submit, so they stay separate components — but the matching, keyboard
+ * on submit, so they stay separate components - but the matching, keyboard
  * handling and dismissal are identical, and live here.
  */
 export function useSuggestions(index: SearchIndex, query: string) {
@@ -29,7 +30,7 @@ export function useSuggestions(index: SearchIndex, query: string) {
   const [active, setActive] = useState(-1);
 
   // Reset the panel whenever the query changes. Adjusting during render rather
-  // than from an effect, the same way Directory handles `?q=` — it settles in
+  // than from an effect, the same way Directory handles `?q=` - it settles in
   // one pass, with no flash of a stale highlight.
   const [lastQuery, setLastQuery] = useState(query);
   if (query !== lastQuery) {
@@ -112,7 +113,8 @@ export function SearchSuggestions({
   onHover,
   onSelect,
   tone = "light",
-  panelClassName = "",
+  minWidth = 0,
+  anchorRef,
 }: {
   suggestions: Suggestion[];
   active: number;
@@ -120,19 +122,33 @@ export function SearchSuggestions({
   onHover: (index: number) => void;
   onSelect: () => void;
   tone?: "light" | "dark";
-  /** Positioning overrides — the header box is too narrow to read well. */
-  panelClassName?: string;
+  /** The header box is too narrow for these rows to read well. */
+  minWidth?: number;
+  /** The input to hang the panel under. */
+  anchorRef: React.RefObject<HTMLElement | null>;
 }) {
   const dark = tone === "dark";
+  const panelRef = useAnchoredPanel(anchorRef, minWidth);
 
-  return (
+  if (typeof document === "undefined") return null;
+
+  /**
+   * Portalled to <body> and positioned with `fixed`.
+   *
+   * The hero is `isolate` + `overflow-hidden`: the first traps any z-index
+   * inside its own stacking context, the second clips the panel at the hero's
+   * bottom edge. Both are needed for the drifting pedal backdrop, so the panel
+   * has to leave the tree rather than out-stack it.
+   */
+  return createPortal(
     <div
       id={listId}
+      ref={panelRef}
       role="listbox"
       aria-label="Matching pedals"
-      className={`tz-pop absolute inset-x-0 top-full z-40 mt-2 max-h-96 overflow-y-auto text-left shadow-2xl ring-1 ${
+      className={`tz-pop fixed top-0 left-0 z-9999 max-h-96 overflow-y-auto rounded-2xl text-left shadow-2xl ring-1 ${
         dark ? "bg-[#151c30] ring-white/10" : "bg-white ring-stone-200"
-      } ${panelClassName}`}
+      }`}
     >
       {suggestions.map((suggestion, index) => {
         const highlighted = index === active;
@@ -145,6 +161,10 @@ export function SearchSuggestions({
             role="option"
             aria-selected={highlighted}
             onMouseEnter={() => onHover(index)}
+            // Keep focus in the input. The panel now lives outside the field's
+            // DOM subtree, so letting the press move focus would fire the
+            // container's blur handler and unmount this link mid-click.
+            onMouseDown={(event) => event.preventDefault()}
             onClick={onSelect}
             className={`flex items-center gap-3 px-3 py-2.5 transition-colors ${
               dark
@@ -210,6 +230,58 @@ export function SearchSuggestions({
           </Link>
         );
       })}
-    </div>
+    </div>,
+    document.body,
+  );
+}
+
+/**
+ * Positions a fixed panel under its anchor, imperatively.
+ *
+ * A ref callback rather than state and an effect: it runs after the DOM is
+ * mutated but before paint, so the panel is never briefly visible in the wrong
+ * place, and there is no render pass just to store coordinates.
+ *
+ * Recomputed on scroll and resize because `fixed` coordinates are viewport
+ * relative - otherwise the panel would hang in space while the page moved. The
+ * scroll listener captures so it also catches scrolling in any container
+ * between the input and the document.
+ */
+function useAnchoredPanel(
+  anchorRef: React.RefObject<HTMLElement | null>,
+  minWidth: number,
+) {
+  return useCallback(
+    (node: HTMLDivElement | null) => {
+      if (!node) return;
+
+      const place = () => {
+        const anchor = anchorRef.current;
+        if (!anchor) return;
+
+        const rect = anchor.getBoundingClientRect();
+        const width = Math.max(rect.width, minWidth);
+        // Keep it on screen when it's wider than the box it hangs off.
+        const left = Math.min(
+          Math.max(8, rect.left),
+          Math.max(8, window.innerWidth - width - 8),
+        );
+
+        node.style.top = `${rect.bottom + 8}px`;
+        node.style.left = `${left}px`;
+        node.style.width = `${width}px`;
+      };
+
+      place();
+      window.addEventListener("scroll", place, true);
+      window.addEventListener("resize", place);
+
+      // React 19 runs this when the ref detaches.
+      return () => {
+        window.removeEventListener("scroll", place, true);
+        window.removeEventListener("resize", place);
+      };
+    },
+    [anchorRef, minWidth],
   );
 }

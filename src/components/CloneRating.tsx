@@ -47,7 +47,7 @@ async function fetchRating(alternativeId: string): Promise<
 }
 
 /**
- * "How close is this to the original?" — a community accuracy score.
+ * "How close is this to the original?" - a community accuracy score.
  *
  * Separate from the editorial `matchQuality` on the record, and deliberately
  * so: one is our judgement, this is what owners actually think, and the two
@@ -143,7 +143,7 @@ export function CloneRating({
               onFocus={() => setHover(star)}
               onBlur={() => setHover(0)}
               disabled={state === "loading" || state === "saving"}
-              aria-label={`${star} out of 5 — ${star === 5 ? "indistinguishable" : star === 1 ? "nothing like it" : "close"}`}
+              aria-label={`${star} out of 5 - ${star === 5 ? "indistinguishable" : star === 1 ? "nothing like it" : "close"}`}
               aria-pressed={mine === star}
               className="p-0.5 transition-transform hover:scale-110 disabled:opacity-50"
             >
@@ -179,7 +179,7 @@ export function CloneRating({
             </>
           ) : state === "ready" ? (
             <span className="text-stone-500">
-              No ratings yet — be the first.
+              No ratings yet - be the first.
             </span>
           ) : (
             <span className="text-stone-400">Loading…</span>

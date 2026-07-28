@@ -9,7 +9,7 @@ import { useCallback, useSyncExternalStore } from "react";
  * site has no accounts. That is a deliberate trade: saving a pedal is instant
  * and needs no sign-up, at the cost of not following you to another device.
  *
- * Built on useSyncExternalStore, which is the primitive for exactly this —
+ * Built on useSyncExternalStore, which is the primitive for exactly this -
  * localStorage is an external store, and it gives correct behaviour during
  * hydration for free: the server snapshot renders first, then React swaps in
  * the real value once mounted.
@@ -32,7 +32,7 @@ function subscribe(key: string, onChange: () => void): () => void {
   listeners.set(key, set);
 
   // `storage` only fires in *other* tabs, so local writes are announced
-  // directly — that is what keeps two buttons for the same pedal in step.
+  // directly - that is what keeps two buttons for the same pedal in step.
   const onStorage = (event: StorageEvent) => {
     if (event.key === null || event.key === key) onChange();
   };
@@ -70,7 +70,7 @@ function write<T>(key: string, value: T) {
   try {
     window.localStorage.setItem(key, JSON.stringify(value));
   } catch {
-    // Nothing useful to do — saving is a convenience, not the product.
+    // Nothing useful to do - saving is a convenience, not the product.
   }
   listeners.get(key)?.forEach((fn) => fn());
 }
@@ -109,7 +109,7 @@ export interface Bookmark {
 
 const BOOKMARKS_KEY = "tz_bookmarks";
 
-/** Stable reference — a new [] each call would loop useSyncExternalStore. */
+/** Stable reference - a new [] each call would loop useSyncExternalStore. */
 const NO_BOOKMARKS: Bookmark[] = [];
 
 export function useBookmarks() {
@@ -155,7 +155,7 @@ const VOTER_KEY = "tz_voter_id";
 /**
  * A random id identifying this browser to the ratings table.
  *
- * Not a security measure — clearing site data gets you a new one. It exists so
+ * Not a security measure - clearing site data gets you a new one. It exists so
  * a person can change their mind about a rating instead of stacking votes, and
  * so the average means something without requiring anyone to sign up.
  */

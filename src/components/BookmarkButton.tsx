@@ -7,7 +7,7 @@ import { useBookmarks, type Bookmark } from "@/lib/local-store";
  *
  * Stored in the browser, so it works with no account and no round trip. Until
  * localStorage has been read the button renders in its unsaved state and is
- * disabled — flashing "Saved" and then correcting itself is worse than a beat
+ * disabled - flashing "Saved" and then correcting itself is worse than a beat
  * of nothing.
  */
 export function BookmarkButton({
@@ -33,8 +33,8 @@ export function BookmarkButton({
         saved
           ? "bg-linear-to-b from-amber-500 to-orange-600 text-white shadow-md"
           : tone === "dark"
-            ? "bg-white/10 text-stone-200 ring-1 ring-white/15 hover:bg-white/15"
-            : "bg-white text-stone-600 ring-1 ring-stone-200 hover:text-stone-900"
+            ? "bg-amber-300/15 text-amber-200 ring-1 ring-amber-300/30 hover:bg-amber-300/25"
+            : "bg-amber-100 text-amber-900 ring-1 ring-amber-300/70 hover:bg-amber-200"
       }`}
     >
       <svg

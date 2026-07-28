@@ -10,7 +10,7 @@ export interface NavMenuItem {
 }
 
 /**
- * A header dropdown — currently "Pedals", listing every genre.
+ * A header dropdown - currently "Pedals", listing every genre.
  *
  * Opens three ways, because hover alone strands anyone not using a mouse:
  * pointer hover, click/tap, and the keyboard (Enter, Space or Down on the

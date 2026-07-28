@@ -1,5 +1,6 @@
 import Link from "next/link";
 
+import { MatchBadge } from "./MatchBadge";
 import { PedalImage } from "./PedalImage";
 import { ProsCons } from "./ProsCons";
 import { RetailerButtons } from "./RetailerButtons";
@@ -11,7 +12,7 @@ import type { Alternative } from "@/lib/types";
  * A clone on an original's page.
  *
  * The whole card opens that clone's own page, but it also contains a "More
- * info" button and outbound retailer links — and an anchor can't legally wrap
+ * info" button and outbound retailer links - and an anchor can't legally wrap
  * either. So navigation is a transparent link stretched across the card, with
  * the genuinely interactive parts lifted above it. Clicking anywhere blank
  * goes to the pedal; clicking a control does what that control has always
@@ -67,7 +68,7 @@ export function AlternativeCard({
         <div className="min-w-0 flex-1 space-y-4">
           <div className="flex flex-wrap items-start justify-between gap-x-4 gap-y-2">
             <div className="min-w-0">
-              <p className="tz-eyebrow text-amber-700">{alternative.brand}</p>
+              <p className="tz-brand text-amber-700">{alternative.brand}</p>
               <h3 className="tz-heading mt-1 text-lg text-stone-900 transition-colors group-hover:text-amber-700">
                 {alternative.name}
               </h3>
@@ -84,9 +85,7 @@ export function AlternativeCard({
 
           <div className="flex flex-wrap items-center gap-2">
             <SavingsBadge saving={saving} comparedTo={originalName} />
-            <span className="rounded-full bg-stone-100 px-3 py-1.5 text-[11px] font-bold text-stone-600">
-              {alternative.matchQuality}% TONAL MATCH
-            </span>
+            <MatchBadge match={alternative.matchQuality} />
             {onOpen && (
               <button
                 type="button"

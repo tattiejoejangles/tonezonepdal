@@ -8,7 +8,7 @@ import type { OriginalWithAlternatives } from "./types";
  * server bundles this index into the page and hands it over as a prop.
  *
  * That only pays off because it is small: every field the suggestion dropdown
- * cannot render is dropped — descriptions, pros, cons, controls, artists,
+ * cannot render is dropped - descriptions, pros, cons, controls, artists,
  * galleries, verdicts. What remains is roughly 12KB across ~86 pedals, and it
  * sits inert until the user actually types a character.
  *
@@ -27,7 +27,7 @@ interface IndexedPedalBase {
 
 export interface IndexedOriginal extends IndexedPedalBase {
   kind: "original";
-  /** Search aliases — "ts9", "klon", "screamer". */
+  /** Search aliases - "ts9", "klon", "screamer". */
   tags: string[];
   /** Its clones' names, so "behringer" also surfaces the pedal they copy. */
   cloneNames: string[];

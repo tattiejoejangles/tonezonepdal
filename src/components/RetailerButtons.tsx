@@ -13,7 +13,7 @@ import type { RetailerId } from "@/lib/types";
  *
  * The badge carries the retailer's colour rather than the pill, which keeps
  * the three buttons a consistent set while still telling them apart. Icons are
- * simple representative glyphs rather than copies of trademarked logos —
+ * simple representative glyphs rather than copies of trademarked logos -
  * using a retailer's name in text is ordinary nominative use, but reproducing
  * their logo is trademark use and each of these three gates that behind their
  * own affiliate/brand programme.

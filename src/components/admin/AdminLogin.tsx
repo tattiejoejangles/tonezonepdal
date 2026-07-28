@@ -19,7 +19,7 @@ export function AdminLogin({ configured }: { configured: boolean }) {
       {!configured && (
         <p className="mt-6 border-l-2 border-amber-500 bg-amber-50 p-4 text-sm text-stone-700">
           <strong>Not configured.</strong> Set <code>ADMIN_PASSWORD</code> in the
-          environment and redeploy — until then this page can&apos;t let anyone in.
+          environment and redeploy - until then this page can&apos;t let anyone in.
         </p>
       )}
 

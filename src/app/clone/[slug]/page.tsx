@@ -2,8 +2,11 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 
+import { AdminTools } from "@/components/admin/AdminTools";
 import { BookmarkButton } from "@/components/BookmarkButton";
 import { CloneRating } from "@/components/CloneRating";
+import { MatchBadge } from "@/components/MatchBadge";
+import { PedalDemos } from "@/components/PedalDemos";
 import { PedalImage } from "@/components/PedalImage";
 import { ProsCons } from "@/components/ProsCons";
 import { RetailerButtons } from "@/components/RetailerButtons";
@@ -36,8 +39,8 @@ export async function generateMetadata({
   const saving = calculateSavings(original.priceGBP, alternative.priceGBP);
 
   return {
-    title: `${alternative.name} — ${original.name} alternative`,
-    description: `${alternative.name} at ${formatPrice(alternative.priceGBP)} — a budget alternative to the ${original.name}. Save ${formatPrice(saving.amount)} (${saving.percent}%). Honest pros and cons.`,
+    title: `${alternative.name} - ${original.name} alternative`,
+    description: `${alternative.name} at ${formatPrice(alternative.priceGBP)} - a budget alternative to the ${original.name}. Save ${formatPrice(saving.amount)} (${saving.percent}%). Honest pros and cons.`,
   };
 }
 
@@ -90,7 +93,7 @@ export default async function ClonePage({
 
           <div className="flex flex-col gap-5">
             <div>
-              <p className="tz-eyebrow text-amber-700">{alternative.brand}</p>
+              <p className="tz-brand text-amber-700">{alternative.brand}</p>
               <h1 className="tz-heading mt-1.5 text-3xl text-stone-900 sm:text-4xl">
                 {alternative.name}
               </h1>
@@ -102,10 +105,9 @@ export default async function ClonePage({
                 {formatPrice(alternative.priceGBP)}
               </span>
               <SavingsBadge saving={saving} comparedTo={original.name} />
-              <span className="rounded-full bg-stone-100 px-3 py-1.5 text-[11px] font-bold text-stone-600">
-                {alternative.matchQuality}% TONAL MATCH
-              </span>
+              <MatchBadge match={alternative.matchQuality} />
               <BookmarkButton kind="clone" slug={alternative.slug} />
+              <AdminTools kind="alternative" slug={alternative.slug} />
             </div>
 
             <div className="border-t border-b border-stone-100 py-4">
@@ -115,32 +117,36 @@ export default async function ClonePage({
               />
             </div>
 
-            {/* The "real deal" cross-sell — deliberately a different colour to
-                the rest of the page so it reads as a distinct route out. */}
-            <div className="tz-chamfer border-2 border-indigo-300 bg-linear-to-br from-indigo-50 to-violet-50 p-4">
-              <p className="tz-eyebrow text-indigo-700">Looking for the real deal?</p>
-              <p className="tz-body mt-1.5 text-sm text-indigo-950">
-                This is a budget alternative to the{" "}
-                <span className="font-bold">{original.name}</span>, which sells for
-                about {formatPrice(original.priceGBP)}.
-              </p>
-              <Link
-                href={`/pedal/${original.slug}`}
-                className="mt-3 inline-flex items-center gap-2 rounded-full bg-linear-to-b from-indigo-600 to-indigo-800 px-5 py-2.5 text-sm font-bold text-white shadow-md transition-transform hover:-translate-y-0.5"
-              >
-                See the original
-                <svg viewBox="0 0 24 24" className="h-4 w-4" fill="none" stroke="currentColor" strokeWidth="3">
-                  <path d="m9 6 6 6-6 6" />
-                </svg>
-              </Link>
-            </div>
-
-            {detail.verdict && (
-              <div className="border-l-2 border-amber-500 bg-amber-50/60 p-4">
-                <p className="tz-eyebrow mb-1 text-amber-800">What players say</p>
-                <p className="tz-body text-sm text-stone-700">{detail.verdict}</p>
+            {/* Side by side: stacked, these two panels added roughly 200px to
+                the hero on every clone page. */}
+            <div className="grid gap-4 sm:grid-cols-2">
+              {/* The "real deal" cross-sell - deliberately a different colour
+                  to the rest of the page so it reads as a distinct route out. */}
+              <div className="tz-chamfer flex flex-col border border-indigo-200 bg-linear-to-br from-indigo-50 to-violet-50 p-4">
+                <p className="tz-eyebrow text-indigo-700">Looking for the real deal?</p>
+                <p className="tz-body mt-1.5 text-sm text-indigo-950">
+                  This is a budget alternative to the{" "}
+                  <span className="font-bold">{original.name}</span>, which sells
+                  for about {formatPrice(original.priceGBP)}.
+                </p>
+                <Link
+                  href={`/pedal/${original.slug}`}
+                  className="mt-auto inline-flex w-fit items-center gap-2 rounded-full bg-linear-to-b from-indigo-600 to-indigo-800 px-5 py-2.5 pt-2.5 text-sm font-bold text-white shadow-md transition-transform hover:-translate-y-0.5"
+                >
+                  See the original
+                  <svg viewBox="0 0 24 24" className="h-4 w-4" fill="none" stroke="currentColor" strokeWidth="3">
+                    <path d="m9 6 6 6-6 6" />
+                  </svg>
+                </Link>
               </div>
-            )}
+
+              {detail.verdict && (
+                <div className="tz-chamfer border border-amber-200 bg-amber-50/70 p-4">
+                  <p className="tz-eyebrow mb-1 text-amber-800">What players say</p>
+                  <p className="tz-body text-sm text-stone-700">{detail.verdict}</p>
+                </div>
+              )}
+            </div>
 
           </div>
 
@@ -190,7 +196,7 @@ export default async function ClonePage({
               <>
                 <p className="tz-body mb-3 text-sm text-stone-500">
                   {detail.artistsAreForOriginal
-                    ? `No documented users of this clone specifically — these players are associated with the ${original.name}, the circuit it copies.`
+                    ? `No documented users of this clone specifically - these players are associated with the ${original.name}, the circuit it copies.`
                     : "Known users of this pedal."}
                 </p>
                 <ul className="flex flex-wrap gap-2">
@@ -216,6 +222,8 @@ export default async function ClonePage({
           </section>
         </div>
       </div>
+
+      <PedalDemos brand={alternative.brand} name={alternative.name} />
     </div>
   );
 }

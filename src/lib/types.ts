@@ -14,7 +14,7 @@ export interface Control {
 }
 
 /**
- * One line of the spec sheet — "Power", "9V DC centre-negative".
+ * One line of the spec sheet - "Power", "9V DC centre-negative".
  *
  * Free-form label/value rather than fixed fields: what's worth stating varies
  * by pedal, and an empty list is meaningful (the UI says specs aren't
@@ -32,7 +32,7 @@ export type RetailerId = "amazon" | "reverb" | "gear4music";
  * Effect family, used to group the directory into genre sections.
  *
  * A const array rather than a bare union so the admin form can render the
- * options from the same source the type comes from — the values must match
+ * options from the same source the type comes from - the values must match
  * the `category` CHECK constraint on the Supabase table exactly.
  */
 export const CATEGORIES = [
@@ -55,7 +55,7 @@ export interface Original {
   name: string;
   brand: string;
   category: Category;
-  /** Typical UK street price in GBP. Estimate — verify before launch. */
+  /** Typical UK street price in GBP. Estimate - verify before launch. */
   priceGBP: number;
   /** One-line hook shown on directory cards. */
   blurb: string;
@@ -63,9 +63,9 @@ export interface Original {
   description: string;
   /** Remote product photo. Null renders the "photo needed" plate. */
   imageUrl: string | null;
-  /** Where the photo came from, e.g. "wikimedia — CC BY 2.0". */
+  /** Where the photo came from, e.g. "wikimedia - CC BY 2.0". */
   imageCredit?: string;
-  /** Search aliases — what people actually type ("ts9", "klon", "screamer"). */
+  /** Search aliases - what people actually type ("ts9", "klon", "screamer"). */
   tags: string[];
   /** 0-100, drives the "Most Popular" sort. */
   popularity: number;
@@ -89,7 +89,7 @@ export interface Alternative {
   originalId: string;
   name: string;
   brand: string;
-  /** Typical UK street price in GBP. Estimate — verify before launch. */
+  /** Typical UK street price in GBP. Estimate - verify before launch. */
   priceGBP: number;
   imageUrl: string | null;
   blurb: string;
@@ -107,7 +107,7 @@ export interface Alternative {
   /** Extra product shots for the modal gallery. Stored in Supabase. */
   gallery?: string[];
   /**
-   * Players known to use this specific clone — not the original it copies.
+   * Players known to use this specific clone - not the original it copies.
    * Usually empty: budget clones rarely have documented famous users.
    */
   artists?: string[];
@@ -117,25 +117,25 @@ export interface Alternative {
   specs?: Spec[];
 }
 
-/** An original joined with its alternatives — the unit the UI renders. */
+/** An original joined with its alternatives - the unit the UI renders. */
 export interface OriginalWithAlternatives extends Original {
   alternatives: Alternative[];
 }
 
 /** Everything the detail modal shows beyond the basic record. */
 export interface PedalDetail {
-  /** Spec sheet rows — power, connections and anything else confirmed. */
+  /** Spec sheet rows - power, connections and anything else confirmed. */
   specs: Spec[];
   /** True when `specs` is verified data rather than an empty placeholder. */
   specsKnown: boolean;
   artists: string[];
-  /** Whose artists these are — this pedal's, or the original it clones. */
+  /** Whose artists these are - this pedal's, or the original it clones. */
   artistsAreForOriginal: boolean;
   /** Extra product shots for the modal gallery. */
   images: string[];
   /**
    * Short editorial summary of what players report about this pedal.
-   * Written by hand — see scripts/fetch-details.mjs for why review text is
+   * Written by hand - see scripts/fetch-details.mjs for why review text is
    * not scraped from retailers.
    */
   verdict?: string;

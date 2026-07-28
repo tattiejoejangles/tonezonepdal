@@ -25,7 +25,7 @@ export default async function SavedPage() {
           Saved pedals
         </h1>
         <p className="tz-body mt-2 text-base text-stone-600">
-          Kept in this browser — no account, nothing sent anywhere.
+          Kept in this browser - no account, nothing sent anywhere.
         </p>
       </header>
 

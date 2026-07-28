@@ -8,8 +8,8 @@ import { findOfTheDay, groupByGenre } from "@/lib/sections";
  *
  * The directory reads `?q=` via useSearchParams so the header search can drive
  * it. On a statically rendered route that leaves the Suspense boundary
- * permanently postponed — the page ships with its whole body stranded in an
- * unresolved <template> — so this route has to be dynamic. It also means the
+ * permanently postponed - the page ships with its whole body stranded in an
+ * unresolved <template> - so this route has to be dynamic. It also means the
  * Find of the Day rolls over exactly at midnight rather than on a revalidate
  * window.
  */

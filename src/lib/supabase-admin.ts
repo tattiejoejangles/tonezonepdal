@@ -1,7 +1,7 @@
 import { createClient, type SupabaseClient } from "@supabase/supabase-js";
 
 /**
- * Service-role Supabase client — full read/write, bypasses Row Level Security.
+ * Service-role Supabase client - full read/write, bypasses Row Level Security.
  *
  * NEVER import this from a client component. It reads
  * SUPABASE_SERVICE_ROLE_KEY, which has no `NEXT_PUBLIC_` prefix precisely so

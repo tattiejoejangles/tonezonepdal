@@ -27,7 +27,7 @@ export function PedalImage({
    * Skip lazy loading. Needed inside the modal: its images sit in a fixed
    * overlay that Chrome's lazy-load observer never reports as intersecting,
    * so they stay unloaded forever. Anything only rendered on demand should
-   * load immediately anyway — the user has already asked to see it.
+   * load immediately anyway - the user has already asked to see it.
    */
   eager?: boolean;
   sizes?: string;

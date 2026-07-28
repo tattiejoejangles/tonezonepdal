@@ -3,14 +3,14 @@ import Link from "next/link";
 /**
  * "The Tone Zone" lockup.
  *
- * The mark is a stompbox footswitch — concentric rings with a lit LED — which
+ * The mark is a stompbox footswitch - concentric rings with a lit LED - which
  * gives the header something recognisably guitar-related instead of initials
  * in a box. The three words are stacked in weight rather than size so the
  * lockup stays one clean horizontal block at any width.
  */
 export function Wordmark() {
   return (
-    <Link href="/" className="group flex items-center gap-3" aria-label="The Tone Zone — home">
+    <Link href="/" className="group flex items-center gap-3" aria-label="The Tone Zone - home">
       <span className="relative flex h-10 w-10 shrink-0 items-center justify-center overflow-hidden bg-linear-to-br from-stone-800 via-stone-900 to-black transition-transform duration-300 group-hover:scale-105">
         <span
           aria-hidden

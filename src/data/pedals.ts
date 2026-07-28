@@ -22,7 +22,7 @@ export const originals: Original[] = [
     priceGBP: 179,
     blurb: "The mid-humped overdrive that defined blues and rock lead tone.",
     description:
-      "Arguably the most cloned circuit in guitar history. The Tube Screamer's trick is a pronounced midrange bump and a soft, symmetrical clipping stage that pushes a valve amp into breakup without swamping it. Stack it in front of a cranked amp and it tightens the low end and shoves the mids forward — which is why it has sat on pedalboards from Stevie Ray Vaughan to modern metal rigs. The TS808 is the warmer, lower-output original; the TS9 is slightly brighter and more aggressive.",
+      "Arguably the most cloned circuit in guitar history. The Tube Screamer's trick is a pronounced midrange bump and a soft, symmetrical clipping stage that pushes a valve amp into breakup without swamping it. Stack it in front of a cranked amp and it tightens the low end and shoves the mids forward - which is why it has sat on pedalboards from Stevie Ray Vaughan to modern metal rigs. The TS808 is the warmer, lower-output original; the TS9 is slightly brighter and more aggressive.",
     imageUrl: null,
     tags: ["tube screamer", "ts9", "ts808", "ts-9", "overdrive", "od", "srv", "stevie ray vaughan", "green", "mid hump", "boost"],
     popularity: 98,
@@ -38,7 +38,7 @@ export const originals: Original[] = [
     priceGBP: 109,
     blurb: "Glassy, amp-like overdrive that cleans right up with your volume knob.",
     description:
-      "Where the Tube Screamer scoops nothing and pushes mids, the BD-2 goes the other way — open, bright and startlingly touch-sensitive. Roll your guitar volume back and it cleans up almost completely; dig in and it snarls. That dynamic response is why it has outlived most of Boss's overdrive line and why the Keeley-modded version became a cottage industry of its own. Its one weakness is a slightly thin low end and a fizz that creeps in at maximum gain.",
+      "Where the Tube Screamer scoops nothing and pushes mids, the BD-2 goes the other way - open, bright and startlingly touch-sensitive. Roll your guitar volume back and it cleans up almost completely; dig in and it snarls. That dynamic response is why it has outlived most of Boss's overdrive line and why the Keeley-modded version became a cottage industry of its own. Its one weakness is a slightly thin low end and a fizz that creeps in at maximum gain.",
     imageUrl: null,
     tags: ["bd-2", "bd2", "blues driver", "boss", "overdrive", "transparent", "amp-like", "keeley", "dynamic"],
     popularity: 92,
@@ -54,7 +54,7 @@ export const originals: Original[] = [
     priceGBP: 179,
     blurb: "All-analogue BBD flanger behind countless 80s jet-sweeps.",
     description:
-      "A bucket-brigade flanger built between 1980 and 2001, and long discontinued — which is why clean examples now cost more than most new pedals. The BF-2 does everything from a subtle rotary-ish shimmer through to full jet-plane whoosh, and its Resonance control will take off into metallic self-oscillation if you push it. Analogue BBD chips give it a warmth and a slight high-end roll-off that digital flangers spend a lot of effort trying to model.",
+      "A bucket-brigade flanger built between 1980 and 2001, and long discontinued - which is why clean examples now cost more than most new pedals. The BF-2 does everything from a subtle rotary-ish shimmer through to full jet-plane whoosh, and its Resonance control will take off into metallic self-oscillation if you push it. Analogue BBD chips give it a warmth and a slight high-end roll-off that digital flangers spend a lot of effort trying to model.",
     imageUrl: null,
     tags: ["bf-2", "bf2", "flanger", "boss", "analog flanger", "analogue", "jet", "modulation", "bbd"],
     popularity: 74,
@@ -70,7 +70,7 @@ export const originals: Original[] = [
     priceGBP: 229,
     blurb: "The warm two-knob analogue chorus that defined 80s clean tone.",
     description:
-      "Two knobs, no menus, and a sound that put a shimmer on half the records made in the 1980s. The CE-2 is a single-voice analogue BBD chorus — thicker and less watery than the stereo CE-1 that preceded it — and it flatters clean amps in a way that is hard to argue with. Original units have climbed steeply on the used market, and the Waza Craft CE-2W reissue is not cheap either, which makes this one of the most worthwhile clones to chase.",
+      "Two knobs, no menus, and a sound that put a shimmer on half the records made in the 1980s. The CE-2 is a single-voice analogue BBD chorus - thicker and less watery than the stereo CE-1 that preceded it - and it flatters clean amps in a way that is hard to argue with. Original units have climbed steeply on the used market, and the Waza Craft CE-2W reissue is not cheap either, which makes this one of the most worthwhile clones to chase.",
     imageUrl: null,
     tags: ["ce-2", "ce2", "chorus", "boss", "analog chorus", "analogue", "modulation", "80s", "bbd", "ce-2w"],
     popularity: 88,
@@ -84,9 +84,9 @@ export const originals: Original[] = [
     brand: "Boss",
     category: "delay",
     priceGBP: 139,
-    blurb: "The industry-standard digital delay — clean repeats and a killer hold function.",
+    blurb: "The industry-standard digital delay - clean repeats and a killer hold function.",
     description:
-      "The DD-2 was the first compact digital delay pedal, and the DD-3 is essentially the same circuit sold at a sane price for three decades. Repeats are clean and uncoloured rather than dark and analogue, which makes it the sensible choice when you want the delay to sit behind the note instead of smearing it. The Hold function — infinite repeat at the stomp of the switch — is still the most fun feature Boss ever shipped, and the reason DD-2s hold their value.",
+      "The DD-2 was the first compact digital delay pedal, and the DD-3 is essentially the same circuit sold at a sane price for three decades. Repeats are clean and uncoloured rather than dark and analogue, which makes it the sensible choice when you want the delay to sit behind the note instead of smearing it. The Hold function - infinite repeat at the stomp of the switch - is still the most fun feature Boss ever shipped, and the reason DD-2s hold their value.",
     imageUrl: null,
     tags: ["dd-2", "dd2", "dd-3", "dd3", "delay", "boss", "digital delay", "echo", "repeats", "hold"],
     popularity: 90,
@@ -102,7 +102,7 @@ export const originals: Original[] = [
     priceGBP: 199,
     blurb: "Dark, warm bucket-brigade echoes that sit behind the note instead of on top of it.",
     description:
-      "The delay people mean when they say they want 'analogue warmth'. Each repeat of a DM-2 is darker and softer than the one before, so the echoes decay into the background rather than competing with what you're playing. That high-end roll-off is a limitation of bucket-brigade chips, and it turned out to be the single most desirable thing about them. Maximum delay time is short — around 300ms — so this is a slapback and rockabilly machine, not a soundscape pedal.",
+      "The delay people mean when they say they want 'analogue warmth'. Each repeat of a DM-2 is darker and softer than the one before, so the echoes decay into the background rather than competing with what you're playing. That high-end roll-off is a limitation of bucket-brigade chips, and it turned out to be the single most desirable thing about them. Maximum delay time is short - around 300ms - so this is a slapback and rockabilly machine, not a soundscape pedal.",
     imageUrl: null,
     tags: ["dm-2", "dm2", "dm-3", "dm3", "analog delay", "analogue delay", "boss", "bbd", "slapback", "echo", "warm"],
     popularity: 84,
@@ -118,7 +118,7 @@ export const originals: Original[] = [
     priceGBP: 55,
     blurb: "The orange box that put distortion on a million pedalboards.",
     description:
-      "In production almost continuously since 1978 and still one of the cheapest pedals Boss makes, which makes it an unusual entry here — the original is already budget-priced. It's a hard-clipping distortion with a pronounced midrange scoop and a famously aggressive Tone control, used by everyone from Kurt Cobain to Joe Satriani. Because the DS-1 is so cheap already, the clones below compete on size, build and voicing rather than on price alone.",
+      "In production almost continuously since 1978 and still one of the cheapest pedals Boss makes, which makes it an unusual entry here - the original is already budget-priced. It's a hard-clipping distortion with a pronounced midrange scoop and a famously aggressive Tone control, used by everyone from Kurt Cobain to Joe Satriani. Because the DS-1 is so cheap already, the clones below compete on size, build and voicing rather than on price alone.",
     imageUrl: null,
     tags: ["ds-1", "ds1", "distortion", "boss", "orange", "nirvana", "cobain", "satriani"],
     popularity: 94,
@@ -132,7 +132,7 @@ export const originals: Original[] = [
     brand: "Boss",
     category: "eq",
     priceGBP: 109,
-    blurb: "Seven bands of EQ — the most useful unglamorous pedal you can own.",
+    blurb: "Seven bands of EQ - the most useful unglamorous pedal you can own.",
     description:
       "Nobody's first pedal, and often their most-used. Seven sliders plus a level control let you fix a boxy amp, tame an ice-picky bridge pickup, or kick in a mid-boost for solos. Put it in front of the amp to reshape what your drive pedals see; put it in the loop to reshape the amp itself. The only real complaint about the Boss unit is a slightly noisy op-amp stage, which is why modded versions are a cottage industry.",
     imageUrl: null,
@@ -148,7 +148,7 @@ export const originals: Original[] = [
     brand: "Boss",
     category: "fuzz",
     priceGBP: 149,
-    blurb: "Boss's take on the Univox Super-Fuzz — vicious, octave-tinged and long discontinued.",
+    blurb: "Boss's take on the Univox Super-Fuzz - vicious, octave-tinged and long discontinued.",
     description:
       "Built for only four years in the early 90s and quietly worshipped ever since, largely because of its role in stoner and doom rock. The FZ-2 is essentially a Univox Super-Fuzz with a two-band EQ bolted on and a Gain 1 / Gain 2 mode switch. Gain 2 is where it earns its name: a saturated, octave-up-flavoured roar with a distinctive midrange honk. Original units are scarce and priced accordingly.",
     imageUrl: null,
@@ -166,7 +166,7 @@ export const originals: Original[] = [
     priceGBP: 149,
     blurb: "The chainsaw. Every knob fully clockwise, and you have Swedish death metal.",
     description:
-      "Discontinued in 1991 and largely ignored until Swedish death metal bands discovered that running every control fully clockwise produced a buzzsaw tone nothing else could make. That 'HM-2 all knobs right' setting is now a genre signature. It's a distortion with a two-band Colour EQ that is far more extreme than its knob count suggests — the low band adds a chest-thumping fizz, the high band a razor edge. Vintage units command silly prices; the Waza reissue brought it back.",
+      "Discontinued in 1991 and largely ignored until Swedish death metal bands discovered that running every control fully clockwise produced a buzzsaw tone nothing else could make. That 'HM-2 all knobs right' setting is now a genre signature. It's a distortion with a two-band Colour EQ that is far more extreme than its knob count suggests - the low band adds a chest-thumping fizz, the high band a razor edge. Vintage units command silly prices; the Waza reissue brought it back.",
     imageUrl: null,
     tags: ["hm-2", "hm2", "heavy metal", "boss", "distortion", "chainsaw", "buzzsaw", "swedish death metal", "entombed", "hm-2w"],
     popularity: 89,
@@ -182,7 +182,7 @@ export const originals: Original[] = [
     priceGBP: 129,
     blurb: "Analogue sub-octaves that turn a guitar into a synth bass.",
     description:
-      "The OC-2 tracks one and two octaves below whatever you play and blends them against your dry signal. It's monophonic and famously fussy — play a chord and it panics — but on single notes above the fifth fret it produces a thick, rubbery synth bass that nothing else quite matches. That flaw became the sound: the tracking glitches are a large part of why producers still reach for it. The OC-3 adds a polyphonic mode and a drive setting.",
+      "The OC-2 tracks one and two octaves below whatever you play and blends them against your dry signal. It's monophonic and famously fussy - play a chord and it panics - but on single notes above the fifth fret it produces a thick, rubbery synth bass that nothing else quite matches. That flaw became the sound: the tracking glitches are a large part of why producers still reach for it. The OC-3 adds a polyphonic mode and a drive setting.",
     imageUrl: null,
     tags: ["oc-2", "oc2", "oc-3", "oc3", "octave", "octaver", "boss", "sub octave", "bass", "synth", "pitch"],
     popularity: 82,
@@ -196,9 +196,9 @@ export const originals: Original[] = [
     brand: "Boss",
     category: "modulation",
     priceGBP: 199,
-    blurb: "True pitch vibrato — the seasick wobble a chorus can't do.",
+    blurb: "True pitch vibrato - the seasick wobble a chorus can't do.",
     description:
-      "Genuine vibrato bends pitch up and down with no dry signal mixed in, which is a very different thing from the chorus most pedals actually give you. The VB-2 was made for only four years in the 80s, and its Rise Time control — which eases the effect in gradually after you engage it — is the feature that made it a cult item. Originals are scarce and expensive; the VB-2W Waza reissue brought the circuit back.",
+      "Genuine vibrato bends pitch up and down with no dry signal mixed in, which is a very different thing from the chorus most pedals actually give you. The VB-2 was made for only four years in the 80s, and its Rise Time control - which eases the effect in gradually after you engage it - is the feature that made it a cult item. Originals are scarce and expensive; the VB-2W Waza reissue brought the circuit back.",
     imageUrl: null,
     tags: ["vb-2", "vb2", "vibrato", "boss", "modulation", "pitch", "seasick", "vb-2w", "waza"],
     popularity: 66,
@@ -214,7 +214,7 @@ export const originals: Original[] = [
     priceGBP: 199,
     blurb: "A cranked Marshall Plexi in a box, running on real 12V internally.",
     description:
-      "Most amp-in-a-box pedals approximate the idea; the Plexitone runs an internal 12V power supply to give its circuit genuine headroom, which is why it stays tight and amp-like where cheaper Plexi pedals get fizzy. Two footswitchable gain levels cover crunch rhythm and full lead. It's aimed squarely at the late-60s Marshall sound — midrange bite, sag under a hard pick attack, and cleanup from the guitar's volume knob.",
+      "Most amp-in-a-box pedals approximate the idea; the Plexitone runs an internal 12V power supply to give its circuit genuine headroom, which is why it stays tight and amp-like where cheaper Plexi pedals get fizzy. Two footswitchable gain levels cover crunch rhythm and full lead. It's aimed squarely at the late-60s Marshall sound - midrange bite, sag under a hard pick attack, and cleanup from the guitar's volume knob.",
     imageUrl: null,
     tags: ["plexitone", "carl martin", "plexi", "marshall", "amp in a box", "distortion", "crunch", "british"],
     popularity: 64,
@@ -230,7 +230,7 @@ export const originals: Original[] = [
     priceGBP: 169,
     blurb: "The opto tremolo everything else gets compared to.",
     description:
-      "An optical tremolo built around a light-dependent resistor, which gives it a soft, rounded pulse rather than the hard chop of a digital tremolo. Two knobs — speed and depth — and a sound that flatters clean amps immediately. It has been in production since the 1980s and is the reference point for the effect; when a review says a tremolo sounds 'organic', this is usually the thing it's being measured against.",
+      "An optical tremolo built around a light-dependent resistor, which gives it a soft, rounded pulse rather than the hard chop of a digital tremolo. Two knobs - speed and depth - and a sound that flatters clean amps immediately. It has been in production since the 1980s and is the reference point for the effect; when a review says a tremolo sounds 'organic', this is usually the thing it's being measured against.",
     imageUrl: null,
     tags: ["tremulator", "demeter", "carl martin", "tremolo", "trem", "opto", "optical", "modulation", "surf"],
     popularity: 61,
@@ -246,7 +246,7 @@ export const originals: Original[] = [
     priceGBP: 129,
     blurb: "High-gain distortion with a three-band parametric EQ bolted on.",
     description:
-      "Designed with Jamie Stillman of EarthQuaker Devices, the Boneshaker pairs an aggressive high-gain distortion with a genuinely powerful three-band EQ — including a sweepable midrange — so you can carve it into almost anything from scooped modern metal to a honking midrange lead. That much control is unusual at any price, and it makes the pedal far more flexible than the average distortion box.",
+      "Designed with Jamie Stillman of EarthQuaker Devices, the Boneshaker pairs an aggressive high-gain distortion with a genuinely powerful three-band EQ - including a sweepable midrange - so you can carve it into almost anything from scooped modern metal to a honking midrange lead. That much control is unusual at any price, and it makes the pedal far more flexible than the average distortion box.",
     imageUrl: null,
     tags: ["boneshaker", "dod", "distortion", "high gain", "parametric", "earthquaker", "stillman", "metal"],
     popularity: 58,
@@ -262,7 +262,7 @@ export const originals: Original[] = [
     priceGBP: 119,
     blurb: "Gated, spitty fuzz with two very different voices.",
     description:
-      "Named after the lost city in Robert W. Chambers' fiction, the Carcosa is a modern take on the gated fuzz — the sort that splutters and cuts out as notes decay. A Hali/Demhe voicing switch flips between a scooped, aggressive tone and a thicker midrange one, and the Bias control lets you starve the circuit for the classic dying-battery sound. It is far more controllable than most gated fuzzes, which usually give you one setting that works.",
+      "Named after the lost city in Robert W. Chambers' fiction, the Carcosa is a modern take on the gated fuzz - the sort that splutters and cuts out as notes decay. A Hali/Demhe voicing switch flips between a scooped, aggressive tone and a thicker midrange one, and the Bias control lets you starve the circuit for the classic dying-battery sound. It is far more controllable than most gated fuzzes, which usually give you one setting that works.",
     imageUrl: null,
     tags: ["carcosa", "dod", "fuzz", "gated fuzz", "bias", "velcro", "spitty", "hali", "demhe"],
     popularity: 52,
@@ -278,7 +278,7 @@ export const originals: Original[] = [
     priceGBP: 129,
     blurb: "Two transistors, two knobs, and the most famous fuzz ever built.",
     description:
-      "The circuit Hendrix made immortal: a two-transistor design in a round enclosure that looks like a smiling face. Germanium versions are warm and temperamental — they drift with temperature and clean up beautifully from the guitar's volume knob — while silicon versions are brighter and more consistent. It is famously fussy about what sits in front of it, which is why players put it first in the chain, straight after the guitar.",
+      "The circuit Hendrix made immortal: a two-transistor design in a round enclosure that looks like a smiling face. Germanium versions are warm and temperamental - they drift with temperature and clean up beautifully from the guitar's volume knob - while silicon versions are brighter and more consistent. It is famously fussy about what sits in front of it, which is why players put it first in the chain, straight after the guitar.",
     imageUrl: null,
     tags: ["fuzz face", "dunlop", "dallas arbiter", "hendrix", "germanium", "silicon", "fuzz", "ffm", "jhf1"],
     popularity: 90,
@@ -294,7 +294,7 @@ export const originals: Original[] = [
     priceGBP: 89,
     blurb: "Endless sustain and a scooped wall of fuzz.",
     description:
-      "Four transistors, two clipping stages and a midrange scoop so deep it can vanish in a band mix — which is exactly why it sounds enormous on its own. The Big Muff is really a sustain machine: notes bloom and hold rather than decay. It has been made in dozens of variants since 1969, and the differences between them are the entire reason a clone market exists. The standard NYC version is the cheapest way in.",
+      "Four transistors, two clipping stages and a midrange scoop so deep it can vanish in a band mix - which is exactly why it sounds enormous on its own. The Big Muff is really a sustain machine: notes bloom and hold rather than decay. It has been made in dozens of variants since 1969, and the differences between them are the entire reason a clone market exists. The standard NYC version is the cheapest way in.",
     imageUrl: null,
     tags: ["big muff", "muff", "electro-harmonix", "ehx", "fuzz", "sustain", "pi", "smashing pumpkins", "gilmour", "nyc"],
     popularity: 95,
@@ -308,7 +308,7 @@ export const originals: Original[] = [
     brand: "Electro-Harmonix",
     category: "fuzz",
     priceGBP: 179,
-    blurb: "The darkest, heaviest Muff — a doom and stoner staple.",
+    blurb: "The darkest, heaviest Muff - a doom and stoner staple.",
     description:
       "Built in the Sovtek factory in Russia through the late 90s in a heavy black box, this version is darker and more compressed than the NYC Big Muff, with a thicker low end and less top-end fizz. That combination made it the fuzz of choice for doom, sludge and stoner rock. Prices have climbed steadily as supply dried up, and it is now one of the most sought-after Muff variants.",
     imageUrl: null,
@@ -326,7 +326,7 @@ export const originals: Original[] = [
     priceGBP: 99,
     blurb: "Thick, tight low end with less scoop than a standard Muff.",
     description:
-      "The mid-90s Sovtek Muff in a green enclosure, reissued by Electro-Harmonix at a sensible price. Compared to the NYC version it has a tighter, punchier bottom end and a less severe midrange scoop, which means it sits in a mix far better — a common complaint about standard Big Muffs is that they disappear behind a band. That makes this the practical choice of the Muff family.",
+      "The mid-90s Sovtek Muff in a green enclosure, reissued by Electro-Harmonix at a sensible price. Compared to the NYC version it has a tighter, punchier bottom end and a less severe midrange scoop, which means it sits in a mix far better - a common complaint about standard Big Muffs is that they disappear behind a band. That makes this the practical choice of the Muff family.",
     imageUrl: null,
     tags: ["green russian", "big muff", "sovtek", "electro-harmonix", "ehx", "fuzz", "civil war", "tight", "reissue"],
     popularity: 81,
@@ -347,10 +347,10 @@ export const alternatives: Alternative[] = [
     brand: "Behringer",
     priceGBP: 25,
     imageUrl: null,
-    blurb: "A near-direct TS808 copy in a plastic shell — same op-amp, a fraction of the price.",
+    blurb: "A near-direct TS808 copy in a plastic shell - same op-amp, a fraction of the price.",
     pros: [
       "Uses the same JRC4558D op-amp chip as the original TS808",
-      "Circuit is a close copy — the mid-hump and clipping feel genuinely track the original",
+      "Circuit is a close copy - the mid-hump and clipping feel genuinely track the original",
       "The cheapest way into a real Tube Screamer circuit, full stop",
     ],
     cons: [
@@ -394,11 +394,11 @@ export const alternatives: Alternative[] = [
     blurb: "Micro-sized TS with a hot mode that goes further than the original.",
     pros: [
       "Micro enclosure frees up roughly half the board space of a TS9",
-      "Two modes — 'warm' for classic TS, 'hot' for more gain than the original has",
+      "Two modes - 'warm' for classic TS, 'hot' for more gain than the original has",
       "Solid metal housing with true bypass",
     ],
     cons: [
-      "No battery option — it's 9V adapter only",
+      "No battery option - it's 9V adapter only",
       "Top-mounted jacks change how you have to cable your board",
       "Small knobs are hard to nudge with your foot mid-set",
     ],
@@ -415,7 +415,7 @@ export const alternatives: Alternative[] = [
     imageUrl: null,
     blurb: "Socketed op-amp means you can retune the drive with a £2 chip swap.",
     pros: [
-      "Socketed op-amp — drop in a JRC4558, TL072 or RC4558 to change the character",
+      "Socketed op-amp - drop in a JRC4558, TL072 or RC4558 to change the character",
       "Heavy-duty metal chassis and true bypass",
       "Tighter, cleaner low end than most budget clones manage",
     ],
@@ -443,7 +443,7 @@ export const alternatives: Alternative[] = [
       "Widely regarded as the best-sounding budget TS-style pedal ever made",
     ],
     cons: [
-      "Discontinued — used market only, and prices are climbing every year",
+      "Discontinued - used market only, and prices are climbing every year",
       "Plastic body and jacks",
       "Voiced a little darker than a true TS9",
     ],
@@ -459,10 +459,10 @@ export const alternatives: Alternative[] = [
     brand: "Tone City",
     priceGBP: 39,
     imageUrl: null,
-    blurb: "Lower-gain, more transparent take — a great always-on.",
+    blurb: "Lower-gain, more transparent take - a great always-on.",
     pros: [
       "Tiny footprint, all-metal build, true bypass",
-      "More transparent and lower gain than a TS9 — works as an always-on tone thickener",
+      "More transparent and lower gain than a TS9 - works as an always-on tone thickener",
       "Cleans up well with the guitar's volume control",
     ],
     cons: [
@@ -537,7 +537,7 @@ export const alternatives: Alternative[] = [
       "Used prices are still low because the brand is out of fashion",
     ],
     cons: [
-      "Discontinued — used market only",
+      "Discontinued - used market only",
       "Not true bypass",
       "Bulkier than the BD-2 it replaces",
     ],
@@ -555,7 +555,7 @@ export const alternatives: Alternative[] = [
     imageUrl: null,
     blurb: "A close BD-2 copy for the price of a set of strings.",
     pros: [
-      "Circuit is a close copy — the dynamic, amp-like breakup really is there",
+      "Circuit is a close copy - the dynamic, amp-like breakup really is there",
       "Same three-knob layout, so BD-2 settings translate directly",
       "Cheapest possible route to this sound",
     ],
@@ -647,7 +647,7 @@ export const alternatives: Alternative[] = [
     brand: "Behringer",
     priceGBP: 30,
     imageUrl: null,
-    blurb: "Behringer's BF-2 answer — cheap, and closer than it has any right to be.",
+    blurb: "Behringer's BF-2 answer - cheap, and closer than it has any right to be.",
     pros: [
       "Gets remarkably close to the BF-2 sweep for well under a fifth of the price",
       "Familiar four-knob layout",
@@ -676,7 +676,7 @@ export const alternatives: Alternative[] = [
       "Handles high-gain signals without getting muddy",
     ],
     cons: [
-      "Discontinued — used only",
+      "Discontinued - used only",
       "Voiced more digital and glassy than the analogue BF-2",
       "Larger footprint",
     ],
@@ -836,7 +836,7 @@ export const alternatives: Alternative[] = [
       "Stereo output for wider clean sounds",
     ],
     cons: [
-      "Discontinued — used only",
+      "Discontinued - used only",
       "Cleaner and more digital-sounding than the warm CE-2",
       "Bigger and heavier",
     ],
@@ -925,7 +925,7 @@ export const alternatives: Alternative[] = [
     pros: [
       "Clean, uncoloured repeats much like the DD-3",
       "Metal enclosure and true bypass",
-      "Up to 600ms of delay time — plenty for most songs",
+      "Up to 600ms of delay time - plenty for most songs",
     ],
     cons: [
       "Shorter maximum delay time than the DD-3's 800ms",
@@ -943,7 +943,7 @@ export const alternatives: Alternative[] = [
     brand: "Mooer",
     priceGBP: 45,
     imageUrl: null,
-    blurb: "Three delay modes in a micro enclosure — more range than the DD-3.",
+    blurb: "Three delay modes in a micro enclosure - more range than the DD-3.",
     pros: [
       "Three modes (analogue, real echo, tape) versus the DD-3's single digital voice",
       "Micro size saves half the board space of a compact Boss pedal",
@@ -1115,7 +1115,7 @@ export const alternatives: Alternative[] = [
       "Cheaper than the original it copies",
     ],
     cons: [
-      "Only modestly cheaper — the DS-1 is already a budget pedal",
+      "Only modestly cheaper - the DS-1 is already a budget pedal",
       "No UK warranty or support",
       "Slightly harsher top end than the Boss",
     ],
@@ -1138,7 +1138,7 @@ export const alternatives: Alternative[] = [
       "True bypass and solid metal build",
     ],
     cons: [
-      "Actually costs less than nothing to save — it's dearer than a new DS-1",
+      "Actually costs less than nothing to save - it's dearer than a new DS-1",
       "No battery option",
       "Not a like-for-like DS-1 clone; it's a different flavour of distortion",
     ],
@@ -1161,7 +1161,7 @@ export const alternatives: Alternative[] = [
     ],
     cons: [
       "Cheap plastic housing that flexes under foot",
-      "Battery only — no power jack on most units",
+      "Battery only - no power jack on most units",
       "Not true bypass",
     ],
     popularity: 74,
@@ -1183,7 +1183,7 @@ export const alternatives: Alternative[] = [
       "Metal chassis",
     ],
     cons: [
-      "Discontinued — used market only",
+      "Discontinued - used market only",
       "Bulkier than a compact Boss enclosure",
       "Voiced more scooped and modern than a DS-1",
     ],
@@ -1320,7 +1320,7 @@ export const alternatives: Alternative[] = [
     blurb: "The clone that made a rare, expensive fuzz available to everyone.",
     pros: [
       "Near-direct copy of the FZ-2, including both Gain modes and the two-band EQ",
-      "One of the most celebrated budget pedals ever made — a genuine cult classic",
+      "One of the most celebrated budget pedals ever made - a genuine cult classic",
       "Around a fifth of what a used FZ-2 costs",
     ],
     cons: [
@@ -1343,7 +1343,7 @@ export const alternatives: Alternative[] = [
     brand: "Behringer",
     priceGBP: 29,
     imageUrl: null,
-    blurb: "The chainsaw tone for £29 — the most famous budget clone of them all.",
+    blurb: "The chainsaw tone for £29 - the most famous budget clone of them all.",
     pros: [
       "Gets genuinely close to the HM-2 buzzsaw with all knobs fully clockwise",
       "Same two-band Colour EQ layout as the original",
@@ -1400,7 +1400,7 @@ export const alternatives: Alternative[] = [
     cons: [
       "Plastic enclosure and footswitch",
       "Buffered bypass",
-      "Struggles badly below the fifth fret — as does the pedal it copies",
+      "Struggles badly below the fifth fret - as does the pedal it copies",
     ],
     popularity: 77,
     matchQuality: 88,
@@ -1416,7 +1416,7 @@ export const alternatives: Alternative[] = [
     imageUrl: null,
     blurb: "Eleven octave modes and polyphonic tracking in a micro box.",
     pros: [
-      "Polyphonic — it handles full chords, which the OC-2 simply cannot",
+      "Polyphonic - it handles full chords, which the OC-2 simply cannot",
       "Eleven modes including octave-up and multi-octave combinations",
       "Micro footprint and true bypass",
     ],
@@ -1636,7 +1636,7 @@ export const alternatives: Alternative[] = [
       "True bypass",
     ],
     cons: [
-      "Discontinued — used market only",
+      "Discontinued - used market only",
       "Larger footprint than a micro pedal",
       "Slight tick audible at slow speeds on some units",
     ],
@@ -1709,7 +1709,7 @@ export const alternatives: Alternative[] = [
     imageUrl: null,
     blurb: "Germanium and silicon Fuzz Face in one box.",
     pros: [
-      "Switches between germanium and silicon voicings — two pedals in one",
+      "Switches between germanium and silicon voicings - two pedals in one",
       "Hand-built with selected transistors",
       "Less than half the price of two Dunlop Fuzz Face Minis",
     ],
@@ -1780,7 +1780,7 @@ export const alternatives: Alternative[] = [
     imageUrl: null,
     blurb: "Direct Big Muff clone in a small metal box.",
     pros: [
-      "Faithful Muff voicing — the sustain and scoop are both there",
+      "Faithful Muff voicing - the sustain and scoop are both there",
       "Metal enclosure with true bypass",
       "Around a third of the price of an NYC Big Muff",
     ],
@@ -1825,7 +1825,7 @@ export const alternatives: Alternative[] = [
     imageUrl: null,
     blurb: "Multiple Muff variants selectable in one small pedal.",
     pros: [
-      "Switches between several Muff voicings — Triangle, Ram's Head and Russian territory",
+      "Switches between several Muff voicings - Triangle, Ram's Head and Russian territory",
       "Far more range than any single Muff for the price",
       "Metal enclosure and true bypass",
     ],
@@ -1878,7 +1878,7 @@ export const alternatives: Alternative[] = [
     blurb: "Green Russian voicing shrunk into a micro enclosure.",
     pros: [
       "Tight, punchy low end that tracks the Green Russian closely",
-      "Micro footprint — a fraction of the board space of a Muff",
+      "Micro footprint - a fraction of the board space of a Muff",
       "All-metal build and true bypass",
     ],
     cons: [

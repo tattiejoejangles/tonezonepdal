@@ -1,5 +1,7 @@
 "use client";
 
+import { useRef } from "react";
+
 import { SearchSuggestions, useSuggestions } from "./SearchSuggestions";
 import type { SearchIndex } from "@/lib/search-index";
 
@@ -16,6 +18,7 @@ export function SearchBar({
   tone?: "light" | "dark";
 }) {
   const dark = tone === "dark";
+  const inputRef = useRef<HTMLInputElement>(null);
   const suggest = useSuggestions(index, value);
 
   return (
@@ -49,10 +52,11 @@ export function SearchBar({
 
           <input
             id="pedal-search"
+            ref={inputRef}
             type="search"
             value={value}
             onChange={(event) => onChange(event.target.value)}
-            placeholder="Search a pedal — “Tube Screamer”, “HM-2”, “delay”…"
+            placeholder="Search a pedal - “Tube Screamer”, “HM-2”, “delay”…"
             autoComplete="off"
             {...suggest.inputProps}
             className={`w-full rounded-full border-0 py-4 pr-24 pl-14 text-base font-medium outline-none ${
@@ -85,6 +89,7 @@ export function SearchBar({
             onHover={suggest.setActive}
             onSelect={suggest.dismiss}
             tone={tone}
+            anchorRef={inputRef}
           />
         )}
       </div>

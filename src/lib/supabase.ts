@@ -3,7 +3,7 @@ import { createClient, type SupabaseClient } from "@supabase/supabase-js";
 /**
  * Read-only Supabase client for the public catalogue.
  *
- * The publishable key is safe in the browser — Row Level Security allows
+ * The publishable key is safe in the browser - Row Level Security allows
  * SELECT and nothing else, so the worst anyone can do with it is read data
  * that's already on the page. Writes need the service role key, which only
  * scripts/push-to-supabase.mjs and the dashboard ever use.

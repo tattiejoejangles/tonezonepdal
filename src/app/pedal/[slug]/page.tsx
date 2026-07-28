@@ -2,9 +2,11 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 
+import { AdminTools } from "@/components/admin/AdminTools";
 import { AlternativesPanel } from "@/components/AlternativesPanel";
 import { BookmarkButton } from "@/components/BookmarkButton";
 import { CheapestAlternative } from "@/components/CheapestAlternative";
+import { PedalDemos } from "@/components/PedalDemos";
 import { PedalImage } from "@/components/PedalImage";
 import { RetailerButtons } from "@/components/RetailerButtons";
 import { getCatalogue, getDetail, getOriginalBySlug } from "@/data/catalogue";
@@ -35,16 +37,16 @@ export async function generateMetadata({
   const saving = cheapest ? calculateSavings(pedal.priceGBP, cheapest.priceGBP) : null;
 
   return {
-    title: `${pedal.name} — cheap alternatives`,
+    title: `${pedal.name} - cheap alternatives`,
     description: saving
-      ? `${pedal.alternatives.length} budget alternatives to the ${pedal.name}, from ${formatPrice(cheapest.priceGBP)} — save up to ${formatPrice(saving.amount)} (${saving.percent}%).`
+      ? `${pedal.alternatives.length} budget alternatives to the ${pedal.name}, from ${formatPrice(cheapest.priceGBP)} - save up to ${formatPrice(saving.amount)} (${saving.percent}%).`
       : `Budget alternatives to the ${pedal.name}.`,
   };
 }
 
 /**
  * Credits Wikimedia Commons photos, which are CC-licensed and require
- * attribution. Retailer photos get no credit line — they're product images
+ * attribution. Retailer photos get no credit line - they're product images
  * used to identify the product being linked to.
  */
 function ImageCredit({ credit }: { credit?: string }) {
@@ -52,7 +54,7 @@ function ImageCredit({ credit }: { credit?: string }) {
   // product shots are used to identify the product being linked to.
   if (!credit?.startsWith("wikimedia")) return null;
 
-  const licence = credit.split("—")[1]?.trim();
+  const licence = credit.split("-")[1]?.trim();
 
   return (
     <p className="mt-2 px-1 text-[11px] leading-relaxed text-stone-400">
@@ -65,7 +67,7 @@ function ImageCredit({ credit }: { credit?: string }) {
       >
         Wikimedia Commons
       </a>
-      {licence ? ` — ${licence}` : ""}
+      {licence ? ` - ${licence}` : ""}
     </p>
   );
 }
@@ -103,7 +105,7 @@ export default async function PedalPage({
       </nav>
 
       {/* Product hero: photo, the pitch, then the buy stack in its own lane.
-          The stack is three tall pills — beside the text it costs no height,
+          The stack is three tall pills - beside the text it costs no height,
           below it, it added ~200px to every pedal page. */}
       <section className="tz-chamfer overflow-hidden bg-white tz-card ring-1 ring-stone-200/60">
         <div className="grid gap-8 p-6 sm:p-8 md:grid-cols-[minmax(0,340px)_1fr] md:gap-10 lg:grid-cols-[minmax(0,300px)_1fr_minmax(0,14rem)] lg:gap-6">
@@ -122,7 +124,7 @@ export default async function PedalPage({
 
           <div className="flex flex-col gap-5">
             <div>
-              <p className="tz-eyebrow text-amber-700">{pedal.brand}</p>
+              <p className="tz-brand text-amber-700">{pedal.brand}</p>
               <h1 className="tz-heading mt-1.5 text-3xl text-stone-900 sm:text-4xl">
                 {pedal.name}
               </h1>
@@ -135,6 +137,7 @@ export default async function PedalPage({
               </span>
               <span className="text-sm text-stone-400">typical UK price</span>
               <BookmarkButton kind="original" slug={pedal.slug} />
+              <AdminTools kind="original" slug={pedal.slug} />
             </div>
 
             {cheapest && (
@@ -181,6 +184,8 @@ export default async function PedalPage({
           </div>
         </div>
       </section>
+
+      <PedalDemos brand={pedal.brand} name={pedal.name} />
 
       <section className="mt-12">
         <AlternativesPanel

@@ -14,8 +14,8 @@ import "./globals.css";
 
 export const metadata: Metadata = {
   title: {
-    default: "The Tone Zone — Budget alternatives to expensive guitar pedals",
-    template: "%s — The Tone Zone",
+    default: "The Tone Zone - Budget alternatives to expensive guitar pedals",
+    template: "%s - The Tone Zone",
   },
   description:
     "Find cheap, well-reviewed clones of expensive guitar pedals. Honest pros and cons, real savings, and where to buy.",
@@ -51,9 +51,8 @@ function SiteHeader({ searchIndex }: { searchIndex: SearchIndex }) {
       <div className="mx-auto flex max-w-6xl items-center gap-4 px-4 py-3 sm:px-6">
         <Wordmark />
 
-        <div className="ml-auto flex items-center gap-3">
-          <HeaderSearch index={searchIndex} />
-
+        {/* Pedals, Saved, then search - navigation first, the tool last. */}
+        <nav className="ml-auto flex items-center gap-5 sm:gap-7">
           {/* Genres live behind one menu so amps can join as a sibling later. */}
           <NavMenu
             label="Pedals"
@@ -71,13 +70,8 @@ function SiteHeader({ searchIndex }: { searchIndex: SearchIndex }) {
             Saved
           </Link>
 
-          <Link
-            href="/#directory"
-            className="hidden text-xs font-bold tracking-wider text-stone-500 uppercase transition-colors hover:text-amber-700 sm:block"
-          >
-            Browse
-          </Link>
-        </div>
+          <HeaderSearch index={searchIndex} />
+        </nav>
       </div>
     </header>
   );
@@ -89,7 +83,7 @@ function SiteFooter() {
       <div className="mx-auto max-w-6xl space-y-3 px-4 py-10 text-sm text-stone-500 sm:px-6">
         <p className="text-base font-bold text-stone-700">The Tone Zone</p>
         <p className="tz-body max-w-2xl">
-          Prices are approximate UK street prices and change constantly — always check
+          Prices are approximate UK street prices and change constantly - always check
           the retailer before buying. Some outbound links are affiliate links, which
           means we may earn a commission at no extra cost to you.
         </p>

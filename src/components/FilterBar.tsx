@@ -10,7 +10,7 @@ import type { BrandOption } from "@/lib/filter";
  * catalogue falls under £30, so the bands split the results very unevenly and
  * told you little. Brand is the question people actually arrive with.
  *
- * Sorting deliberately isn't here either — the home page is organised by
+ * Sorting deliberately isn't here either - the home page is organised by
  * genre, and reordering the whole directory isn't a thing anyone wants.
  * Sorting lives on the individual pedal page, where it reorders that pedal's
  * clones.

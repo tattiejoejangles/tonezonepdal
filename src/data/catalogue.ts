@@ -200,7 +200,7 @@ export async function getOriginalBySlug(
 /**
  * Everything the pedal modal and detail pages show.
  *
- * Specs come from the record itself and are only shown when present —
+ * Specs come from the record itself and are only shown when present -
  * `specsKnown` lets the UI say "not confirmed yet" rather than print a
  * plausible-looking guess.
  *

@@ -6,7 +6,7 @@ import { calculateSavings, type Savings } from "./format";
  * Pure search / filter / sort logic for the directory.
  *
  * Deliberately free of React and the DOM so it can be reasoned about and
- * tested on its own — the page component just calls `filterCatalogue` from a
+ * tested on its own - the page component just calls `filterCatalogue` from a
  * useMemo and renders whatever comes back.
  */
 
@@ -23,7 +23,7 @@ export interface DirectoryOptions {
   query: string;
   /**
    * Exact brand name, or null for all. Matches an original's own brand and a
-   * clone's own brand — so "Boss" returns Boss originals and "Behringer"
+   * clone's own brand - so "Boss" returns Boss originals and "Behringer"
    * returns Behringer clones, rather than one implying the other.
    */
   brand?: string | null;
@@ -45,7 +45,7 @@ export interface BrandOption {
  * Every brand in the catalogue, most pedals first.
  *
  * Deliberately mixes the expensive makers with the budget ones. They're the
- * same question from the shopper's side — "show me the Boss pedals" and "show
+ * same question from the shopper's side - "show me the Boss pedals" and "show
  * me what Behringer do" are both just a brand.
  */
 export function brandOptions(catalogue: OriginalWithAlternatives[]): BrandOption[] {
@@ -192,8 +192,8 @@ function sortAlternatives(alternatives: Alternative[], sort: SortId): Alternativ
  * Filters and sorts the catalogue's originals.
  *
  * The brand filter tests the original's own brand. Picking a budget maker like
- * Behringer therefore returns nothing here — correctly, since Behringer don't
- * make any of these originals — and the clones surface through
+ * Behringer therefore returns nothing here - correctly, since Behringer don't
+ * make any of these originals - and the clones surface through
  * `filterAlternatives` instead.
  */
 export function filterCatalogue(
@@ -339,7 +339,7 @@ export interface Suggestion {
  * the Behringer clones match on brand and outrank the pedals they copy, which
  * only match indirectly.
  *
- * Returns nothing for an empty query. That is deliberate and load-bearing —
+ * Returns nothing for an empty query. That is deliberate and load-bearing -
  * the dropdown must stay shut until a character is typed.
  */
 export function searchSuggestions(
@@ -373,7 +373,7 @@ export function searchSuggestions(
     });
   }
 
-  // Cheapest first among equally relevant pedals — this is a budget site.
+  // Cheapest first among equally relevant pedals - this is a budget site.
   return matches
     .sort((a, b) =>
       b.relevance !== a.relevance ? b.relevance - a.relevance : a.priceGBP - b.priceGBP,

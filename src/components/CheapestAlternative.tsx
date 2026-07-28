@@ -13,7 +13,7 @@ import type { Alternative, PedalDetail } from "@/lib/types";
  *
  * It's the first concrete answer the page gives, so it now shows the pedal
  * rather than only naming it, and opens the same detail modal the clone list
- * uses — reached from the top of the page instead of after a scroll.
+ * uses - reached from the top of the page instead of after a scroll.
  *
  * The trigger is a button stretched across the panel rather than a button
  * wrapping it: a photo and a savings badge aren't phrasing content, so they
@@ -36,7 +36,7 @@ export function CheapestAlternative({
   return (
     <>
       <div className="group relative border-l-2 border-emerald-500 bg-emerald-50/70 transition-colors hover:bg-emerald-100/70">
-        {/* Label is the name alone — most already lead with the brand. */}
+        {/* Label is the name alone - most already lead with the brand. */}
         <button
           type="button"
           onClick={() => setOpen(true)}

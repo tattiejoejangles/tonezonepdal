@@ -13,7 +13,7 @@
 
     Controls follow the box's own axes rather than being scattered across the
     face. On a diamond, a row of knobs across the pedal's width runs along
-    (+w, -h) — up and to the right — and anything front-to-back runs along
+    (+w, -h) - up and to the right - and anything front-to-back runs along
     (+w, +h). Placing knobs on a symmetric arc or a zigzag instead is what made
     the earlier version look like buttons dropped at random.
   -->
@@ -25,7 +25,7 @@
   </defs>
 
   <defs>
-    <!-- Compact stompbox — three knobs in a row, one footswitch. -->
+    <!-- Compact stompbox - three knobs in a row, one footswitch. -->
     <symbol id="box" viewBox="0 0 150 128">
       <ellipse cx="75" cy="112" rx="58" ry="13" fill="#05070f" opacity="0.45" />
 
@@ -52,7 +52,7 @@
       <ellipse cx="75" cy="70.5" rx="8.5" ry="5" fill="#cbd5e1" opacity="0.55" />
     </symbol>
 
-    <!-- Mini pedal — one knob, one switch. -->
+    <!-- Mini pedal - one knob, one switch. -->
     <symbol id="mini" viewBox="0 0 100 100">
       <ellipse cx="50" cy="86" rx="39" ry="9" fill="#05070f" opacity="0.45" />
 
@@ -72,7 +72,7 @@
       <ellipse cx="50" cy="45.8" rx="6.5" ry="3.8" fill="#cbd5e1" opacity="0.55" />
     </symbol>
 
-    <!-- Long 1590BB-style slab — four knobs in a row, one footswitch. -->
+    <!-- Long 1590BB-style slab - four knobs in a row, one footswitch. -->
     <symbol id="slab" viewBox="0 0 220 170">
       <ellipse cx="110" cy="146" rx="88" ry="16" fill="#05070f" opacity="0.45" />
 
@@ -101,7 +101,7 @@
       <ellipse cx="110" cy="98.4" rx="9" ry="5.2" fill="#cbd5e1" opacity="0.55" />
     </symbol>
 
-    <!-- Graphic EQ — a bank of sliders, caps tracing a curve. -->
+    <!-- Graphic EQ - a bank of sliders, caps tracing a curve. -->
     <symbol id="eq" viewBox="0 0 220 170">
       <ellipse cx="110" cy="146" rx="88" ry="16" fill="#05070f" opacity="0.45" />
 
@@ -134,7 +134,7 @@
       <ellipse cx="110" cy="102.4" rx="9" ry="5.2" fill="#cbd5e1" opacity="0.55" />
     </symbol>
 
-    <!-- Big-box fuzz — three knobs in a row, deeper walls. -->
+    <!-- Big-box fuzz - three knobs in a row, deeper walls. -->
     <symbol id="bigbox" viewBox="0 0 180 150">
       <ellipse cx="90" cy="130" rx="72" ry="14" fill="#05070f" opacity="0.45" />
 
@@ -161,7 +161,7 @@
       <ellipse cx="90" cy="84.5" rx="10" ry="5.8" fill="#cbd5e1" opacity="0.55" />
     </symbol>
 
-    <!-- Wah / expression pedal — tapered treadle with a ribbed tread plate. -->
+    <!-- Wah / expression pedal - tapered treadle with a ribbed tread plate. -->
     <symbol id="wah" viewBox="0 0 190 148">
       <ellipse cx="96" cy="130" rx="74" ry="14" fill="#05070f" opacity="0.45" />
       <path d="M11 70 L69 103 L69 128 L11 95 Z" fill="currentColor" opacity="0.5" />

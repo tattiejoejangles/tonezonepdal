@@ -9,7 +9,7 @@ import type { DailyFind, GenreGroup } from "@/lib/sections";
  * element to the client-side Directory. React validates every child of a prop
  * that crosses the server/client boundary as if it were a dynamic list, so
  * two adjacent children there warn about missing keys even when they're
- * static. One element, one child — no warning.
+ * static. One element, one child - no warning.
  */
 export function HomeSections({
   find,
