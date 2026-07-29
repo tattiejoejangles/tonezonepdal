@@ -32,7 +32,10 @@ export function OriginalCard({
       {/* Always lit, not hover-only: this is the mark of an original. */}
       <span className="absolute inset-x-0 top-0 z-10 h-1 bg-linear-to-r from-amber-400 via-orange-500 to-rose-500" />
 
-      <div className="relative aspect-4/3 overflow-hidden bg-linear-to-br from-amber-50/60 to-stone-100">
+      {/* Plain white behind the photo - the warm tint is carried by the card
+          body instead, so the pedal itself sits on the same white it was shot
+          on and reads as cut out. */}
+      <div className="relative aspect-4/3 overflow-hidden bg-white">
         <div className="h-full w-full transition-transform duration-500 group-hover:scale-108">
           <PedalImage
             src={result.imageUrl}

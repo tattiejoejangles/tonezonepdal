@@ -277,6 +277,61 @@ export async function createPedal(
 }
 
 /* -------------------------------------------------------------------------
+   Suggestions
+   ------------------------------------------------------------------------- */
+
+/**
+ * Approve or reject a user suggestion.
+ *
+ * Approving marks the suggestion reviewed. It does NOT write to the catalogue:
+ * a suggestion is prose plus an optional payload, and turning "the price is
+ * about twenty quid too high" into a column update is a judgement call, not a
+ * transformation. Approving means "yes, I'll do this" - you then make the edit
+ * with the normal edit form, which already has validation and an audit trail
+ * in the shape of the page itself.
+ */
+export async function reviewSuggestion(
+  _previous: ActionState,
+  form: FormData,
+): Promise<ActionState> {
+  if (!(await isAuthed())) return fail("Session expired - sign in again.");
+
+  const supabase = getAdminSupabase();
+  if (!supabase) {
+    return fail("SUPABASE_SERVICE_ROLE_KEY isn't set, so nothing can be saved.");
+  }
+
+  const id = text(form, "id");
+  const decision = text(form, "decision");
+  if (!id) return fail("Missing the suggestion.");
+  if (decision !== "approved" && decision !== "rejected" && decision !== "pending") {
+    return fail("Unknown decision.");
+  }
+
+  const { error } = await supabase
+    .from("suggestions")
+    .update({
+      status: decision,
+      reviewed_at: decision === "pending" ? null : new Date().toISOString(),
+      review_note: text(form, "review_note") || null,
+    })
+    .eq("id", id);
+
+  if (error) return fail(`Supabase refused it: ${error.message}`);
+
+  revalidatePath("/admin/suggestions");
+  return {
+    ok: true,
+    message:
+      decision === "approved"
+        ? "Approved. Make the edit on the pedal's own page."
+        : decision === "rejected"
+          ? "Rejected."
+          : "Moved back to pending.",
+  };
+}
+
+/* -------------------------------------------------------------------------
    Edit and delete
    ------------------------------------------------------------------------- */
 

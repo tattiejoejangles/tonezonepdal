@@ -37,7 +37,9 @@ export function HeaderSearch({ index }: { index: SearchIndex }) {
     event.preventDefault();
     suggest.dismiss();
     const trimmed = value.trim();
-    router.push(trimmed ? `/?q=${encodeURIComponent(trimmed)}#directory` : "/");
+    // /pedals, not the home page: the home page is curated and no longer
+    // filters, so a search term landing there had nothing to act on.
+    router.push(trimmed ? `/pedals?q=${encodeURIComponent(trimmed)}` : "/pedals");
   }
 
   return (

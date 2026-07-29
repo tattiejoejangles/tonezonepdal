@@ -15,7 +15,7 @@ import {
   type PriceRange,
 } from "@/lib/filter";
 import { buildSearchIndex } from "@/lib/search-index";
-import { AMPS_GENRE, GENRES } from "@/lib/sections";
+import { AMP_GENRES, GENRES } from "@/lib/sections";
 import type { OriginalWithAlternatives } from "@/lib/types";
 
 /** What the grid is showing. Same three lenses the home directory offers. */
@@ -41,13 +41,19 @@ const LENSES: { id: Lens; label: string }[] = [
  */
 export function GearBrowser({
   catalogue,
+  scope = "pedals",
   initialFamily = null,
+  initialQuery = "",
 }: {
   catalogue: OriginalWithAlternatives[];
-  /** A genre id from `lib/sections`, e.g. "overdrive" or "amps". */
+  /** Which half of the catalogue this page browses. They never mix. */
+  scope?: "pedals" | "amps";
+  /** A genre id from `lib/sections`, e.g. "overdrive" or "amps-valve". */
   initialFamily?: string | null;
+  /** Seeded from `?q=`, so the header search can land here with a term. */
+  initialQuery?: string;
 }) {
-  const [query, setQuery] = useState("");
+  const [query, setQuery] = useState(initialQuery);
   const [brand, setBrand] = useState<string | null>(null);
   const [price, setPrice] = useState<PriceRange>(UNBOUNDED);
   const [family, setFamily] = useState<string | null>(initialFamily);
@@ -56,13 +62,24 @@ export function GearBrowser({
   // One chip per genre, not per category: "Distortion & Fuzz" covers two
   // categories and rendering one chip each gave it two identical buttons.
   const families = useMemo(
-    () => [...GENRES, AMPS_GENRE].map((genre) => ({ id: genre.id, label: genre.label, categories: genre.categories })),
-    [],
+    () =>
+      (scope === "amps" ? AMP_GENRES : GENRES).map((genre) => ({
+        id: genre.id,
+        label: genre.label,
+        categories: genre.categories,
+      })),
+    [scope],
+  );
+
+  /** Everything this page is allowed to show, before any chip is pressed. */
+  const scopeCategories = useMemo(
+    () => families.flatMap((entry) => entry.categories),
+    [families],
   );
 
   const categories = family
-    ? (families.find((entry) => entry.id === family)?.categories ?? null)
-    : null;
+    ? (families.find((entry) => entry.id === family)?.categories ?? scopeCategories)
+    : scopeCategories;
 
   const bounds = useMemo(() => priceBounds(catalogue), [catalogue]);
   const brands = useMemo(() => brandOptions(catalogue), [catalogue]);
@@ -97,7 +114,12 @@ export function GearBrowser({
   return (
     <div className="space-y-6">
       <div className="max-w-xl">
-        <SearchBar value={query} onChange={setQuery} index={searchIndex} />
+        <SearchBar
+          value={query}
+          onChange={setQuery}
+          index={searchIndex}
+          placeholder={scope === "amps" ? "Search amps…" : "Search pedals…"}
+        />
       </div>
 
       {/* Family chips. Horizontally scrollable on phones rather than wrapping

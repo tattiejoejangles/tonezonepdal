@@ -4,16 +4,17 @@ import { getCatalogue, getDetail } from "@/data/catalogue";
 import { findOfTheDay, groupByGenre } from "@/lib/sections";
 
 /**
- * Rendered per request.
+ * Statically rendered, revalidated every 5 minutes.
  *
- * The directory reads `?q=` via useSearchParams so the header search can drive
- * it. On a statically rendered route that leaves the Suspense boundary
- * permanently postponed - the page ships with its whole body stranded in an
- * unresolved <template> - so this route has to be dynamic. It also means the
- * Find of the Day rolls over exactly at midnight rather than on a revalidate
- * window.
+ * This used to be `force-dynamic`, because the directory read `?q=` through
+ * useSearchParams and a static route left that Suspense boundary permanently
+ * postponed - the page shipped with its whole body stranded in an unresolved
+ * <template>. The home page no longer filters, so nothing here reads search
+ * params and the route can be static again. Find of the Day now turns over
+ * within 5 minutes of midnight rather than exactly on it, which is a fair
+ * trade for a cacheable home page.
  */
-export const dynamic = "force-dynamic";
+export const revalidate = 300;
 
 export default async function HomePage() {
   const catalogue = await getCatalogue();

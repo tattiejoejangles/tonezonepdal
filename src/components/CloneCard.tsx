@@ -24,7 +24,7 @@ export function CloneCard({ result }: { result: CloneResult }) {
       href={`/clone/${alternative.slug}`}
       className="tz-chamfer group relative flex flex-col overflow-hidden bg-white ring-1 ring-stone-200 transition-all duration-300 hover:-translate-y-1 hover:ring-stone-300 focus-visible:ring-2 focus-visible:ring-amber-500 focus-visible:outline-none"
     >
-      <div className="tz-well relative aspect-4/3 rounded-none bg-stone-100">
+      <div className="tz-well relative aspect-4/3 rounded-none">
         <div className="h-full w-full transition-transform duration-500 group-hover:scale-105">
           <PedalImage
             src={alternative.imageUrl}

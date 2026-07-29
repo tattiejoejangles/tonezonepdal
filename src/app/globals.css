@@ -332,9 +332,17 @@ input[type="search"]::-webkit-search-cancel-button {
   transform: translateY(-2px);
 }
 
-/* Image wells: a tinted panel the product sits in, rather than white-on-white. */
+/**
+ * Image wells.
+ *
+ * White, not the tinted grey they used to be. Every product photo in the
+ * catalogue is shot on white, so a tinted panel behind one drew a visible
+ * rectangle around the pedal - a box sitting on a box sitting on the card.
+ * On white, the background of the photo and the background of the well are
+ * the same colour and the pedal reads as cut out.
+ */
 .tz-well {
-  background: #f2f2f3;
+  background: #fff;
   border-radius: var(--tz-radius);
   overflow: hidden;
 }

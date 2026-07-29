@@ -1,7 +1,7 @@
 -- ---------------------------------------------------------------------------
 -- Launch expansion, part 2: pairings first.
 --
--- Run AFTER 04-expansion.sql. Safe to run twice (`on conflict (id) do nothing`).
+-- Run AFTER 04-expansion.sql. Safe to run twice: bare `on conflict do nothing` absorbs id AND slug clashes.
 --
 -- This file is deliberately thin on prose. The priority here was breadth of
 -- ORIGINAL -> ALTERNATIVE links rather than finished copy: every row has the
@@ -38,7 +38,7 @@ values
 
 ('org-5150','evh-5150iii-50w','EVH 5150III 50W','EVH','amp',1599,'The modern high-gain benchmark, and the amp half of metal is chasing.',NULL,NULL,ARRAY['5150','5150iii','evh','van halen','high gain','metal','valve head','tube amp']::text[],'{}','{}',86,'EVH 5150III 50W head')
 
-on conflict (id) do nothing;
+on conflict do nothing;
 
 -- Alternatives --------------------------------------------------------------
 -- Both new originals above and the ones added in 04, which had thin coverage.
@@ -86,4 +86,4 @@ values
 ('alt-mosky-blue-delay','mosky-blue-delay','org-memory-man','Mosky Blue Delay','Mosky',35,'Micro delay with time, repeat and level, at the bottom of the price range.',NULL,'{}','{}','{}',70,66,NULL,NULL),
 ('alt-mosky-spring','mosky-spring-reverb','org-bluesky','Mosky Spring Reverb','Mosky',35,'Single-knob spring reverb in a micro enclosure.',NULL,'{}','{}','{}',70,58,NULL,NULL)
 
-on conflict (id) do nothing;
+on conflict do nothing;

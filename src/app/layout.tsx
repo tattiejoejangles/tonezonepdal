@@ -1,6 +1,7 @@
 import type { Metadata, Viewport } from "next";
 import { GeistMono } from "geist/font/mono";
 import { GeistSans } from "geist/font/sans";
+import Link from "next/link";
 
 import { siteUrl } from "./sitemap";
 
@@ -10,7 +11,7 @@ import { SiteNav } from "@/components/SiteNav";
 import { Wordmark } from "@/components/Wordmark";
 import { getSearchIndex } from "@/data/catalogue";
 import type { SearchIndex } from "@/lib/search-index";
-import { GENRES } from "@/lib/sections";
+import { AMP_GENRES, GENRES } from "@/lib/sections";
 import "./globals.css";
 
 const TITLE = "The Tone Zone - Budget alternatives to expensive pedals and amps";
@@ -73,7 +74,25 @@ function SiteHeader({ searchIndex }: { searchIndex: SearchIndex }) {
     <header className="sticky top-0 z-30 relative border-b border-stone-200/70 bg-white/85 backdrop-blur-md">
       <div className="tz-page flex items-center gap-4 py-3">
         <Wordmark />
-        <SiteNav searchIndex={searchIndex} genres={GENRES} />
+        <SiteNav
+          searchIndex={searchIndex}
+          sections={[
+            {
+              href: "/pedals",
+              label: "Pedals",
+              genres: GENRES,
+              genreBase: "/pedals",
+            },
+            {
+              href: "/amps",
+              label: "Amps",
+              genres: AMP_GENRES,
+              genreBase: "/pedals",
+            },
+            // No genres yet - renders as a plain link until the builder lands.
+            { href: "/boards", label: "Boards", genres: [], genreBase: "/boards" },
+          ]}
+        />
       </div>
     </header>
   );
@@ -99,6 +118,14 @@ function SiteFooter() {
         </div>
 
         <div className="space-y-3">
+          <p>
+            <Link
+              href="/suggest"
+              className="text-sm font-bold text-amber-700 underline underline-offset-4 hover:text-amber-900"
+            >
+              Spotted something wrong? Make a suggestion
+            </Link>
+          </p>
           <p className="tz-body max-w-2xl">
             Prices are approximate UK street prices and change constantly - always check
             the retailer before buying. Some outbound links are affiliate links, which

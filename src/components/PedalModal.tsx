@@ -109,7 +109,7 @@ role="presentation"
 
         <div className="grid gap-0 md:grid-cols-[minmax(0,340px)_1fr]">
           {/* Gallery */}
-          <div className="bg-stone-50 p-5">
+          <div className="bg-white p-5">
             <div className="tz-well relative aspect-square w-full">
               <PedalImage
                 src={images[image] ?? null}

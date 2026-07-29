@@ -142,6 +142,13 @@ export default async function ClonePage({
               <BookmarkButton kind="clone" slug={alternative.slug} />
               <AdminTools kind="alternative" slug={alternative.slug} />
             </div>
+
+            <Link
+              href={`/suggest?kind=alternative&slug=${alternative.slug}`}
+              className="mt-3 block text-xs font-bold text-stone-500 underline underline-offset-4 transition-colors hover:text-amber-700"
+            >
+              Suggest a change
+            </Link>
           </div>
         </div>
       </section>

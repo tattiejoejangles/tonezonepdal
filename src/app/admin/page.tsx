@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Link from "next/link";
 
 import { AdminLogin } from "@/components/admin/AdminLogin";
 import { PedalForm, type OriginalOption } from "@/components/admin/PedalForm";
@@ -37,6 +38,12 @@ export default async function AdminPage() {
         <div>
           <p className="tz-eyebrow text-amber-700">The Tone Zone</p>
           <h1 className="tz-heading mt-1.5 text-3xl text-stone-900">Add gear</h1>
+          <Link
+            href="/admin/suggestions"
+            className="tz-eyebrow mt-3 inline-block text-amber-700 hover:text-amber-900"
+          >
+            Review suggestions →
+          </Link>
           <p className="tz-body mt-2 text-sm text-stone-600">
             Writes straight to Supabase. Pages pick it up within five minutes,
             or immediately on the next visit.

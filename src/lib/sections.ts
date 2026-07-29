@@ -24,15 +24,58 @@ export function genreNoun(genre: Genre, count: number): string {
 }
 
 /** Categories that are not guitar pedals, so the pedal menu can exclude them. */
-export const NON_PEDAL_CATEGORIES: Category[] = ["amp"];
+export const NON_PEDAL_CATEGORIES: Category[] = [
+  "amp",
+  "amp-valve",
+  "amp-modelling",
+  "amp-cab",
+];
 
-export const AMPS_GENRE: Genre = {
-  id: "amps",
-  label: "Amps",
-  blurb: "Valve tone and clean headroom, without the boutique invoice.",
-  categories: ["amp"],
-  noun: "amp",
-};
+/**
+ * Amp genres.
+ *
+ * Amps browse on their own page rather than as one more band under the
+ * pedals, because "cheap alternative to a JCM800" and "cheap alternative to a
+ * Tube Screamer" are different shopping trips. Broken down further than a
+ * single "Amps" bucket for the same reason: a modelling combo is not an
+ * alternative to a speaker cab.
+ *
+ * `amp` stays as a catch-all so rows that haven't been reclassified yet still
+ * appear somewhere rather than vanishing from the site.
+ */
+export const AMP_GENRES: Genre[] = [
+  {
+    id: "amps-valve",
+    label: "Valve & Tube",
+    blurb: "Glass, glow and the breakup everything else is modelled on.",
+    categories: ["amp-valve"],
+    noun: "amp",
+  },
+  {
+    id: "amps-modelling",
+    label: "Solid State & Modelling",
+    blurb: "Digital voicings, quiet practice and a hundred amps in one box.",
+    categories: ["amp-modelling"],
+    noun: "amp",
+  },
+  {
+    id: "amps-cabs",
+    label: "Cabs & Speakers",
+    blurb: "The other half of your tone, and the cheapest place to change it.",
+    categories: ["amp-cab"],
+    noun: "cab",
+  },
+  {
+    id: "amps",
+    label: "Other Amps",
+    blurb: "Everything not yet filed under a type.",
+    categories: ["amp"],
+    noun: "amp",
+  },
+];
+
+/** Back-compat: `/pedals/amps` was the original amps URL. */
+export const AMPS_GENRE: Genre = AMP_GENRES[AMP_GENRES.length - 1];
 
 export const GENRES: Genre[] = [
   {
@@ -80,7 +123,7 @@ export const GENRES: Genre[] = [
 ];
 
 export function findGenre(id: string): Genre | undefined {
-  return [...GENRES, AMPS_GENRE].find((genre) => genre.id === id);
+  return [...GENRES, ...AMP_GENRES].find((genre) => genre.id === id);
 }
 
 /** Every original in one genre, most popular first. */
@@ -103,7 +146,10 @@ export interface GenreGroup {
  * Amps come last: they're the newest section and the least expected here.
  */
 export function groupByGenre(catalogue: OriginalWithAlternatives[]): GenreGroup[] {
-  return [...GENRES, AMPS_GENRE].map((genre) => ({
+  // Pedals only. Amps have their own page now, and mixing a valve combo into
+  // the run of effect bands on the home page was the thing that made "Amps
+  // pedals" copy possible in the first place.
+  return GENRES.map((genre) => ({
     genre,
     entries: catalogue.filter((entry) => genre.categories.includes(entry.category)),
   })).filter((group) => group.entries.length > 0);

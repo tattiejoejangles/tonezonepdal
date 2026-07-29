@@ -46,7 +46,12 @@ export function FilterBar<L extends string>({
   const activeLens = lens ?? lenses[0]?.id;
 
   return (
-    <div className="tz-chamfer flex flex-col gap-4 bg-white/70 p-4 ring-1 ring-stone-200/70 backdrop-blur-sm lg:flex-row lg:items-center lg:gap-6">
+    // `relative z-20` is load-bearing. `backdrop-blur` creates a stacking
+    // context, which trapped the brand dropdown's z-40 inside this bar - so
+    // the result cards, which come later in the DOM, painted over the open
+    // menu and hid every brand. Lifting the whole bar fixes it at the level
+    // the containment actually happens. Below the sticky header's z-30.
+    <div className="tz-chamfer relative z-20 flex flex-col gap-4 bg-white/70 p-4 ring-1 ring-stone-200/70 backdrop-blur-sm lg:flex-row lg:items-center lg:gap-6">
       {/* Segmented control. One group, one selection - radios rather than
           buttons so arrow keys move between them the way they should. */}
       <div

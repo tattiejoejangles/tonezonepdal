@@ -3,7 +3,7 @@
 -- alternatives against them.
 --
 -- Run this in the Supabase SQL editor. Safe to run twice: every insert is
--- `on conflict (id) do nothing`, so a partial run can be repeated.
+-- a bare `on conflict do nothing`, which absorbs BOTH id and slug clashes - so it stays safe even as you keep adding gear in the admin.
 --
 -- Checked against the 35 originals and 96 alternatives already in the database
 -- before writing, which is why this is smaller than it first looks. The
@@ -52,7 +52,7 @@ values
 
 ('org-twin-reverb','fender-65-twin-reverb','Fender ''65 Twin Reverb','Fender','amp',1699,'85 watts of clean headroom that will not break up for anyone.','Two 12" speakers, 85 valve watts, and a clean stage that stays clean at volumes no venue will let you reach. That is the Twin''s job: it is a pedal platform and a jazz amp, not an overdrive machine. If you want your drive pedals to be the whole story of your tone, this is the amp that gets out of the way - assuming you can carry it.',NULL,ARRAY['twin reverb','fender','twin','85 watts','clean','headroom','pedal platform','jazz','blackface']::text[],ARRAY['Johnny Marr','Ike Turner','James Burton']::text[],'{}',80,'Fender 65 Twin Reverb amp')
 
-on conflict (id) do nothing;
+on conflict do nothing;
 
 -- Alternatives --------------------------------------------------------------
 
@@ -104,4 +104,4 @@ values
 
 ('alt-spark-40','positive-grid-spark-40','org-twin-reverb','Positive Grid Spark 40','Positive Grid',239,'A 40-watt modelling combo aimed at practice, with app-driven amp models.',NULL,ARRAY['Large range of amp and effect models through the app','Smart jam and backing-track features for practising alone','Compact, and genuinely good sounding at low volume']::text[],ARRAY['Very much a practice amp - 40W of modelling will not hold a stage','Depends on the app for deeper editing','Small speaker with a limited low end']::text[],'{}',82,52,NULL,'Excellent at what it is built for, which is practising at home. It is here as the cheap end of the clean-amp ladder, not as a Twin replacement.')
 
-on conflict (id) do nothing;
+on conflict do nothing;

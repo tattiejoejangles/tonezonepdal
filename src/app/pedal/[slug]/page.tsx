@@ -175,6 +175,13 @@ export default async function PedalPage({
               <BookmarkButton kind="original" slug={pedal.slug} />
               <AdminTools kind="original" slug={pedal.slug} />
             </div>
+
+            <Link
+              href={`/suggest?kind=original&slug=${pedal.slug}`}
+              className="mt-3 block text-xs font-bold text-stone-500 underline underline-offset-4 transition-colors hover:text-amber-700"
+            >
+              Suggest a change
+            </Link>
           </div>
         </div>
       </section>

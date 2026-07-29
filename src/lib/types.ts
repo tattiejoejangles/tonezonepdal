@@ -44,9 +44,18 @@ export const CATEGORIES = [
   "octave",
   "eq",
   "reverb",
-  // Amps sit in the same model as pedals: an expensive original with cheaper
-  // alternatives against it. They get their own section rather than a genre.
+  // Amps sit in the same model as pedals - an expensive original with cheaper
+  // alternatives against it - but they browse separately, and "amps" on its
+  // own turned out to be too coarse: a valve combo, a modelling box and a
+  // speaker cab are not alternatives to one another.
+  //
+  // `amp` is kept as the generic bucket so existing rows stay valid against
+  // the CHECK constraint; supabase/seed/06-amp-categories.sql reclassifies
+  // them and everything new should use one of the specific ones.
   "amp",
+  "amp-valve",
+  "amp-modelling",
+  "amp-cab",
 ] as const;
 
 export type Category = (typeof CATEGORIES)[number];

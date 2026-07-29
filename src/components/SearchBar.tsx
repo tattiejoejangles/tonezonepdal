@@ -1,6 +1,7 @@
 "use client";
 
-import { useRef } from "react";
+import { useRouter } from "next/navigation";
+import { useId, useRef } from "react";
 
 import { SearchSuggestions, useSuggestions } from "./SearchSuggestions";
 import type { SearchIndex } from "@/lib/search-index";
@@ -10,20 +11,47 @@ export function SearchBar({
   onChange,
   index,
   tone = "light",
+  placeholder = "Search a pedal - “Tube Screamer”, “HM-2”, “delay”…",
+  submitTo,
 }: {
   value: string;
   onChange: (value: string) => void;
+  placeholder?: string;
   /** Pedals to suggest as you type. */
   index: SearchIndex;
   tone?: "light" | "dark";
+  /**
+   * Where enter goes, e.g. "/pedals". Omit on a page that already filters as
+   * you type - there, submitting has nowhere to go and the form would just
+   * reload the page.
+   */
+  submitTo?: string;
 }) {
   const dark = tone === "dark";
+  const router = useRouter();
   const inputRef = useRef<HTMLInputElement>(null);
   const suggest = useSuggestions(index, value);
+  // Generated: this renders in the hero and again on the browse pages, and a
+  // hardcoded id put two of them in one document with a label pointing at
+  // whichever came first.
+  const inputId = useId();
+
+  function submit(event: React.FormEvent) {
+    event.preventDefault();
+    if (!submitTo) return;
+    suggest.dismiss();
+    const trimmed = value.trim();
+    router.push(trimmed ? `${submitTo}?q=${encodeURIComponent(trimmed)}` : submitTo);
+  }
+
+  const Wrapper = submitTo ? "form" : "div";
 
   return (
-    <div className="w-full">
-      <label htmlFor="pedal-search" className="sr-only">
+    <Wrapper
+      className="w-full"
+      {...(submitTo ? { onSubmit: submit, role: "search" } : {})}
+    >
+      <label htmlFor={inputId} className="sr-only">
         Search for a pedal
       </label>
 
@@ -51,12 +79,12 @@ export function SearchBar({
           </svg>
 
           <input
-            id="pedal-search"
+            id={inputId}
             ref={inputRef}
             type="search"
             value={value}
             onChange={(event) => onChange(event.target.value)}
-            placeholder="Search a pedal - “Tube Screamer”, “HM-2”, “delay”…"
+            placeholder={placeholder}
             autoComplete="off"
             {...suggest.inputProps}
             className={`w-full rounded-full border-0 py-4 pr-24 pl-14 text-base font-medium outline-none ${
@@ -93,6 +121,6 @@ export function SearchBar({
           />
         )}
       </div>
-    </div>
+    </Wrapper>
   );
 }

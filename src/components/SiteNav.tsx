@@ -2,43 +2,46 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { useId, useState } from "react";
+import { useId, useRef, useState } from "react";
 
 import { HeaderSearch } from "./HeaderSearch";
 import type { SearchIndex } from "@/lib/search-index";
 import type { Genre } from "@/lib/sections";
 
+export interface NavSection {
+  /** Where "Browse all" goes, e.g. /pedals. */
+  href: string;
+  label: string;
+  /** Genres listed inside the dropdown. */
+  genres: Genre[];
+  /** Base path each genre hangs off, e.g. /pedals. */
+  genreBase: string;
+}
+
 /**
- * The header's navigation, mobile first.
+ * The header's navigation.
  *
- * The previous header laid the wordmark, a genre dropdown, two links and a
- * 20rem search box out in a single row and let them shrink. Below about 500px
- * that ran out of room: the search field collapsed to a sliver and the links
- * were pushed off the right edge.
+ * Three sections - Pedals, Amps, Boards. The first two open a menu of their
+ * genres with a "Browse all" at the foot, so the dropdown answers both "take
+ * me to fuzz" and "show me everything" without needing two controls.
  *
- * Now there are two layouts. Under `md` the bar carries the wordmark and a
- * disclosure button, and everything else - search first, then the links -
- * drops into a panel underneath at full width. From `md` up it is the
- * original single row.
- *
- * The panel closes on navigation, which `usePathname` reports; without that,
- * tapping a link leaves the menu hanging open over the page you just asked
- * for.
+ * Desktop opens on hover *and* click; a hover-only menu is unreachable by
+ * keyboard and unusable on a touchscreen laptop. Under `md` the whole thing
+ * collapses into one panel, where sections are always expanded - a dropdown
+ * inside a dropdown is a worse phone experience than a slightly longer list.
  */
 export function SiteNav({
   searchIndex,
-  genres,
+  sections,
 }: {
   searchIndex: SearchIndex;
-  genres: Genre[];
+  sections: NavSection[];
 }) {
   const [open, setOpen] = useState(false);
   const panelId = useId();
   const pathname = usePathname();
 
-  // Close on navigation. Adjusted during render rather than in an effect -
-  // that's the documented way to reset state when an external value changes,
-  // and it avoids the panel painting once over the page you just asked for.
+  // Close on navigation, adjusted during render rather than in an effect.
   const [lastPath, setLastPath] = useState(pathname);
   if (pathname !== lastPath) {
     setLastPath(pathname);
@@ -47,7 +50,6 @@ export function SiteNav({
 
   return (
     <>
-      {/* Mobile: the toggle. Hidden from md up, where the row layout fits. */}
       <button
         type="button"
         aria-expanded={open}
@@ -69,44 +71,163 @@ export function SiteNav({
         </svg>
       </button>
 
-      {/* Desktop row. */}
       <nav
         aria-label="Main"
         className="ml-auto hidden items-center gap-5 md:flex lg:gap-7"
       >
-        <NavLink href="/pedals">All pedals</NavLink>
-        <NavLink href="/pedals/amps">Amps</NavLink>
+        {sections.map((section) =>
+          section.genres.length > 0 ? (
+            <NavDropdown key={section.href} section={section} />
+          ) : (
+            <NavLink key={section.href} href={section.href}>
+              {section.label}
+            </NavLink>
+          ),
+        )}
         <NavLink href="/saved">Saved</NavLink>
-        <div className="w-56 lg:w-72">
+        <div className="w-56 lg:w-64">
           <HeaderSearch index={searchIndex} />
         </div>
       </nav>
 
-      {/* Mobile panel. Full width, search first - it is what people came for. */}
       {open && (
         <div
           id={panelId}
-          className="tz-pop absolute inset-x-0 top-full border-b border-stone-200/70 bg-white/95 shadow-lg backdrop-blur-md md:hidden"
+          className="tz-pop absolute inset-x-0 top-full max-h-[75dvh] overflow-y-auto overscroll-contain border-b border-stone-200/70 bg-white/95 shadow-lg backdrop-blur-md md:hidden"
         >
-          <div className="tz-page space-y-4 py-4">
+          <div className="tz-page space-y-5 py-4">
             <HeaderSearch index={searchIndex} />
 
-            <nav aria-label="Main" className="grid gap-1">
-              <PanelLink href="/pedals">All pedals</PanelLink>
-              {genres.map((genre) => (
-                <PanelLink key={genre.id} href={`/pedals/${genre.id}`} indent>
-                  {genre.label}
-                </PanelLink>
+            <nav aria-label="Main" className="space-y-4">
+              {sections.map((section) => (
+                <div key={section.href}>
+                  <PanelLink href={section.href}>{section.label}</PanelLink>
+                  {section.genres.map((genre) => (
+                    <PanelLink
+                      key={genre.id}
+                      href={`${section.genreBase}/${genre.id}`}
+                      indent
+                    >
+                      {genre.label}
+                    </PanelLink>
+                  ))}
+                  {section.genres.length > 0 && (
+                    <PanelLink href={section.href} indent muted>
+                      Browse all {section.label.toLowerCase()} →
+                    </PanelLink>
+                  )}
+                </div>
               ))}
-              <PanelLink href="/pedals/amps" indent>
-                Amps
-              </PanelLink>
               <PanelLink href="/saved">Saved</PanelLink>
             </nav>
           </div>
         </div>
       )}
     </>
+  );
+}
+
+function NavDropdown({ section }: { section: NavSection }) {
+  const [clickOpen, setClickOpen] = useState(false);
+  const [hoverOpen, setHoverOpen] = useState(false);
+  const menuId = useId();
+  const triggerRef = useRef<HTMLButtonElement>(null);
+
+  const open = clickOpen || hoverOpen;
+
+  function close() {
+    setClickOpen(false);
+    setHoverOpen(false);
+  }
+
+  return (
+    <div
+      className="relative"
+      onMouseEnter={() => setHoverOpen(true)}
+      onMouseLeave={() => setHoverOpen(false)}
+      onKeyDown={(event) => {
+        if (event.key === "Escape" && open) {
+          event.preventDefault();
+          close();
+          triggerRef.current?.focus();
+        } else if (event.key === "ArrowDown") {
+          event.preventDefault();
+          setClickOpen(true);
+        }
+      }}
+      onBlur={(event) => {
+        if (!event.currentTarget.contains(event.relatedTarget)) close();
+      }}
+    >
+      <button
+        ref={triggerRef}
+        type="button"
+        aria-haspopup="true"
+        aria-expanded={open}
+        aria-controls={menuId}
+        onClick={() => setClickOpen((value) => !value)}
+        className="flex items-center gap-1.5 rounded text-xs font-bold tracking-wider text-stone-500 uppercase transition-colors hover:text-amber-700 focus-visible:ring-2 focus-visible:ring-amber-500 focus-visible:outline-none"
+      >
+        {section.label}
+        <svg
+          viewBox="0 0 24 24"
+          aria-hidden
+          className={`h-3 w-3 transition-transform ${open ? "rotate-180" : ""}`}
+          fill="none"
+          stroke="currentColor"
+          strokeWidth="3"
+        >
+          <path d="m6 9 6 6 6-6" />
+        </svg>
+      </button>
+
+      {open && (
+        // No gap between trigger and panel: a few pixels of dead space is
+        // enough for the pointer to leave both and close the menu mid-reach.
+        <div
+          id={menuId}
+          className="tz-pop absolute top-full left-1/2 z-40 w-72 -translate-x-1/2 pt-3"
+        >
+          <div className="tz-chamfer overflow-hidden bg-white shadow-2xl ring-1 ring-stone-200">
+            {section.genres.map((genre) => (
+              <Link
+                key={genre.id}
+                href={`${section.genreBase}/${genre.id}`}
+                onClick={close}
+                className="block border-b border-stone-100 px-4 py-3 transition-colors hover:bg-amber-50 focus-visible:bg-amber-50 focus-visible:outline-none"
+              >
+                <span className="block text-sm font-bold text-stone-900">
+                  {genre.label}
+                </span>
+                {genre.blurb && (
+                  <span className="tz-body mt-0.5 block text-xs text-stone-500">
+                    {genre.blurb}
+                  </span>
+                )}
+              </Link>
+            ))}
+
+            <Link
+              href={section.href}
+              onClick={close}
+              className="flex items-center justify-between gap-2 bg-stone-50 px-4 py-3 text-xs font-bold tracking-wider text-stone-700 uppercase transition-colors hover:bg-amber-50 hover:text-amber-800 focus-visible:bg-amber-50 focus-visible:outline-none"
+            >
+              Browse all {section.label.toLowerCase()}
+              <svg
+                viewBox="0 0 24 24"
+                aria-hidden
+                className="h-3.5 w-3.5"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="3"
+              >
+                <path d="m9 6 6 6-6 6" />
+              </svg>
+            </Link>
+          </div>
+        </div>
+      )}
+    </div>
   );
 }
 
@@ -126,17 +247,19 @@ function PanelLink({
   href,
   children,
   indent = false,
+  muted = false,
 }: {
   href: string;
   children: React.ReactNode;
   indent?: boolean;
+  muted?: boolean;
 }) {
   return (
     <Link
       href={href}
-      className={`flex min-h-11 items-center rounded-lg px-3 text-sm font-bold text-stone-800 transition-colors hover:bg-amber-50 focus-visible:bg-amber-50 focus-visible:outline-none ${
-        indent ? "pl-7 text-stone-600" : ""
-      }`}
+      className={`flex min-h-11 items-center rounded-lg px-3 text-sm font-bold transition-colors hover:bg-amber-50 focus-visible:bg-amber-50 focus-visible:outline-none ${
+        indent ? "pl-7" : ""
+      } ${muted ? "text-amber-700" : indent ? "text-stone-600" : "text-stone-900"}`}
     >
       {children}
     </Link>
