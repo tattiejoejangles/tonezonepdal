@@ -25,18 +25,18 @@ export default async function AdminPage() {
   // is missing - and falls back to the bundled copy if Supabase is down.
   const catalogue = await getCatalogue();
   const originals: OriginalOption[] = catalogue
-    .map(({ id, name, brand }) => ({ id, name, brand }))
+    .map(({ id, name, brand, category }) => ({ id, name, brand, category }))
     .sort((a, b) => a.name.localeCompare(b.name));
 
   // Only writes need the service role key; the page still renders without it.
   const canWrite = getAdminSupabase() !== null;
 
   return (
-    <div className="mx-auto max-w-3xl px-4 py-10 sm:px-6">
+    <div className="tz-page tz-page--narrow py-10">
       <div className="mb-8 flex flex-wrap items-end justify-between gap-4 border-b-2 border-stone-900/10 pb-5">
         <div>
           <p className="tz-eyebrow text-amber-700">The Tone Zone</p>
-          <h1 className="tz-heading mt-1.5 text-3xl text-stone-900">Add a pedal</h1>
+          <h1 className="tz-heading mt-1.5 text-3xl text-stone-900">Add gear</h1>
           <p className="tz-body mt-2 text-sm text-stone-600">
             Writes straight to Supabase. Pages pick it up within five minutes,
             or immediately on the next visit.

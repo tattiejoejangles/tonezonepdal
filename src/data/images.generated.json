@@ -258,5 +258,11 @@
     "source": "thomann",
     "confidence": "medium",
     "matchedTitle": "Tone City Matcha Cream - Fuzz"
+  },
+  "behringer-dd400-digital-delay": {
+    "url": "https://m.media-amazon.com/images/I/51pqw9MkeaL._AC_SL600_.jpg",
+    "source": "amazon",
+    "confidence": "high",
+    "matchedTitle": "Behringer DD400 Digital Delay Guitar Stomp Box Pedal"
   }
 }

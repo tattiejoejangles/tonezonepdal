@@ -20,10 +20,13 @@ export function AlternativesPanel({
   items,
   originalName,
   originalPrice,
+  noun = "pedal",
 }: {
   items: AlternativeView[];
   originalName: string;
   originalPrice: number;
+  /** "pedal" or "amp" - amps are not pedals and the copy shouldn't say so. */
+  noun?: string;
 }) {
   const [sort, setSort] = useState<SortId>("price-asc");
   const [openSlug, setOpenSlug] = useState<string | null>(null);
@@ -56,8 +59,8 @@ export function AlternativesPanel({
           <h2 className="tz-heading text-2xl text-stone-900">Cheaper alternatives</h2>
           <p className="tz-body mt-1 text-sm text-stone-500">
             {items.length === 1
-              ? `One budget pedal that gets you close to the ${originalName}.`
-              : `${items.length} budget pedals that get you close to the ${originalName}.`}
+              ? `One budget ${noun} that gets you close to the ${originalName}.`
+              : `${items.length} budget ${noun}s that get you close to the ${originalName}.`}
           </p>
         </div>
 

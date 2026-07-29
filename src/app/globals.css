@@ -32,6 +32,46 @@ html {
   -webkit-text-size-adjust: 100%;
 }
 
+/* ---------------------------------------------------------------------------
+   The content column.
+
+   One class instead of `mx-auto max-w-6xl px-4 sm:px-6` repeated on seven
+   pages, because the header, the footer and every page body have to agree on
+   where the column edge is - and when they were written out longhand they
+   quietly drifted apart.
+
+   84rem, up from max-w-6xl (72rem). The old width left ~170px of empty gutter
+   either side on a 1440 screen while the middle column of a pedal hero was
+   squeezed to 468px, so the page was simultaneously too wide and too narrow.
+   The gutter grows a little at xl, which is the one place a wide column can
+   afford to breathe.
+   --------------------------------------------------------------------------- */
+.tz-page {
+  width: 100%;
+  max-width: 84rem;
+  margin-inline: auto;
+  padding-inline: 1rem;
+}
+
+@media (min-width: 640px) {
+  .tz-page {
+    padding-inline: 1.5rem;
+  }
+}
+
+@media (min-width: 1280px) {
+  .tz-page {
+    padding-inline: 2rem;
+  }
+}
+
+/* The narrow variant: forms and single-column reading, where a wide measure
+   would be actively worse. Same gutters, so it still lines up with the header
+   above it. */
+.tz-page--narrow {
+  max-width: 48rem;
+}
+
 body {
   min-height: 100vh;
   /* iOS counts 100vh as the height *behind* the toolbars, so a full-height
@@ -48,6 +88,76 @@ body {
 
 input[type="search"]::-webkit-search-cancel-button {
   appearance: none;
+}
+
+/* ---------------------------------------------------------------------------
+   Range inputs, for the dual-handle price filter.
+
+   Two of these sit exactly on top of each other. The trick that makes that
+   work: the input itself is transparent and ignores pointer events, and only
+   the thumb takes them back. Without that, whichever input is painted second
+   would swallow every click across the whole track and the other handle would
+   be unreachable.
+   --------------------------------------------------------------------------- */
+.tz-range {
+  appearance: none;
+  background: transparent;
+  pointer-events: none;
+  margin: 0;
+  height: 100%;
+}
+
+.tz-range:focus {
+  outline: none;
+}
+
+.tz-range::-webkit-slider-thumb {
+  appearance: none;
+  pointer-events: auto;
+  height: 1.05rem;
+  width: 1.05rem;
+  border-radius: 9999px;
+  background: #fff;
+  border: 2px solid var(--tz-ink);
+  box-shadow: var(--tz-shadow);
+  cursor: grab;
+  transition: transform 150ms cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+
+.tz-range::-moz-range-thumb {
+  pointer-events: auto;
+  height: 1.05rem;
+  width: 1.05rem;
+  border-radius: 9999px;
+  background: #fff;
+  border: 2px solid var(--tz-ink);
+  box-shadow: var(--tz-shadow);
+  cursor: grab;
+}
+
+.tz-range::-webkit-slider-thumb:hover {
+  transform: scale(1.12);
+}
+
+.tz-range::-webkit-slider-thumb:active {
+  cursor: grabbing;
+}
+
+/* The focus ring has to go on the thumb - the input has no visible box. */
+.tz-range:focus-visible::-webkit-slider-thumb {
+  border-color: #ea580c;
+  box-shadow: 0 0 0 4px rgba(234, 88, 12, 0.3);
+}
+
+.tz-range:focus-visible::-moz-range-thumb {
+  border-color: #ea580c;
+  box-shadow: 0 0 0 4px rgba(234, 88, 12, 0.3);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .tz-range::-webkit-slider-thumb {
+    transition: none;
+  }
 }
 
 /* iOS Safari zooms the whole viewport when a focused field's font-size is
@@ -343,6 +453,79 @@ input[type="search"]::-webkit-search-cancel-button {
   }
   to {
     background-position: 880px 620px;
+  }
+}
+
+/* ---------------------------------------------------------------------------
+   The "legendary" treatment, for originals.
+
+   Originals and clones are both just cards, and telling them apart used to
+   mean reading the label. Now the original carries warmth - a tinted surface,
+   a gilt edge and a slow sheen that crosses it - and the clone is left plain
+   white. The contrast is what does the work, so the clone deliberately gets
+   NO accent rather than a different one; two decorated cards read as two
+   flavours, one decorated and one plain reads as a hierarchy.
+
+   The sheen is a transform on a pseudo-element, so it stays on the compositor.
+   --------------------------------------------------------------------------- */
+.tz-legend {
+  position: relative;
+  isolation: isolate;
+  background:
+    linear-gradient(160deg, rgba(255, 247, 237, 0.9) 0%, rgba(255, 255, 255, 0.95) 42%),
+    #fff;
+}
+
+.tz-legend::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 3;
+  pointer-events: none;
+  border-radius: inherit;
+  background: linear-gradient(
+    104deg,
+    transparent 34%,
+    rgba(255, 255, 255, 0.65) 47%,
+    rgba(255, 224, 178, 0.35) 52%,
+    transparent 66%
+  );
+  transform: translateX(-130%);
+  opacity: 0;
+  transition: opacity 200ms ease;
+}
+
+.tz-legend:hover::after,
+.tz-legend:focus-visible::after {
+  opacity: 1;
+  animation: tz-sheen 1100ms cubic-bezier(0.25, 0.6, 0.3, 1) forwards;
+}
+
+@keyframes tz-sheen {
+  to {
+    transform: translateX(130%);
+  }
+}
+
+/* The gilt edge. A gradient border done as a ring would need two elements; an
+   inset shadow gets the same read in one. */
+.tz-legend-edge {
+  box-shadow:
+    inset 0 0 0 1px rgba(217, 119, 6, 0.28),
+    var(--tz-shadow);
+}
+
+.tz-legend-edge:hover {
+  box-shadow:
+    inset 0 0 0 1px rgba(217, 119, 6, 0.55),
+    var(--tz-shadow-lift);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .tz-legend:hover::after,
+  .tz-legend:focus-visible::after {
+    animation: none;
+    opacity: 0;
   }
 }
 

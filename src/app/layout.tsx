@@ -5,6 +5,7 @@ import Link from "next/link";
 
 import { AmbientBackground } from "@/components/AmbientBackground";
 import { HeaderSearch } from "@/components/HeaderSearch";
+import { TzLockup } from "@/components/Logo";
 import { NavMenu } from "@/components/NavMenu";
 import { Wordmark } from "@/components/Wordmark";
 import { getSearchIndex } from "@/data/catalogue";
@@ -14,11 +15,11 @@ import "./globals.css";
 
 export const metadata: Metadata = {
   title: {
-    default: "The Tone Zone - Budget alternatives to expensive guitar pedals",
+    default: "The Tone Zone - Budget alternatives to expensive pedals and amps",
     template: "%s - The Tone Zone",
   },
   description:
-    "Find cheap, well-reviewed clones of expensive guitar pedals. Honest pros and cons, real savings, and where to buy.",
+    "Find cheap, well-reviewed alternatives to expensive guitar pedals and amps. Honest pros and cons, real savings, and where to buy.",
 };
 
 export default async function RootLayout({
@@ -48,7 +49,7 @@ export default async function RootLayout({
 function SiteHeader({ searchIndex }: { searchIndex: SearchIndex }) {
   return (
     <header className="sticky top-0 z-30 border-b border-stone-200/70 bg-white/85 backdrop-blur-md">
-      <div className="mx-auto flex max-w-6xl items-center gap-4 px-4 py-3 sm:px-6">
+      <div className="tz-page flex items-center gap-4 py-3">
         <Wordmark />
 
         {/* Pedals, Saved, then search - navigation first, the tool last. */}
@@ -87,17 +88,33 @@ function SiteHeader({ searchIndex }: { searchIndex: SearchIndex }) {
 function SiteFooter() {
   return (
     <footer className="mt-16 border-t border-stone-200/70 bg-white/60">
-      <div className="mx-auto max-w-6xl space-y-3 px-4 py-10 text-sm text-stone-500 sm:px-6">
-        <p className="text-base font-bold text-stone-700">The Tone Zone</p>
-        <p className="tz-body max-w-2xl">
-          Prices are approximate UK street prices and change constantly - always check
-          the retailer before buying. Some outbound links are affiliate links, which
-          means we may earn a commission at no extra cost to you.
-        </p>
-        <p className="text-xs text-stone-400">
-          All pedal and brand names are trademarks of their respective owners, used here
-          for identification and comparison only.
-        </p>
+      {/* Two lanes on desktop: the mark on the left, the small print on the
+          right. The footer is the one place with room for the full lockup, and
+          the wide waveform is what stops a bare block of legal text reading as
+          the page having simply run out. */}
+      <div className="tz-page grid gap-8 py-10 text-sm text-stone-500 md:grid-cols-[minmax(0,18rem)_1fr] md:gap-14">
+        <div>
+          <TzLockup
+            className="h-12 w-auto text-stone-800"
+            title="The Tone Zone"
+          />
+          <p className="mt-3 text-base font-bold text-stone-700">The Tone Zone</p>
+          <p className="tz-body mt-1 text-xs text-stone-400">
+            Great tone, not boutique prices.
+          </p>
+        </div>
+
+        <div className="space-y-3">
+          <p className="tz-body max-w-2xl">
+            Prices are approximate UK street prices and change constantly - always check
+            the retailer before buying. Some outbound links are affiliate links, which
+            means we may earn a commission at no extra cost to you.
+          </p>
+          <p className="max-w-2xl text-xs text-stone-400">
+            All product and brand names are trademarks of their respective owners, used
+            here for identification and comparison only.
+          </p>
+        </div>
       </div>
     </footer>
   );

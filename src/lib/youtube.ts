@@ -9,9 +9,15 @@ import { cache } from "react";
  *
  * Get a key at console.cloud.google.com: create a project, enable "YouTube
  * Data API v3", then create an API key. The free quota is 10,000 units a day
- * and a search costs 100, so ~100 distinct pedals per day. Results are cached
- * per render pass and the pages hold them for their revalidate window, so real
- * usage sits far below that.
+ * and a search costs 100, so ~100 distinct searches per day.
+ *
+ * That quota CANNOT be bought. Enabling billing on the Google Cloud project
+ * does nothing for it - the only way up is Google's "YouTube API Services
+ * Audit and Quota Extension" form, which is a review, not a payment. So the
+ * only lever on this side is spending fewer units, which is what the
+ * `Outcome` type below is for: a lookup that failed because the quota is gone
+ * must not be retried on a short timer, or every retry burns another 100 units
+ * and the project never climbs out.
  */
 
 export interface Demo {
@@ -20,6 +26,18 @@ export interface Demo {
   channel: string;
 }
 
+/**
+ * Why a lookup returned what it did, so the caller can cache accordingly.
+ *
+ * - `ok`       real results, cache hard
+ * - `empty`    the search genuinely found nothing, cache for a while
+ * - `blocked`  no key, quota exhausted, or the API said no - back right off
+ */
+export type Outcome =
+  | { status: "ok"; demos: Demo[] }
+  | { status: "empty" }
+  | { status: "blocked"; reason: "no-key" | "quota" | "error" };
+
 const ENDPOINT = "https://www.googleapis.com/youtube/v3/search";
 
 interface SearchItem {
@@ -27,9 +45,9 @@ interface SearchItem {
   snippet?: { title?: string; channelTitle?: string };
 }
 
-async function search(query: string, limit: number): Promise<Demo[] | null> {
-  const key = process.env.YOUTUBE_API_KEY;
-  if (!key) return null;
+async function search(query: string, limit: number): Promise<Outcome> {
+  const key = process.env.YOUTUBE_API_KEY?.trim();
+  if (!key) return { status: "blocked", reason: "no-key" };
 
   const url = new URL(ENDPOINT);
   url.searchParams.set("key", key);
@@ -50,22 +68,28 @@ async function search(query: string, limit: number): Promise<Demo[] | null> {
     });
 
     if (!response.ok) {
-      console.error("[youtube] search failed:", response.status);
-      return null;
+      // 403 and 429 are both how the API reports an exhausted daily quota.
+      const quota = response.status === 429 || response.status === 403;
+      console.error(
+        `[youtube] search failed: ${response.status}${quota ? " (daily quota gone - this is not buyable, see the note above)" : ""}`,
+      );
+      return { status: "blocked", reason: quota ? "quota" : "error" };
     }
 
     const data = (await response.json()) as { items?: SearchItem[] };
 
-    return (data.items ?? [])
+    const demos = (data.items ?? [])
       .map((item) => ({
         videoId: item.id?.videoId ?? "",
         title: item.snippet?.title ?? "",
         channel: item.snippet?.channelTitle ?? "",
       }))
       .filter((demo) => demo.videoId !== "");
+
+    return demos.length > 0 ? { status: "ok", demos } : { status: "empty" };
   } catch (error) {
     console.error("[youtube] search errored:", error);
-    return null;
+    return { status: "blocked", reason: "error" };
   }
 }
 
@@ -74,7 +98,7 @@ export const findDemos = cache(async function findDemos(
   brand: string,
   name: string,
   limit = 3,
-): Promise<Demo[] | null> {
+): Promise<Outcome> {
   // Names usually already lead with the brand; repeating it narrows the search
   // to nothing on pedals like "Boss BD-2 Blues Driver".
   const subject = name.toLowerCase().startsWith(brand.toLowerCase())

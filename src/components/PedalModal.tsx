@@ -9,6 +9,7 @@ import { PedalImage } from "./PedalImage";
 import { ProsCons } from "./ProsCons";
 import { RetailerButtons } from "./RetailerButtons";
 import { SavingsBadge } from "./SavingsBadge";
+import { ArtistChips, SpecList } from "./SpecList";
 import { calculateSavings, formatPrice } from "@/lib/format";
 import type { Alternative, PedalDetail } from "@/lib/types";
 
@@ -206,22 +207,10 @@ role="presentation"
 
                 <Panel>
                   {detail.specsKnown ? (
-                    <dl className="divide-y divide-stone-100">
-                      {detail.specs.map((spec) => (
-                        <div key={spec.label} className="flex gap-3 py-2">
-                          <dt className="w-28 shrink-0 text-xs font-bold text-stone-500">
-                            {spec.label}
-                          </dt>
-                          <dd className="tz-body min-w-0 text-sm text-stone-700">
-                            {spec.value}
-                          </dd>
-                        </div>
-                      ))}
-                    </dl>
+                    <SpecList specs={detail.specs} size="sm" />
                   ) : (
                     <p className="tz-body text-sm text-stone-500">
-                      We haven&apos;t confirmed this pedal&apos;s specs yet, so
-                      rather than guess we&apos;re leaving it blank.
+                      Not confirmed yet.
                     </p>
                   )}
                 </Panel>
@@ -231,27 +220,17 @@ role="presentation"
                     <>
                       <p className="tz-body mb-3 text-sm text-stone-600">
                         {detail.artistsAreForOriginal
-                          ? `No documented users of this clone specifically - these players are associated with the ${originalName}, the circuit it copies.`
-                          : "Known users of this pedal."}
+                          ? `Associated with the ${originalName}, the circuit this copies.`
+                          : "Known users."}
                       </p>
-                      <ul className="flex flex-wrap gap-2">
-                        {detail.artists.map((artist) => (
-                          <li
-                            key={artist}
-                            className={`px-3 py-1.5 text-xs font-bold ${
-                              detail.artistsAreForOriginal
-                                ? "bg-stone-100 text-stone-600"
-                                : "bg-linear-to-br from-stone-800 to-stone-900 text-white"
-                            }`}
-                          >
-                            {artist}
-                          </li>
-                        ))}
-                      </ul>
+                      <ArtistChips
+                        artists={detail.artists}
+                        muted={detail.artistsAreForOriginal}
+                      />
                     </>
                   ) : (
                     <p className="tz-body text-sm text-stone-500">
-                      No artist associations recorded for this pedal yet.
+                      None recorded yet.
                     </p>
                   )}
                 </Panel>

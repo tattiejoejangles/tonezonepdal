@@ -111,7 +111,15 @@ export async function login(
 
   const password = text(form, "password");
   if (!password) return fail("Enter the password.");
-  if (!passwordMatches(password)) return fail("That password isn't right.");
+  if (!passwordMatches(password)) {
+    // The hint is here because the two ways this fails on a deploy but not
+    // locally are both invisible from the browser: a stray newline pasted onto
+    // the end of the value, and a value that was changed without redeploying
+    // (Vercel bakes environment variables in at build time).
+    return fail(
+      "That password isn't right. If it works locally but not here, check ADMIN_PASSWORD in the Vercel project settings for a stray space or newline, and redeploy after changing it.",
+    );
+  }
 
   const token = sessionToken();
   if (!token) return fail("Admin isn't configured.");

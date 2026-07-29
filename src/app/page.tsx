@@ -1,6 +1,6 @@
 import { Directory } from "@/components/Directory";
 import { HomeSections } from "@/components/HomeSections";
-import { getCatalogue } from "@/data/catalogue";
+import { getCatalogue, getDetail } from "@/data/catalogue";
 import { findOfTheDay, groupByGenre } from "@/lib/sections";
 
 /**
@@ -20,12 +20,21 @@ export default async function HomePage() {
   const find = findOfTheDay(catalogue);
   const groups = groupByGenre(catalogue);
 
+  // The whole Find of the Day card opens the detail dialog, so its detail is
+  // resolved here rather than fetched when the card is clicked. Artists fall
+  // back to the original's, same rule the pedal pages use.
+  const findDetail = find
+    ? getDetail(find.alternative, find.original.artists ?? [])
+    : undefined;
+
   return (
     // No max-width here: the hero is full-bleed and Directory applies the
     // content column to everything below it.
     <Directory
       catalogue={catalogue}
-      idleContent={<HomeSections find={find} groups={groups} />}
+      idleContent={
+        <HomeSections find={find} findDetail={findDetail} groups={groups} />
+      }
     />
   );
 }

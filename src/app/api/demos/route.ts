@@ -24,19 +24,36 @@ export async function GET(request: Request) {
     return NextResponse.json({ error: "brand and name required" }, { status: 400 });
   }
 
-  const configured = Boolean(process.env.YOUTUBE_API_KEY);
-  const demos = await findDemos(brand, name);
+  const outcome = await findDemos(brand, name);
+
+  /**
+   * How long the CDN holds this answer.
+   *
+   * The old version cached every non-result for 10 minutes, which is what
+   * turned one exhausted quota into a permanent one: each expiry sent another
+   * search, each search cost 100 of the 10,000 daily units, and the quota
+   * never recovered enough to serve anyone. A blocked lookup is now held for
+   * six hours - long enough for the daily reset to land - and a genuinely
+   * empty search for a day, since a pedal with no demos today will not have
+   * any tomorrow either.
+   */
+  const maxAge =
+    outcome.status === "ok"
+      ? 2592000 // 30 days - demos for a ten-year-old pedal don't change
+      : outcome.status === "empty"
+        ? 86400 // a day
+        : 21600; // six hours, and no faster
 
   return NextResponse.json(
-    { configured, demos: demos ?? [] },
+    {
+      demos: outcome.status === "ok" ? outcome.demos : [],
+      // Surfaced for debugging, not shown to visitors.
+      status: outcome.status,
+      reason: outcome.status === "blocked" ? outcome.reason : undefined,
+    },
     {
       headers: {
-        // Long shared cache, short revalidate window. A failed lookup is not
-        // cached for a month because `demos` is empty and the client treats
-        // empty as "nothing yet" rather than a permanent answer.
-        "cache-control": demos && demos.length > 0
-          ? "public, s-maxage=2592000, stale-while-revalidate=86400"
-          : "public, s-maxage=600",
+        "cache-control": `public, s-maxage=${maxAge}, stale-while-revalidate=86400`,
       },
     },
   );

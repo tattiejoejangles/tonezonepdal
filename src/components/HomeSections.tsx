@@ -1,6 +1,7 @@
 import { FindOfDayCard } from "./FindOfDayCard";
 import { GenreSection } from "./GenreSection";
 import type { DailyFind, GenreGroup } from "@/lib/sections";
+import type { PedalDetail } from "@/lib/types";
 
 /**
  * The curated home page body: today's bargain, then the genre bands.
@@ -13,14 +14,19 @@ import type { DailyFind, GenreGroup } from "@/lib/sections";
  */
 export function HomeSections({
   find,
+  findDetail,
   groups,
 }: {
   find: DailyFind | undefined;
+  /** Resolved on the server so the card's dialog opens without a round trip. */
+  findDetail: PedalDetail | undefined;
   groups: GenreGroup[];
 }) {
   return (
     <div className="space-y-12">
-      {find ? <FindOfDayCard find={find} /> : null}
+      {find && findDetail ? (
+        <FindOfDayCard find={find} detail={findDetail} />
+      ) : null}
       {groups.map((group) => (
         <GenreSection key={group.genre.id} group={group} />
       ))}

@@ -20,6 +20,27 @@ import { cookies } from "next/headers";
 
 export const ADMIN_COOKIE = "tz_admin";
 
+/**
+ * The configured password, with surrounding whitespace removed.
+ *
+ * Trimming matters. Pasting a password into the Vercel dashboard very easily
+ * carries a trailing newline or space, and Vercel stores the value verbatim -
+ * so `ADMIN_PASSWORD` arrives as "password\n" while the form submits the
+ * trimmed "password", and the gate rejects a password that looks correct in
+ * both places. A local `.env` file hides the problem because the parser strips
+ * the line ending for you.
+ *
+ * Trimming can only ever remove leading/trailing whitespace from a password,
+ * which is not something anyone can type into the form and have survive
+ * anyway - the form input is trimmed too, so the two sides now agree.
+ */
+function configuredPassword(): string | null {
+  const raw = process.env.ADMIN_PASSWORD;
+  if (typeof raw !== "string") return null;
+  const trimmed = raw.trim();
+  return trimmed === "" ? null : trimmed;
+}
+
 function tokenFor(password: string): string {
   return createHash("sha256").update(`thetonezone:${password}`).digest("hex");
 }
@@ -32,12 +53,12 @@ function sameToken(a: string, b: string): boolean {
 }
 
 export function isAdminConfigured(): boolean {
-  return Boolean(process.env.ADMIN_PASSWORD);
+  return configuredPassword() !== null;
 }
 
 /** The cookie value a correct password produces. */
 export function sessionToken(): string | null {
-  const password = process.env.ADMIN_PASSWORD;
+  const password = configuredPassword();
   return password ? tokenFor(password) : null;
 }
 

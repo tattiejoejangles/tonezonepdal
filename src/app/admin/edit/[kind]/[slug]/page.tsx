@@ -28,7 +28,7 @@ export default async function EditPedalPage({
 
   const catalogue = await getCatalogue();
   const originals: OriginalOption[] = catalogue
-    .map(({ id, name, brand }) => ({ id, name, brand }))
+    .map(({ id, name, brand, category }) => ({ id, name, brand, category }))
     .sort((a, b) => a.name.localeCompare(b.name));
 
   let draft: PedalDraft;
@@ -88,7 +88,7 @@ export default async function EditPedalPage({
   const viewHref = kind === "original" ? `/pedal/${slug}` : `/clone/${slug}`;
 
   return (
-    <div className="mx-auto max-w-3xl px-4 py-10 sm:px-6">
+    <div className="tz-page tz-page--narrow py-10">
       <nav aria-label="Breadcrumb" className="mb-6 flex flex-wrap gap-2 text-xs">
         <Link href="/admin" className="tz-eyebrow text-stone-500 hover:text-amber-700">
           Admin

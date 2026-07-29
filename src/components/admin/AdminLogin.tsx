@@ -13,7 +13,7 @@ export function AdminLogin({ configured }: { configured: boolean }) {
     <div className="mx-auto max-w-md px-4 py-16 sm:px-6">
       <h1 className="tz-heading text-3xl text-stone-900">Admin</h1>
       <p className="tz-body mt-2 text-sm text-stone-600">
-        Add pedals to the catalogue.
+        Add gear to the catalogue.
       </p>
 
       {!configured && (

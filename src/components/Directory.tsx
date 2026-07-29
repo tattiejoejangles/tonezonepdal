@@ -8,9 +8,26 @@ import { HeroBackdrop } from "./HeroBackdrop";
 import { CloneCard } from "./CloneCard";
 import { OriginalCard } from "./OriginalCard";
 import { SearchBar } from "./SearchBar";
-import { brandOptions, filterAlternatives, filterCatalogue } from "@/lib/filter";
+import {
+  brandOptions,
+  filterAlternatives,
+  filterCatalogue,
+  isBounded,
+  priceBounds,
+  UNBOUNDED,
+  type PriceRange,
+} from "@/lib/filter";
 import { buildSearchIndex } from "@/lib/search-index";
 import type { OriginalWithAlternatives } from "@/lib/types";
+
+/** What the results grid is showing. */
+type Lens = "all" | "originals" | "budget";
+
+const LENSES: { id: Lens; label: string }[] = [
+  { id: "all", label: "Everything" },
+  { id: "originals", label: "Originals" },
+  { id: "budget", label: "Budget" },
+];
 
 /**
  * The interactive shell of the home page.
@@ -34,6 +51,8 @@ export function Directory({
   const [query, setQuery] = useState(urlQuery);
   const [lastUrlQuery, setLastUrlQuery] = useState(urlQuery);
   const [brand, setBrand] = useState<string | null>(null);
+  const [price, setPrice] = useState<PriceRange>(UNBOUNDED);
+  const [lens, setLens] = useState<Lens | null>(null);
 
   // Searching from the header pushes ?q= and lands here. Adjusting during
   // render rather than in an effect - this is the documented way to reset
@@ -43,23 +62,45 @@ export function Directory({
     setQuery(urlQuery);
   }
 
-  const searching = query.trim() !== "" || brand !== null;
+  const bounds = useMemo(() => priceBounds(catalogue), [catalogue]);
+
+  // Anything the user has done that means "show me a result list" rather than
+  // the curated home page. Picking a lens counts, which is what makes the
+  // "Everything" button work as a plain browse-all entry point.
+  const browsing =
+    query.trim() !== "" || brand !== null || isBounded(price) || lens !== null;
+
+  const active: Lens = lens ?? "all";
 
   const results = useMemo(
-    () => filterCatalogue(catalogue, { query, brand }),
-    [catalogue, query, brand],
+    () =>
+      active === "budget"
+        ? []
+        : filterCatalogue(catalogue, { query, brand, price }),
+    [catalogue, query, brand, price, active],
   );
 
-  // Clones are searchable in their own right - people look up "Behringer
-  // TO800" as often as "Tube Screamer".
+  // Clones are browsable in their own right - people look up "Behringer
+  // TO800" as often as "Tube Screamer", and now they can also just scroll
+  // the lot. `true` lists them with nothing typed.
   const cloneResults = useMemo(
-    () => filterAlternatives(catalogue, { query, brand }),
-    [catalogue, query, brand],
+    () =>
+      active === "originals"
+        ? []
+        : filterAlternatives(catalogue, { query, brand, price }, true),
+    [catalogue, query, brand, price, active],
   );
 
   const brands = useMemo(() => brandOptions(catalogue), [catalogue]);
 
   const total = results.length + cloneResults.length;
+
+  function reset() {
+    setQuery("");
+    setBrand(null);
+    setPrice(UNBOUNDED);
+    setLens(null);
+  }
 
   // Derived from the catalogue this page already holds, so the hero box costs
   // no extra payload - unlike the header, which is handed one by the layout.
@@ -96,62 +137,47 @@ export function Directory({
 
       <div
         id="directory"
-        className="mx-auto max-w-6xl scroll-mt-20 space-y-8 px-4 py-10 sm:px-6"
+        className="tz-page scroll-mt-20 space-y-8 py-10"
       >
         <FilterBar
           brands={brands}
           brand={brand}
           onBrandChange={setBrand}
+          bounds={bounds}
+          price={price}
+          onPriceChange={setPrice}
+          lens={lens}
+          lenses={LENSES}
+          onLensChange={setLens}
           resultLabel={
-            searching
-              ? `${total} ${total === 1 ? "match" : "matches"}`
-              : undefined
+            browsing ? `${total} ${total === 1 ? "result" : "results"}` : undefined
           }
+          onReset={browsing ? reset : undefined}
         />
 
-        {!searching ? (
+        {!browsing ? (
           idleContent
         ) : total > 0 ? (
-          <div className="tz-rise space-y-10">
-            {results.length > 0 && (
-              <section>
-                <h2 className="tz-eyebrow mb-4 text-stone-500">
-                  Original pedals ({results.length})
-                </h2>
-                <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3">
-                  {results.map((result, index) => (
-                    <OriginalCard key={result.id} result={result} priority={index < 3} />
-                  ))}
-                </div>
-              </section>
-            )}
-
-            {cloneResults.length > 0 && (
-              <section>
-                <h2 className="tz-eyebrow mb-4 text-stone-500">
-                  Budget options ({cloneResults.length})
-                </h2>
-                <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3">
-                  {cloneResults.map((result) => (
-                    <CloneCard key={result.alternative.id} result={result} />
-                  ))}
-                </div>
-              </section>
-            )}
+          // One grid, both kinds. The cards carry the distinction - an original
+          // is tinted and gilt-edged, a clone is plain white - so they can sit
+          // side by side without a heading telling you which is which.
+          <div className="tz-rise grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+            {results.map((result, index) => (
+              <OriginalCard key={result.id} result={result} priority={index < 4} />
+            ))}
+            {cloneResults.map((result) => (
+              <CloneCard key={result.alternative.id} result={result} />
+            ))}
           </div>
         ) : (
           <div className="tz-chamfer bg-white/70 px-6 py-16 text-center ring-1 ring-stone-200">
-            <p className="text-lg font-bold text-stone-800">Nothing matches yet</p>
+            <p className="text-lg font-bold text-stone-800">Nothing matches</p>
             <p className="tz-body mx-auto mt-2 max-w-md text-sm text-stone-500">
-              Try a different brand, or search the original by name - “Tube
-              Screamer”, “BD-2”, “chorus”.
+              Try a wider price range, or a different brand.
             </p>
             <button
               type="button"
-              onClick={() => {
-                setQuery("");
-                setBrand(null);
-              }}
+              onClick={reset}
               className="tz-btn mt-5 bg-linear-to-b from-stone-800 to-stone-950 px-6 py-3 text-sm tracking-wide text-white"
             >
               Reset filters

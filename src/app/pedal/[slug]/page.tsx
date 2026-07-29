@@ -9,8 +9,10 @@ import { CheapestAlternative } from "@/components/CheapestAlternative";
 import { PedalDemos } from "@/components/PedalDemos";
 import { PedalImage } from "@/components/PedalImage";
 import { RetailerButtons } from "@/components/RetailerButtons";
+import { ArtistChips, SpecList } from "@/components/SpecList";
 import { getCatalogue, getDetail, getOriginalBySlug } from "@/data/catalogue";
 import { calculateSavings, formatPrice } from "@/lib/format";
+import { gearNoun } from "@/lib/gear";
 
 /**
  * Regenerate every 5 minutes so an image URL pasted into Supabase appears on
@@ -31,7 +33,7 @@ export async function generateMetadata({
   const { slug } = await params;
   const pedal = await getOriginalBySlug(slug);
 
-  if (!pedal) return { title: "Pedal not found" };
+  if (!pedal) return { title: "Not found" };
 
   const cheapest = pedal.alternatives[0];
   const saving = cheapest ? calculateSavings(pedal.priceGBP, cheapest.priceGBP) : null;
@@ -93,22 +95,27 @@ export default async function PedalPage({
     detail: getDetail(alternative, artists),
   }));
 
+  const hasDetails = originalDetail.specsKnown || artists.length > 0;
+  const noun = gearNoun(pedal.category);
+
   return (
-    <div className="mx-auto max-w-6xl px-4 py-8 sm:px-6 sm:py-10">
+    <div className="tz-page py-8 sm:py-10">
       <nav aria-label="Breadcrumb" className="mb-6">
         <Link
           href="/"
           className="tz-eyebrow text-stone-500 transition-colors hover:text-amber-700"
         >
-          ← All pedals
+          ← All gear
         </Link>
       </nav>
 
-      {/* Product hero: photo, the pitch, then the buy stack in its own lane.
-          The stack is three tall pills - beside the text it costs no height,
-          below it, it added ~200px to every pedal page. */}
+      {/* Product hero: photo, the pitch, then the buy panel in its own lane.
+          Specs and players used to sit in the middle lane, which made it two
+          to three times taller than the two beside it and left a few hundred
+          pixels of empty card in both bottom corners. They're a band of their
+          own below now, where they get full width to line up in. */}
       <section className="tz-chamfer overflow-hidden bg-white tz-card ring-1 ring-stone-200/60">
-        <div className="grid gap-8 p-6 sm:p-8 md:grid-cols-[minmax(0,340px)_1fr] md:gap-10 lg:grid-cols-[minmax(0,300px)_1fr_minmax(0,14rem)] lg:gap-6">
+        <div className="grid gap-8 p-6 sm:p-8 md:grid-cols-[minmax(0,300px)_1fr] md:gap-10 lg:grid-cols-[minmax(0,320px)_1fr_minmax(0,17rem)] lg:gap-8">
           <div>
             <div className="tz-well relative aspect-square">
               <PedalImage
@@ -116,7 +123,7 @@ export default async function PedalPage({
                 name={pedal.name}
                 brand={pedal.brand}
                 priority
-                sizes="(max-width: 768px) 100vw, 380px"
+                sizes="(max-width: 768px) 100vw, 320px"
               />
             </div>
             <ImageCredit credit={pedal.imageCredit} />
@@ -128,16 +135,11 @@ export default async function PedalPage({
               <h1 className="tz-heading mt-1.5 text-3xl text-stone-900 sm:text-4xl">
                 {pedal.name}
               </h1>
-              <p className="tz-body mt-3 text-base text-stone-600">{pedal.blurb}</p>
-            </div>
-
-            <div className="flex flex-wrap items-center gap-x-3 gap-y-2">
-              <span className="tz-heading text-3xl text-stone-900">
-                {formatPrice(pedal.priceGBP)}
-              </span>
-              <span className="text-sm text-stone-400">typical UK price</span>
-              <BookmarkButton kind="original" slug={pedal.slug} />
-              <AdminTools kind="original" slug={pedal.slug} />
+              {/* Capped measure: the middle lane is ~600px wide now, and a
+                  line of body copy that long is past comfortable reading. */}
+              <p className="tz-body mt-3 max-w-prose text-base text-stone-600">
+                {pedal.blurb}
+              </p>
             </div>
 
             {cheapest && (
@@ -149,49 +151,60 @@ export default async function PedalPage({
               />
             )}
 
-            <p className="tz-body text-sm text-stone-600">{pedal.description}</p>
-
-            {originalDetail.specsKnown && (
-              <div>
-                <p className="tz-eyebrow mb-2 text-stone-400">Specs</p>
-                <dl className="divide-y divide-stone-100 border-y border-stone-100">
-                  {originalDetail.specs.map((spec) => (
-                    <div key={spec.label} className="flex gap-4 py-1.5 text-sm">
-                      <dt className="w-32 shrink-0 font-bold text-stone-500">
-                        {spec.label}
-                      </dt>
-                      <dd className="tz-body min-w-0 text-stone-700">{spec.value}</dd>
-                    </div>
-                  ))}
-                </dl>
-              </div>
-            )}
-
-            {artists.length > 0 && (
-              <div>
-                <p className="tz-eyebrow mb-2 text-stone-400">Played by</p>
-                <p className="tz-body text-sm text-stone-600">{artists.join(" · ")}</p>
-              </div>
-            )}
-
+            <p className="tz-body max-w-prose text-sm text-stone-600">
+              {pedal.description}
+            </p>
           </div>
 
-          {/* Spans the full width while the grid is two columns, becomes the
-              third column once there's room for it. */}
-          <div className="space-y-2 border-t border-stone-100 pt-5 md:col-span-2 lg:col-span-1 lg:border-t-0 lg:pt-0">
+          {/* Full width while the grid is two columns, its own lane once
+              there's room. `self-start` so it doesn't stretch to the row
+              height and leave a tall empty box under the last button. */}
+          <div className="tz-chamfer self-start border-t border-stone-100 bg-stone-50/80 p-5 md:col-span-2 lg:col-span-1 lg:border-t-0">
             <p className="tz-eyebrow text-stone-400">Buy the original</p>
-            <RetailerButtons pedal={pedal} />
+
+            <p className="tz-heading mt-2 text-3xl text-stone-900 tabular-nums">
+              {formatPrice(pedal.priceGBP)}
+            </p>
+            <p className="text-xs text-stone-400">typical UK price</p>
+
+            <div className="mt-4">
+              <RetailerButtons pedal={pedal} />
+            </div>
+
+            <div className="mt-4 flex flex-wrap items-center gap-2 border-t border-stone-200/80 pt-4">
+              <BookmarkButton kind="original" slug={pedal.slug} />
+              <AdminTools kind="original" slug={pedal.slug} />
+            </div>
           </div>
         </div>
       </section>
 
-      <PedalDemos brand={pedal.brand} name={pedal.name} />
+      {hasDetails && (
+        <div className="mt-6 grid gap-6 lg:grid-cols-2">
+          {originalDetail.specsKnown && (
+            <section className="tz-chamfer bg-white p-6 tz-card ring-1 ring-stone-200/60">
+              <h2 className="tz-heading mb-3 text-xl text-stone-900">Specs</h2>
+              <SpecList specs={originalDetail.specs} />
+            </section>
+          )}
+
+          {artists.length > 0 && (
+            <section className="tz-chamfer bg-white p-6 tz-card ring-1 ring-stone-200/60">
+              <h2 className="tz-heading mb-3 text-xl text-stone-900">Played by</h2>
+              <ArtistChips artists={artists} />
+            </section>
+          )}
+        </div>
+      )}
+
+      <PedalDemos brand={pedal.brand} name={pedal.name} noun={noun} />
 
       <section className="mt-12">
         <AlternativesPanel
           items={items}
           originalName={pedal.name}
           originalPrice={pedal.priceGBP}
+          noun={noun}
         />
       </section>
     </div>

@@ -1,26 +1,32 @@
 import Link from "next/link";
 
+import { TzMark } from "./Logo";
+
 /**
  * "The Tone Zone" lockup.
  *
- * The mark is a stompbox footswitch - concentric rings with a lit LED - which
- * gives the header something recognisably guitar-related instead of initials
- * in a box. The three words are stacked in weight rather than size so the
- * lockup stays one clean horizontal block at any width.
+ * The mark is the soundwave-through-a-pound-sign from Logo.tsx: the site is
+ * about what a sound costs, and that is the one thing a stompbox footswitch
+ * couldn't say. The tile keeps it legible against the pale, gradient-washed
+ * header background - a monoline mark sitting loose on that would disappear.
+ *
+ * The three words are stacked in weight rather than size, so the lockup stays
+ * one clean horizontal block at any width.
  */
 export function Wordmark() {
   return (
-    <Link href="/" className="group flex items-center gap-3" aria-label="The Tone Zone - home">
-      <span className="relative flex h-10 w-10 shrink-0 items-center justify-center overflow-hidden bg-linear-to-br from-stone-800 via-stone-900 to-black transition-transform duration-300 group-hover:scale-105">
-        <span
-          aria-hidden
-          className="absolute top-1 right-1 h-1.5 w-1.5 rounded-full bg-amber-400 shadow-[0_0_6px_2px_rgba(251,191,36,0.7)] transition-all duration-300 group-hover:bg-emerald-400 group-hover:shadow-[0_0_8px_3px_rgba(52,211,153,0.8)]"
+    <Link
+      href="/"
+      className="group flex items-center gap-3 rounded-lg focus-visible:ring-2 focus-visible:ring-amber-500 focus-visible:ring-offset-2 focus-visible:outline-none"
+      aria-label="The Tone Zone - home"
+    >
+      <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-linear-to-br from-stone-800 via-stone-900 to-black text-white shadow-sm transition-transform duration-300 group-hover:scale-105">
+        {/* The wave picks up the accent; it shifts to the "signal found" green
+            on hover, which is what the old footswitch LED used to do. */}
+        <TzMark
+          className="h-7 w-7"
+          waveClassName="text-amber-400 transition-colors duration-300 group-hover:text-emerald-400"
         />
-        <svg viewBox="0 0 32 32" aria-hidden className="h-6 w-6">
-          <circle cx="16" cy="16" r="11" fill="none" stroke="#57534e" strokeWidth="2.5" />
-          <circle cx="16" cy="16" r="6.5" fill="#d6d3d1" />
-          <circle cx="16" cy="16" r="3" fill="#78716c" />
-        </svg>
       </span>
 
       <span className="leading-none">

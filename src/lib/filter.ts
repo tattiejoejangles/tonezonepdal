@@ -19,8 +19,56 @@ export const SORT_OPTIONS: { id: SortId; label: string }[] = [
   { id: "popular", label: "Most Popular" },
 ];
 
+/** Inclusive price window in GBP. Null on either end means "no bound". */
+export interface PriceRange {
+  min: number | null;
+  max: number | null;
+}
+
+export const UNBOUNDED: PriceRange = { min: null, max: null };
+
+export function isBounded(range: PriceRange): boolean {
+  return range.min !== null || range.max !== null;
+}
+
+function withinRange(price: number, range: PriceRange): boolean {
+  if (range.min !== null && price < range.min) return false;
+  if (range.max !== null && price > range.max) return false;
+  return true;
+}
+
+/**
+ * Cheapest and dearest thing in the catalogue, originals and clones together.
+ *
+ * The slider's track is built from this rather than from a hardcoded 0-500, so
+ * the handles always span real data and adding a £2,000 amp moves the ceiling
+ * instead of putting it out of reach.
+ */
+export function priceBounds(catalogue: OriginalWithAlternatives[]): {
+  min: number;
+  max: number;
+} {
+  let min = Infinity;
+  let max = 0;
+
+  for (const entry of catalogue) {
+    min = Math.min(min, entry.priceGBP);
+    max = Math.max(max, entry.priceGBP);
+    for (const alt of entry.alternatives) {
+      min = Math.min(min, alt.priceGBP);
+      max = Math.max(max, alt.priceGBP);
+    }
+  }
+
+  if (!Number.isFinite(min)) return { min: 0, max: 0 };
+  // Rounded outwards to tens so the handles land on tidy numbers.
+  return { min: Math.floor(min / 10) * 10, max: Math.ceil(max / 10) * 10 };
+}
+
 export interface DirectoryOptions {
   query: string;
+  /** Price window. Applied to an original's own price, or a clone's own. */
+  price?: PriceRange;
   /**
    * Exact brand name, or null for all. Matches an original's own brand and a
    * clone's own brand - so "Boss" returns Boss originals and "Behringer"
@@ -198,7 +246,7 @@ function sortAlternatives(alternatives: Alternative[], sort: SortId): Alternativ
  */
 export function filterCatalogue(
   catalogue: OriginalWithAlternatives[],
-  { query, brand = null, sort = "price-asc" }: DirectoryOptions,
+  { query, brand = null, sort = "price-asc", price = UNBOUNDED }: DirectoryOptions,
 ): DirectoryResult[] {
   const normalizedQuery = normalize(query);
 
@@ -206,6 +254,7 @@ export function filterCatalogue(
 
   for (const entry of catalogue) {
     if (brand && entry.brand !== brand) continue;
+    if (!withinRange(entry.priceGBP, price)) continue;
 
     const relevance = scoreEntry(entry, normalizedQuery);
     if (normalizedQuery && relevance === 0) continue;
@@ -275,18 +324,21 @@ export interface CloneResult {
  */
 export function filterAlternatives(
   catalogue: OriginalWithAlternatives[],
-  { query, brand = null }: Omit<DirectoryOptions, "sort">,
+  { query, brand = null, price = UNBOUNDED }: Omit<DirectoryOptions, "sort">,
+  /** Browse mode lists every clone even with nothing typed. */
+  listWhenIdle = false,
 ): CloneResult[] {
   const normalizedQuery = normalize(query);
 
-  // Idle directory: no query and no brand means nothing to list here.
-  if (!normalizedQuery && !brand) return [];
+  // Idle directory: no query, brand or price band means nothing to list here.
+  if (!normalizedQuery && !brand && !isBounded(price) && !listWhenIdle) return [];
 
   const results: CloneResult[] = [];
 
   for (const original of catalogue) {
     for (const alternative of original.alternatives) {
       if (brand && alternative.brand !== brand) continue;
+      if (!withinRange(alternative.priceGBP, price)) continue;
 
       const relevance = scoreCloneFields(
         {

@@ -1,13 +1,40 @@
 /**
- * Tonal match, colour-coded.
+ * How close a clone gets to the original it copies.
  *
- * The number alone made every clone look equivalent at a glance. Banding it by
- * colour lets you scan a list and see which ones actually get close, without
- * reading a single figure.
+ * Was a pastel pill with a coloured ring round it and "78% MATCH" set in caps.
+ * Nothing else on the site is built that way - the savings badge is a solid
+ * gradient block, the brand tag is a flat chip - so the ringed pill read as
+ * imported from somewhere else rather than part of the page.
  *
- * Thresholds are deliberately strict: 90+ is "you would struggle to tell",
- * which very few earn, so green stays meaningful.
+ * This version says the thing in words and shows the number as a filled meter,
+ * which is what the number actually is. The band's own colour fills the track;
+ * the label carries the meaning, so the colour is reinforcement rather than
+ * the only signal (a red and an amber pill were otherwise the same object).
  */
+
+interface Band {
+  label: string;
+  /** Meter fill. Solid, matching the savings badge's treatment. */
+  fill: string;
+  text: string;
+}
+
+function bandFor(match: number): Band {
+  if (match >= 90) {
+    return { label: "Near identical", fill: "bg-emerald-500", text: "text-emerald-800" };
+  }
+  if (match >= 80) {
+    return { label: "Very close", fill: "bg-emerald-500", text: "text-emerald-800" };
+  }
+  if (match >= 70) {
+    return { label: "Close", fill: "bg-amber-500", text: "text-amber-800" };
+  }
+  if (match >= 55) {
+    return { label: "In the ballpark", fill: "bg-orange-500", text: "text-orange-800" };
+  }
+  return { label: "Its own thing", fill: "bg-stone-400", text: "text-stone-600" };
+}
+
 export function MatchBadge({
   match,
   size = "md",
@@ -15,26 +42,37 @@ export function MatchBadge({
   match: number;
   size?: "sm" | "md";
 }) {
-  const band =
-    match >= 90
-      ? { tone: "bg-emerald-100 text-emerald-800 ring-emerald-200", label: "Near identical" }
-      : match >= 80
-        ? { tone: "bg-lime-100 text-lime-800 ring-lime-200", label: "Very close" }
-        : match >= 70
-          ? { tone: "bg-amber-100 text-amber-800 ring-amber-200", label: "Close" }
-          : match >= 55
-            ? { tone: "bg-orange-100 text-orange-800 ring-orange-200", label: "In the ballpark" }
-            : { tone: "bg-rose-100 text-rose-800 ring-rose-200", label: "Its own thing" };
+  const band = bandFor(match);
+  const small = size === "sm";
 
   return (
     <span
+      className="inline-flex items-center gap-2"
       title={`${band.label} - ${match}% tonal match`}
-      className={`inline-flex items-center gap-1.5 rounded-full ring-1 ring-inset ${band.tone} ${
-        size === "sm" ? "px-2.5 py-1 text-[11px]" : "px-3 py-1.5 text-[11px]"
-      } font-bold`}
     >
-      <span aria-hidden className="h-1.5 w-1.5 rounded-full bg-current opacity-70" />
-      {match}% MATCH
+      {/* aria-hidden: the meter is a picture of the number that follows it. */}
+      <span
+        aria-hidden
+        className={`relative block overflow-hidden rounded-full bg-stone-200/80 ${
+          small ? "h-1 w-10" : "h-1.5 w-14"
+        }`}
+      >
+        <span
+          className={`absolute inset-y-0 left-0 rounded-full ${band.fill}`}
+          style={{ width: `${Math.min(100, Math.max(0, match))}%` }}
+        />
+      </span>
+
+      <span
+        className={`font-bold whitespace-nowrap ${band.text} ${
+          small ? "text-[11px]" : "text-xs"
+        }`}
+      >
+        {band.label}
+        <span className="ml-1 font-medium text-stone-400 tabular-nums">
+          {match}%
+        </span>
+      </span>
     </span>
   );
 }

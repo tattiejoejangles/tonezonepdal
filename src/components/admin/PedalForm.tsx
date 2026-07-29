@@ -4,12 +4,15 @@ import Link from "next/link";
 import { useActionState, useState } from "react";
 
 import { createPedal, updatePedal, type ActionState } from "@/app/admin/actions";
-import { CATEGORIES, type Spec } from "@/lib/types";
+import { categoriesFor, gearTypeOf, type GearType } from "@/lib/gear";
+import { CATEGORIES, type Category, type Spec } from "@/lib/types";
 
 export interface OriginalOption {
   id: string;
   name: string;
   brand: string;
+  /** So picking "amp" can narrow the list of originals a clone may link to. */
+  category: Category;
 }
 
 /** An existing record, for the edit form. */
@@ -95,7 +98,24 @@ export function PedalForm({
     draft?.kind ?? "original",
   );
 
+  /**
+   * Amp or pedal, asked first.
+   *
+   * It used to be implied by whichever of the nine categories you happened to
+   * pick, which meant "amp" sat in a list of effect types it has nothing in
+   * common with and was easy to miss entirely. Answering it up front narrows
+   * everything below: the category list for an original, and which originals a
+   * clone may be linked to.
+   */
+  const [gear, setGear] = useState<GearType>(
+    draft?.category ? gearTypeOf(draft.category as Category) : "pedal",
+  );
+
   const isOriginal = kind === "original";
+  const categories = categoriesFor(gear, CATEGORIES);
+  const linkable = originals.filter(
+    (original) => gearTypeOf(original.category) === gear,
+  );
 
   return (
     <form action={action} className="space-y-8">
@@ -105,6 +125,37 @@ export function PedalForm({
           <input type="hidden" name="slug" value={draft.slug} />
           <input type="hidden" name="kind" value={draft.kind} />
         </>
+      )}
+
+      {/* Gear type - the first question ------------------------------------ */}
+      {!editing && (
+        <fieldset>
+          <legend className="tz-eyebrow mb-2 text-stone-500">
+            Is it an amp or a pedal?
+          </legend>
+          <div className="flex flex-wrap gap-2">
+            {(["pedal", "amp"] as const).map((value) => (
+              <label
+                key={value}
+                className={`tz-btn cursor-pointer px-5 py-2.5 text-xs tracking-wider uppercase ${
+                  gear === value
+                    ? "bg-linear-to-b from-amber-500 to-orange-600 text-white shadow-md"
+                    : "bg-white text-stone-600 ring-1 ring-stone-200"
+                }`}
+              >
+                <input
+                  type="radio"
+                  name="gear_type"
+                  value={value}
+                  checked={gear === value}
+                  onChange={() => setGear(value)}
+                  className="sr-only"
+                />
+                {value}
+              </label>
+            ))}
+          </div>
+        </fieldset>
       )}
 
       {/* Kind ------------------------------------------------------------- */}
@@ -131,14 +182,14 @@ export function PedalForm({
                   onChange={() => setKind(value)}
                   className="sr-only"
                 />
-                {value === "original" ? "Original pedal" : "Alternative"}
+                {value === "original" ? `Original ${gear}` : "Alternative"}
               </label>
             ))}
           </div>
           <p className="mt-2 text-xs text-stone-500">
             {isOriginal
-              ? "The expensive pedal people want a cheaper version of."
-              : "A budget pedal that gets close to an original - you'll link it below."}
+              ? `The expensive ${gear} people want a cheaper version of.`
+              : `A budget ${gear} that gets close to an original - you'll link it below.`}
           </p>
         </fieldset>
       )}
@@ -159,13 +210,21 @@ export function PedalForm({
               <option value="" disabled>
                 Choose an original...
               </option>
-              {originals.map((original) => (
+              {/* Narrowed to the chosen gear type, so an amp clone can't be
+                  hung off a fuzz pedal by a mis-click. */}
+              {linkable.map((original) => (
                 <option key={original.id} value={original.id}>
                   {original.name} ({original.brand})
                 </option>
               ))}
             </select>
           </Field>
+
+          {linkable.length === 0 && (
+            <p className="mt-2 text-xs text-rose-700">
+              No {gear}s in the catalogue yet - add the original {gear} first.
+            </p>
+          )}
         </div>
       )}
 
@@ -194,12 +253,20 @@ export function PedalForm({
 
         {isOriginal ? (
           <Field label="Category *">
+            {/* Keyed on `gear` so switching amp/pedal re-mounts the select and
+                its default lands inside the newly narrowed list, instead of
+                keeping a now-invalid value from the other type. */}
             <select
+              key={gear}
               name="category"
-              defaultValue={draft?.category ?? "overdrive"}
+              defaultValue={
+                draft?.category && categories.includes(draft.category as Category)
+                  ? draft.category
+                  : categories[0]
+              }
               className={inputClass}
             >
-              {CATEGORIES.map((category) => (
+              {categories.map((category) => (
                 <option key={category} value={category}>
                   {category}
                 </option>

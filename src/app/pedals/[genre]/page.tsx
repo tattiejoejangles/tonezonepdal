@@ -56,7 +56,7 @@ export default async function GenrePage({
   });
 
   return (
-    <div className="mx-auto max-w-6xl px-4 py-8 sm:px-6 sm:py-10">
+    <div className="tz-page py-8 sm:py-10">
       <nav aria-label="Breadcrumb" className="mb-6">
         <Link
           href="/"
@@ -78,7 +78,7 @@ export default async function GenrePage({
       </header>
 
       {results.length > 0 ? (
-        <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3">
+        <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
           {results.map((result, index) => (
             <OriginalCard key={result.id} result={result} priority={index < 3} />
           ))}

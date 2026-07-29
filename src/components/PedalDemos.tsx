@@ -19,11 +19,18 @@ import type { Demo } from "@/lib/youtube";
  * Embeds use youtube-nocookie.com, so watching one here doesn't drop tracking
  * cookies on a visitor who never asked for them.
  */
-export function PedalDemos({ brand, name }: { brand: string; name: string }) {
+export function PedalDemos({
+  brand,
+  name,
+  noun = "pedal",
+}: {
+  brand: string;
+  name: string;
+  /** "pedal" or "amp" - the fallback copy names the thing. */
+  noun?: string;
+}) {
   const [state, setState] = useState<
-    | { status: "loading" }
-    | { status: "ready"; demos: Demo[]; configured: boolean }
-    | { status: "failed" }
+    { status: "loading" } | { status: "ready"; demos: Demo[] } | { status: "failed" }
   >({ status: "loading" });
 
   useEffect(() => {
@@ -32,14 +39,8 @@ export function PedalDemos({ brand, name }: { brand: string; name: string }) {
 
     fetch(`/api/demos?${query}`)
       .then((response) => (response.ok ? response.json() : Promise.reject()))
-      .then((data: { demos?: Demo[]; configured?: boolean }) => {
-        if (!cancelled) {
-          setState({
-            status: "ready",
-            demos: data.demos ?? [],
-            configured: Boolean(data.configured),
-          });
-        }
+      .then((data: { demos?: Demo[] }) => {
+        if (!cancelled) setState({ status: "ready", demos: data.demos ?? [] });
       })
       .catch(() => {
         if (!cancelled) setState({ status: "failed" });
@@ -60,15 +61,9 @@ export function PedalDemos({ brand, name }: { brand: string; name: string }) {
   return (
     <section aria-labelledby="demos" className="mt-10">
       <div className="mb-4 flex flex-wrap items-end justify-between gap-3 border-b-2 border-stone-900/10 pb-3">
-        <div>
-          <h2 id="demos" className="tz-heading text-xl text-stone-900">
-            Hear it
-          </h2>
-          <p className="tz-body mt-0.5 text-sm text-stone-500">
-            Demos from YouTube. We don&apos;t pick these - they&apos;re the top
-            results for this pedal.
-          </p>
-        </div>
+        <h2 id="demos" className="tz-heading text-xl text-stone-900">
+          Hear it
+        </h2>
 
         <a
           href={searchUrl}
@@ -118,9 +113,7 @@ export function PedalDemos({ brand, name }: { brand: string; name: string }) {
       ) : (
         <div className="tz-chamfer bg-white/70 px-6 py-10 text-center ring-1 ring-stone-200">
           <p className="tz-body text-sm text-stone-600">
-            {state.status === "ready" && !state.configured
-              ? "Video demos aren't switched on yet."
-              : "Couldn't load demos just now."}
+            No demos here yet for this {noun}.
           </p>
           <a
             href={searchUrl}
