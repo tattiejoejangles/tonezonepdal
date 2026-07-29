@@ -36,21 +36,44 @@ export function PriceRangeFilter({
 
   const low = value.min ?? bounds.min;
   const high = value.max ?? bounds.max;
-  const span = Math.max(1, bounds.max - bounds.min);
-
-  const pct = (n: number) => ((n - bounds.min) / span) * 100;
   const active = value.min !== null || value.max !== null;
 
-  // Step in tens once the catalogue spans a few hundred pounds - single-pound
-  // precision on a £2,000 range is 2,000 keypresses from end to end.
-  const step = span > 400 ? 10 : 5;
+  /**
+   * The track is logarithmic, not linear.
+   *
+   * The catalogue runs from about £15 to four figures, but the overwhelming
+   * majority of it sits under £100 - so on a linear track every clone in the
+   * database was crammed into the first few percent of travel and the handle
+   * jumped in £40 steps through the range people actually shop in. On a log
+   * scale each equal slice of the track is an equal *proportion* of price, so
+   * £20-£40 gets as much room as £400-£800.
+   *
+   * The inputs themselves run 0-1000 positions and are converted at the edges;
+   * everything outside this component still speaks in pounds.
+   */
+  const STEPS = 1000;
+  const lo = Math.log(Math.max(1, bounds.min));
+  const hi = Math.log(Math.max(2, bounds.max));
 
-  function setLow(next: number) {
-    onChange({ min: Math.min(next, high), max: value.max });
+  const toPos = (price: number) =>
+    Math.round(((Math.log(Math.max(1, price)) - lo) / (hi - lo)) * STEPS);
+
+  const toPrice = (pos: number) => {
+    const raw = Math.exp(lo + (pos / STEPS) * (hi - lo));
+    // Round to something a person would type: £5 below £100, £10 below £500,
+    // £25 above that.
+    const grain = raw < 100 ? 5 : raw < 500 ? 10 : 25;
+    return Math.min(bounds.max, Math.max(bounds.min, Math.round(raw / grain) * grain));
+  };
+
+  const pct = (price: number) => (toPos(price) / STEPS) * 100;
+
+  function setLow(pos: number) {
+    onChange({ min: Math.min(toPrice(pos), high), max: value.max });
   }
 
-  function setHigh(next: number) {
-    onChange({ min: value.min, max: Math.max(next, low) });
+  function setHigh(pos: number) {
+    onChange({ min: value.min, max: Math.max(toPrice(pos), low) });
   }
 
   return (
@@ -73,26 +96,30 @@ export function PriceRangeFilter({
             style={{ left: `${pct(low)}%`, right: `${100 - pct(high)}%` }}
           />
 
+          {/* aria-valuetext, because the raw value is a position on a log
+              curve and "437" would be a lie to anyone listening. */}
           <input
             id={`${id}-min`}
             type="range"
-            min={bounds.min}
-            max={bounds.max}
-            step={step}
-            value={low}
+            min={0}
+            max={STEPS}
+            step={1}
+            value={toPos(low)}
             onChange={(event) => setLow(Number(event.target.value))}
             aria-label="Minimum price"
+            aria-valuetext={formatPrice(low)}
             className="tz-range absolute inset-0 w-full"
           />
           <input
             id={`${id}-max`}
             type="range"
-            min={bounds.min}
-            max={bounds.max}
-            step={step}
-            value={high}
+            min={0}
+            max={STEPS}
+            step={1}
+            value={toPos(high)}
             onChange={(event) => setHigh(Number(event.target.value))}
             aria-label="Maximum price"
+            aria-valuetext={formatPrice(high)}
             className="tz-range absolute inset-0 w-full"
           />
         </div>

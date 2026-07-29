@@ -1,7 +1,7 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { useRef, useState } from "react";
+import { useId, useRef, useState } from "react";
 
 import { SearchSuggestions, useSuggestions } from "./SearchSuggestions";
 import type { SearchIndex } from "@/lib/search-index";
@@ -27,6 +27,11 @@ export function HeaderSearch({ index }: { index: SearchIndex }) {
   const [value, setValue] = useState("");
   const inputRef = useRef<HTMLInputElement>(null);
   const suggest = useSuggestions(index, value);
+  // Generated, not the literal "header-search": the header renders this twice
+  // - once in the desktop row and once in the mobile panel - and a hardcoded
+  // id put two of them in the document, which points both labels at the first
+  // (hidden) input and leaves the visible one unlabelled.
+  const inputId = useId();
 
   function submit(event: React.FormEvent) {
     event.preventDefault();
@@ -42,8 +47,8 @@ export function HeaderSearch({ index }: { index: SearchIndex }) {
       className="relative w-full max-w-xs"
       {...suggest.containerProps}
     >
-      <label htmlFor="header-search" className="sr-only">
-        Search pedals
+      <label htmlFor={inputId} className="sr-only">
+        Search pedals and amps
       </label>
 
       <svg
@@ -60,12 +65,12 @@ export function HeaderSearch({ index }: { index: SearchIndex }) {
       </svg>
 
       <input
-        id="header-search"
+        id={inputId}
         ref={inputRef}
         type="search"
         value={value}
         onChange={(event) => setValue(event.target.value)}
-        placeholder="Search pedals…"
+        placeholder="Search pedals and amps…"
         autoComplete="off"
         {...suggest.inputProps}
         className="w-full border border-stone-200 bg-stone-50 py-2 pr-3 pl-9 text-sm font-medium text-stone-800 transition-colors outline-none placeholder:text-stone-400 focus:border-amber-500 focus:bg-white"

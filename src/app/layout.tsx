@@ -1,25 +1,46 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { GeistMono } from "geist/font/mono";
 import { GeistSans } from "geist/font/sans";
-import Link from "next/link";
+
+import { siteUrl } from "./sitemap";
 
 import { AmbientBackground } from "@/components/AmbientBackground";
-import { HeaderSearch } from "@/components/HeaderSearch";
 import { TzLockup } from "@/components/Logo";
-import { NavMenu } from "@/components/NavMenu";
+import { SiteNav } from "@/components/SiteNav";
 import { Wordmark } from "@/components/Wordmark";
 import { getSearchIndex } from "@/data/catalogue";
 import type { SearchIndex } from "@/lib/search-index";
 import { GENRES } from "@/lib/sections";
 import "./globals.css";
 
+const TITLE = "The Tone Zone - Budget alternatives to expensive pedals and amps";
+const DESCRIPTION =
+  "Find cheap, well-reviewed alternatives to expensive guitar pedals and amps. Honest pros and cons, real savings, and where to buy.";
+
 export const metadata: Metadata = {
-  title: {
-    default: "The Tone Zone - Budget alternatives to expensive pedals and amps",
-    template: "%s - The Tone Zone",
+  // Absolute base for OG tags and canonicals. Without it, social previews get
+  // relative image paths and silently render nothing.
+  metadataBase: new URL(siteUrl()),
+  title: { default: TITLE, template: "%s - The Tone Zone" },
+  description: DESCRIPTION,
+  applicationName: "The Tone Zone",
+  openGraph: {
+    type: "website",
+    siteName: "The Tone Zone",
+    title: TITLE,
+    description: DESCRIPTION,
+    locale: "en_GB",
   },
-  description:
-    "Find cheap, well-reviewed alternatives to expensive guitar pedals and amps. Honest pros and cons, real savings, and where to buy.",
+  twitter: { card: "summary_large_image", title: TITLE, description: DESCRIPTION },
+  robots: { index: true, follow: true },
+};
+
+export const viewport: Viewport = {
+  // No maximum-scale or user-scalable=no: pinch zoom is an accessibility
+  // feature, and disabling it is one of the fastest ways to fail an audit.
+  width: "device-width",
+  initialScale: 1,
+  themeColor: "#f6f6f7",
 };
 
 export default async function RootLayout({
@@ -48,38 +69,11 @@ export default async function RootLayout({
 
 function SiteHeader({ searchIndex }: { searchIndex: SearchIndex }) {
   return (
-    <header className="sticky top-0 z-30 border-b border-stone-200/70 bg-white/85 backdrop-blur-md">
+    // `relative` so the mobile panel can hang off the bar's bottom edge.
+    <header className="sticky top-0 z-30 relative border-b border-stone-200/70 bg-white/85 backdrop-blur-md">
       <div className="tz-page flex items-center gap-4 py-3">
         <Wordmark />
-
-        {/* Pedals, Saved, then search - navigation first, the tool last. */}
-        <nav className="ml-auto flex items-center gap-5 sm:gap-7">
-          {/* Genres live behind one menu so amps can join as a sibling later. */}
-          <NavMenu
-            label="Pedals"
-            items={GENRES.map((genre) => ({
-              href: `/pedals/${genre.id}`,
-              label: genre.label,
-              blurb: genre.blurb,
-            }))}
-          />
-
-          <Link
-            href="/amps"
-            className="text-xs font-bold tracking-wider whitespace-nowrap text-stone-500 uppercase transition-colors hover:text-amber-700"
-          >
-            Amps
-          </Link>
-
-          <Link
-            href="/saved"
-            className="text-xs font-bold tracking-wider whitespace-nowrap text-stone-500 uppercase transition-colors hover:text-amber-700"
-          >
-            Saved
-          </Link>
-
-          <HeaderSearch index={searchIndex} />
-        </nav>
+        <SiteNav searchIndex={searchIndex} genres={GENRES} />
       </div>
     </header>
   );

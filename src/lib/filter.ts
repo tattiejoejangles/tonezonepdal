@@ -1,4 +1,4 @@
-import type { Alternative, OriginalWithAlternatives } from "./types";
+import type { Alternative, Category, OriginalWithAlternatives } from "./types";
 import type { SearchIndex } from "./search-index";
 import { calculateSavings, type Savings } from "./format";
 
@@ -69,6 +69,17 @@ export interface DirectoryOptions {
   query: string;
   /** Price window. Applied to an original's own price, or a clone's own. */
   price?: PriceRange;
+  /**
+   * Effect family, as the set of categories it covers, or null for all.
+   *
+   * A set rather than one category because a genre can span several -
+   * "Distortion & Fuzz" is `["distortion","fuzz"]` - and filtering one
+   * category at a time produced two identical chips for it.
+   *
+   * A clone has no category of its own, so it is matched on the category of
+   * the original it copies.
+   */
+  categories?: readonly Category[] | null;
   /**
    * Exact brand name, or null for all. Matches an original's own brand and a
    * clone's own brand - so "Boss" returns Boss originals and "Behringer"
@@ -246,7 +257,13 @@ function sortAlternatives(alternatives: Alternative[], sort: SortId): Alternativ
  */
 export function filterCatalogue(
   catalogue: OriginalWithAlternatives[],
-  { query, brand = null, sort = "price-asc", price = UNBOUNDED }: DirectoryOptions,
+  {
+    query,
+    brand = null,
+    sort = "price-asc",
+    price = UNBOUNDED,
+    categories = null,
+  }: DirectoryOptions,
 ): DirectoryResult[] {
   const normalizedQuery = normalize(query);
 
@@ -254,6 +271,7 @@ export function filterCatalogue(
 
   for (const entry of catalogue) {
     if (brand && entry.brand !== brand) continue;
+    if (categories && !categories.includes(entry.category)) continue;
     if (!withinRange(entry.priceGBP, price)) continue;
 
     const relevance = scoreEntry(entry, normalizedQuery);
@@ -324,18 +342,27 @@ export interface CloneResult {
  */
 export function filterAlternatives(
   catalogue: OriginalWithAlternatives[],
-  { query, brand = null, price = UNBOUNDED }: Omit<DirectoryOptions, "sort">,
+  {
+    query,
+    brand = null,
+    price = UNBOUNDED,
+    categories = null,
+  }: Omit<DirectoryOptions, "sort">,
   /** Browse mode lists every clone even with nothing typed. */
   listWhenIdle = false,
 ): CloneResult[] {
   const normalizedQuery = normalize(query);
 
   // Idle directory: no query, brand or price band means nothing to list here.
-  if (!normalizedQuery && !brand && !isBounded(price) && !listWhenIdle) return [];
+  if (!normalizedQuery && !brand && !isBounded(price) && !categories && !listWhenIdle) {
+    return [];
+  }
 
   const results: CloneResult[] = [];
 
   for (const original of catalogue) {
+    if (categories && !categories.includes(original.category)) continue;
+
     for (const alternative of original.alternatives) {
       if (brand && alternative.brand !== brand) continue;
       if (!withinRange(alternative.priceGBP, price)) continue;

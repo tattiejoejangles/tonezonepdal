@@ -147,20 +147,24 @@ function localCatalogue(): OriginalWithAlternatives[] {
   const images = generatedImages as Record<string, { url: string } | undefined>;
   const details = generatedDetails as Record<string, { images?: string[] } | undefined>;
 
-  return originals.map((original) => ({
-    ...original,
-    imageUrl: original.imageUrl ?? images[original.slug]?.url ?? null,
-    alternatives: alternatives
-      .filter((alt) => alt.originalId === original.id)
-      .sort((a, b) => a.priceGBP - b.priceGBP)
-      .map((alt) => ({
-        ...alt,
-        imageUrl: alt.imageUrl ?? images[alt.slug]?.url ?? null,
-        verdict: VERDICTS[alt.slug],
-        gallery: details[alt.slug]?.images ?? [],
-        artists: ALTERNATIVE_ARTISTS[alt.slug] ?? [],
-      })),
-  }));
+  // Same hidden list as the Supabase path, so the fallback doesn't quietly
+  // reintroduce a pedal the live site is deliberately not showing.
+  return originals
+    .filter((original) => !HIDDEN_SLUGS.has(original.slug))
+    .map((original) => ({
+      ...original,
+      imageUrl: original.imageUrl ?? images[original.slug]?.url ?? null,
+      alternatives: alternatives
+        .filter((alt) => alt.originalId === original.id)
+        .sort((a, b) => a.priceGBP - b.priceGBP)
+        .map((alt) => ({
+          ...alt,
+          imageUrl: alt.imageUrl ?? images[alt.slug]?.url ?? null,
+          verdict: VERDICTS[alt.slug],
+          gallery: details[alt.slug]?.images ?? [],
+          artists: ALTERNATIVE_ARTISTS[alt.slug] ?? [],
+        })),
+    }));
 }
 
 /**
@@ -168,6 +172,18 @@ function localCatalogue(): OriginalWithAlternatives[] {
  * want the catalogue while rendering the same request, and without this each
  * one would hit Supabase separately.
  */
+/**
+ * Originals kept out of the site without deleting them.
+ *
+ * The Klon Centaur is an original-only collector's piece that changes hands for
+ * thousands, which dragged the top of every price filter out to £3,500 and left
+ * the slider's whole usable range squashed into the first two percent of its
+ * travel. Hiding it is one line to undo, unlike a DELETE - the row and its
+ * clones are still in Supabase, and the clones (Silver Horse, Golden Horse and
+ * friends) can be re-pointed at another original if it stays hidden.
+ */
+const HIDDEN_SLUGS = new Set(["klon-centaur"]);
+
 export const getCatalogue = cache(loadCatalogue);
 
 async function loadCatalogue(): Promise<OriginalWithAlternatives[]> {
@@ -187,7 +203,9 @@ async function loadCatalogue(): Promise<OriginalWithAlternatives[]> {
     if (rows.length === 0) return localCatalogue();
 
     const alts = (alternativesResult.data ?? []) as AlternativeRow[];
-    return rows.map((row) => mapOriginal(row, alts));
+    return rows
+      .filter((row) => !HIDDEN_SLUGS.has(row.slug))
+      .map((row) => mapOriginal(row, alts));
   } catch (error) {
     console.error("[catalogue] Supabase unavailable, using bundled data:", error);
     return localCatalogue();
