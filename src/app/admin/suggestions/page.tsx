@@ -112,7 +112,7 @@ export default async function SuggestionsPage({
         <h1 className="tz-heading mt-1.5 text-3xl text-stone-900">Suggestions</h1>
         <p className="tz-body mt-2 text-sm text-stone-600">
           Approving marks it done - it doesn&apos;t edit the catalogue. Make the
-          change on the pedal&apos;s own page.
+          change on the entry&apos;s own page.
         </p>
         <Link
           href="/admin"

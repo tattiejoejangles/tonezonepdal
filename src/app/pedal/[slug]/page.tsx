@@ -10,6 +10,7 @@ import { PedalDemos } from "@/components/PedalDemos";
 import { PedalImage } from "@/components/PedalImage";
 import { RetailerButtons } from "@/components/RetailerButtons";
 import { ArtistChips, SpecList } from "@/components/SpecList";
+import { getArtistIndex } from "@/data/artists";
 import { getCatalogue, getDetail, getOriginalBySlug } from "@/data/catalogue";
 import { calculateSavings, formatPrice } from "@/lib/format";
 import { gearNoun } from "@/lib/gear";
@@ -86,13 +87,18 @@ export default async function PedalPage({
 
   const cheapest = pedal.alternatives[0];
   const artists = pedal.artists ?? [];
-  const originalDetail = getDetail(pedal, artists);
+
+  // One lookup for the whole page, cached per request, and threaded into every
+  // `getDetail` so the artist photos come along with the details rather than
+  // needing their own prop on every component.
+  const artistIndex = await getArtistIndex();
+  const originalDetail = getDetail(pedal, artists, artistIndex);
 
   // Details are resolved on the server and handed to the client panel, so the
   // modal has everything it needs without another round trip.
   const items = pedal.alternatives.map((alternative) => ({
     alternative,
-    detail: getDetail(alternative, artists),
+    detail: getDetail(alternative, artists, artistIndex),
   }));
 
   const hasDetails = originalDetail.specsKnown || artists.length > 0;
@@ -145,9 +151,10 @@ export default async function PedalPage({
             {cheapest && (
               <CheapestAlternative
                 alternative={cheapest}
-                detail={getDetail(cheapest, artists)}
+                detail={getDetail(cheapest, artists, artistIndex)}
                 originalName={pedal.name}
                 originalPrice={pedal.priceGBP}
+                noun={noun}
               />
             )}
 
@@ -171,10 +178,29 @@ export default async function PedalPage({
               <RetailerButtons pedal={pedal} />
             </div>
 
-            <div className="mt-4 flex flex-wrap items-center gap-2 border-t border-stone-200/80 pt-4">
-              <BookmarkButton kind="original" slug={pedal.slug} />
-              <AdminTools kind="original" slug={pedal.slug} />
+            {/* Save and Compare are one stack of equal-width buttons; the admin
+                Edit link stays its own size because only one person sees it. */}
+            <div className="mt-4 border-t border-stone-200/80 pt-4">
+              <BookmarkButton kind="original" slug={pedal.slug} full />
             </div>
+
+            <Link
+              href={`/compare?a=${pedal.slug}`}
+              className="tz-btn mt-3 flex w-full items-center justify-center gap-2 bg-white px-5 py-2.5 text-xs tracking-wider text-stone-700 uppercase ring-1 ring-stone-300 hover:text-stone-900"
+            >
+              <svg
+                viewBox="0 0 24 24"
+                aria-hidden
+                className="h-3.5 w-3.5"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2.5"
+                strokeLinecap="round"
+              >
+                <path d="M8 7H3m0 0 3-3M3 7l3 3M16 17h5m0 0-3 3m3-3-3-3" />
+              </svg>
+              Compare
+            </Link>
 
             <Link
               href={`/suggest?kind=original&slug=${pedal.slug}`}
@@ -182,6 +208,8 @@ export default async function PedalPage({
             >
               Suggest a change
             </Link>
+
+            <AdminTools kind="original" slug={pedal.slug} />
           </div>
         </div>
       </section>
@@ -191,14 +219,14 @@ export default async function PedalPage({
           {originalDetail.specsKnown && (
             <section className="tz-chamfer bg-white p-6 tz-card ring-1 ring-stone-200/60">
               <h2 className="tz-heading mb-3 text-xl text-stone-900">Specs</h2>
-              <SpecList specs={originalDetail.specs} />
+              <SpecList specs={originalDetail.specs} grouped />
             </section>
           )}
 
           {artists.length > 0 && (
             <section className="tz-chamfer bg-white p-6 tz-card ring-1 ring-stone-200/60">
               <h2 className="tz-heading mb-3 text-xl text-stone-900">Played by</h2>
-              <ArtistChips artists={artists} />
+              <ArtistChips artists={originalDetail.artists} />
             </section>
           )}
         </div>

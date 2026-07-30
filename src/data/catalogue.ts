@@ -8,10 +8,13 @@ import type {
   PedalDetail,
   Spec,
 } from "@/lib/types";
+import { resolveArtists, type ArtistIndex } from "@/lib/artists";
+import type { ReviewSummary } from "@/lib/reviews";
 import { buildSearchIndex, type SearchIndex } from "@/lib/search-index";
 import { getSupabase } from "@/lib/supabase";
 
 import { ALTERNATIVE_ARTISTS, VERDICTS } from "./details";
+import { getReviewSummaries } from "./reviews";
 import generatedDetails from "./details.generated.json";
 import generatedImages from "./images.generated.json";
 import { alternatives, originals } from "./pedals";
@@ -92,7 +95,11 @@ const pickImage = (row: { image_url: string | null; auto_image_url: string | nul
 const num = (value: number | string) =>
   typeof value === "number" ? value : Number.parseFloat(value);
 
-function mapOriginal(row: OriginalRow, alts: AlternativeRow[]): OriginalWithAlternatives {
+function mapOriginal(
+  row: OriginalRow,
+  alts: AlternativeRow[],
+  reviews: Map<string, ReviewSummary>,
+): OriginalWithAlternatives {
   return {
     id: row.id,
     slug: row.slug,
@@ -113,12 +120,15 @@ function mapOriginal(row: OriginalRow, alts: AlternativeRow[]): OriginalWithAlte
     specs: row.specs ?? [],
     alternatives: alts
       .filter((alt) => alt.original_id === row.id)
-      .map(mapAlternative)
+      .map((alt) => mapAlternative(alt, reviews.get(alt.id)))
       .sort((a, b) => a.priceGBP - b.priceGBP),
   };
 }
 
-function mapAlternative(row: AlternativeRow): Alternative {
+function mapAlternative(
+  row: AlternativeRow,
+  reviewSummary?: ReviewSummary,
+): Alternative {
   return {
     id: row.id,
     slug: row.slug,
@@ -133,6 +143,7 @@ function mapAlternative(row: AlternativeRow): Alternative {
     aliases: row.aliases ?? [],
     popularity: row.popularity,
     matchQuality: row.match_quality,
+    reviewSummary,
     searchQuery: row.search_query ?? undefined,
     verdict: row.verdict ?? undefined,
     gallery: row.gallery ?? [],
@@ -191,9 +202,13 @@ async function loadCatalogue(): Promise<OriginalWithAlternatives[]> {
   if (!supabase) return localCatalogue();
 
   try {
-    const [originalsResult, alternativesResult] = await Promise.all([
+    // Reviews are fetched alongside rather than after: they resolve to an empty
+    // map on any failure, so they can never be the reason the catalogue falls
+    // back to the bundled copy.
+    const [originalsResult, alternativesResult, reviews] = await Promise.all([
       supabase.from("originals").select("*").order("popularity", { ascending: false }),
       supabase.from("alternatives").select("*"),
+      getReviewSummaries(),
     ]);
 
     if (originalsResult.error) throw originalsResult.error;
@@ -205,7 +220,7 @@ async function loadCatalogue(): Promise<OriginalWithAlternatives[]> {
     const alts = (alternativesResult.data ?? []) as AlternativeRow[];
     return rows
       .filter((row) => !HIDDEN_SLUGS.has(row.slug))
-      .map((row) => mapOriginal(row, alts));
+      .map((row) => mapOriginal(row, alts, reviews));
   } catch (error) {
     console.error("[catalogue] Supabase unavailable, using bundled data:", error);
     return localCatalogue();
@@ -249,6 +264,16 @@ export function getDetail(
     artists?: string[];
   },
   originalArtists: string[],
+  /**
+   * Artist photo lookup, from `getArtistIndex()`.
+   *
+   * Optional so every existing caller keeps working: without it the artists
+   * come back with no photos, which is precisely the old behaviour. Resolving
+   * here rather than in each component means anything already handed a
+   * `PedalDetail` - including the client-side dialog - gets the pictures with
+   * no extra prop threading.
+   */
+  artistIndex?: ArtistIndex,
 ): PedalDetail {
   const gallery = [pedal.imageUrl, ...(pedal.gallery ?? [])].filter(
     (url): url is string => Boolean(url),
@@ -256,11 +281,12 @@ export function getDetail(
 
   const own = pedal.artists ?? [];
   const specs = pedal.specs ?? [];
+  const names = own.length > 0 ? own : originalArtists;
 
   return {
     specs,
     specsKnown: specs.length > 0,
-    artists: own.length > 0 ? own : originalArtists,
+    artists: resolveArtists(names, artistIndex ?? new Map()),
     artistsAreForOriginal: own.length === 0,
     images: [...new Set(gallery)],
     verdict: pedal.verdict ?? VERDICTS[pedal.slug],

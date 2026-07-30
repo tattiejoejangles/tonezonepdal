@@ -10,7 +10,8 @@ import { isAuthed } from "@/lib/admin-auth";
 export const dynamic = "force-dynamic";
 
 export const metadata: Metadata = {
-  title: "Edit pedal",
+  // "entry", not "pedal": the same form edits amps and cabs.
+  title: "Edit entry",
   robots: { index: false, follow: false },
 };
 
@@ -110,7 +111,7 @@ export default async function EditPedalPage({
       <PedalForm originals={originals} draft={draft} />
 
       <div className="mt-10 rounded-xl border border-rose-200 bg-rose-50/60 p-5">
-        <h2 className="tz-heading text-lg text-rose-900">Delete this pedal</h2>
+        <h2 className="tz-heading text-lg text-rose-900">Delete this entry</h2>
         <p className="tz-body mt-1 mb-4 text-sm text-rose-950/80">
           {kind === "original"
             ? "This also deletes every alternative linked to it. There is no undo."

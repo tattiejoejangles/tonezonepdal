@@ -14,10 +14,20 @@ export function BookmarkButton({
   kind,
   slug,
   tone = "light",
+  full = false,
 }: {
   kind: Bookmark["kind"];
   slug: string;
   tone?: "light" | "dark";
+  /**
+   * Stretch to the container's width and adopt the Compare button's metrics.
+   *
+   * The detail pages stack Save above Compare in a narrow buy panel, where two
+   * buttons of different widths and two different text sizes read as an
+   * accident. `px-5 py-2.5 text-xs` is copied from that Compare link
+   * deliberately - the pair only lines up while the numbers match.
+   */
+  full?: boolean;
 }) {
   const { has, toggle, ready } = useBookmarks();
   const saved = ready && has(kind, slug);
@@ -29,7 +39,9 @@ export function BookmarkButton({
       disabled={!ready}
       aria-pressed={saved}
       title={saved ? "Remove from saved" : "Save for later"}
-      className={`tz-btn px-4 py-2 text-[11px] tracking-wider uppercase disabled:opacity-50 ${
+      className={`tz-btn tracking-wider uppercase disabled:opacity-50 ${
+        full ? "flex w-full px-5 py-2.5 text-xs" : "px-4 py-2 text-[11px]"
+      } ${
         saved
           ? "bg-linear-to-b from-amber-500 to-orange-600 text-white shadow-md"
           : tone === "dark"

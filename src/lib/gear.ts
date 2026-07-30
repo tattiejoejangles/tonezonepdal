@@ -12,8 +12,22 @@ import type { Category } from "./types";
  * is - so a clone page passes `original.category`.
  */
 
-/** Categories that aren't pedals. Currently just amps; heads/cabs would join. */
-const AMP_CATEGORIES: Category[] = ["amp"];
+/**
+ * Categories that aren't pedals.
+ *
+ * Every amp category has to be listed, not just the generic `amp` bucket. This
+ * held `["amp"]` alone while the specific types existed, so `isAmp` answered
+ * false for every reclassified row and a valve combo was described as a pedal
+ * everywhere the noun came from here - including "Go to pedal" on the Find of
+ * the Day dialog. `sections.ts` re-exports this list rather than keeping its
+ * own copy, which is how the two drifted apart in the first place.
+ */
+export const AMP_CATEGORIES: Category[] = [
+  "amp",
+  "amp-valve",
+  "amp-modelling",
+  "amp-cab",
+];
 
 export function isAmp(category: Category): boolean {
   return AMP_CATEGORIES.includes(category);
@@ -34,9 +48,16 @@ export function categoriesFor(
   return all.filter((category) => gearTypeOf(category) === type);
 }
 
-/** "pedal" / "pedals" / "amp" / "amps", by category and count. */
+/**
+ * "pedal" / "amp" / "cab", singular or plural by count.
+ *
+ * A speaker cab is not an amp - it has no amplifier in it - so it gets its own
+ * noun rather than being folded in with the combos, matching the label its
+ * genre already carries in `sections.ts`.
+ */
 export function gearNoun(category: Category, count = 1): string {
-  const noun = isAmp(category) ? "amp" : "pedal";
+  const noun =
+    category === "amp-cab" ? "cab" : isAmp(category) ? "amp" : "pedal";
   return count === 1 ? noun : `${noun}s`;
 }
 

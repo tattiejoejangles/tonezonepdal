@@ -324,11 +324,191 @@ export async function reviewSuggestion(
     ok: true,
     message:
       decision === "approved"
-        ? "Approved. Make the edit on the pedal's own page."
+        ? "Approved. Make the edit on the entry's own page."
         : decision === "rejected"
           ? "Rejected."
           : "Moved back to pending.",
   };
+}
+
+/**
+ * Approve, reject or re-queue one community review.
+ *
+ * Unlike `reviewSuggestion`, approving here DOES change the site: the public
+ * `clone_review_summary` view counts approved rows only, so this is the switch
+ * that puts a review's stars into the average and its answers into the tonal
+ * match percentage. Hence the two revalidations - the review queue, and the
+ * layout, because listing cards and the compare table carry the same adjusted
+ * number as the clone's own page.
+ *
+ * Rejecting leaves the row in place rather than deleting it. It still occupies
+ * that browser's one-review-per-clone slot, which is what stops a rejected
+ * review being resubmitted unchanged.
+ */
+export async function reviewCloneReview(
+  _previous: ActionState,
+  form: FormData,
+): Promise<ActionState> {
+  if (!(await isAuthed())) return fail("Session expired - sign in again.");
+
+  const supabase = getAdminSupabase();
+  if (!supabase) {
+    return fail("SUPABASE_SERVICE_ROLE_KEY isn't set, so nothing can be saved.");
+  }
+
+  const id = text(form, "id");
+  const decision = text(form, "decision");
+  if (!id) return fail("Missing the review.");
+  if (decision !== "approved" && decision !== "rejected" && decision !== "pending") {
+    return fail("Unknown decision.");
+  }
+
+  const { error } = await supabase
+    .from("clone_reviews")
+    .update({
+      status: decision,
+      reviewed_at: decision === "pending" ? null : new Date().toISOString(),
+      review_note: text(form, "review_note") || null,
+    })
+    .eq("id", id);
+
+  if (error) return fail(`Supabase refused it: ${error.message}`);
+
+  revalidatePath("/admin/reviews");
+  // Every surface that shows a tonal match reads the approved aggregate.
+  revalidatePath("/", "layout");
+
+  return {
+    ok: true,
+    message:
+      decision === "approved"
+        ? "Approved - it's live and counts towards the match."
+        : decision === "rejected"
+          ? "Rejected. It stays hidden."
+          : "Moved back to pending.",
+  };
+}
+
+/**
+ * Hide a comment but keep the scores.
+ *
+ * The middle option between approving and rejecting, and the one most often
+ * wanted: the ratings are honest and useful, and the prose is not - abuse, a
+ * link, someone's phone number. Blanking `comment` and approving keeps the
+ * numbers in the average with nothing to read.
+ */
+export async function approveReviewScoresOnly(
+  _previous: ActionState,
+  form: FormData,
+): Promise<ActionState> {
+  if (!(await isAuthed())) return fail("Session expired - sign in again.");
+
+  const supabase = getAdminSupabase();
+  if (!supabase) {
+    return fail("SUPABASE_SERVICE_ROLE_KEY isn't set, so nothing can be saved.");
+  }
+
+  const id = text(form, "id");
+  if (!id) return fail("Missing the review.");
+
+  const { error } = await supabase
+    .from("clone_reviews")
+    .update({
+      comment: null,
+      status: "approved",
+      reviewed_at: new Date().toISOString(),
+      review_note: text(form, "review_note") || "comment removed in moderation",
+    })
+    .eq("id", id);
+
+  if (error) return fail(`Supabase refused it: ${error.message}`);
+
+  revalidatePath("/admin/reviews");
+  revalidatePath("/", "layout");
+
+  return { ok: true, message: "Scores approved, comment dropped." };
+}
+
+/* -------------------------------------------------------------------------
+   Artists
+   ------------------------------------------------------------------------- */
+
+/**
+ * Saves one artist's photo and details.
+ *
+ * `match_key` is the primary key and is never editable here: it is what every
+ * pedal's artist list joins against, so changing it would silently orphan the
+ * photo from the pedals that reference the name. Retitling a display name is
+ * fine; re-keying is a migration.
+ *
+ * An UPSERT rather than an update, because this is now reachable from a pedal
+ * page as well as from /admin/artists. Pedals store artists as free text and
+ * the artists table was seeded from the names present at the time, so a name
+ * added to a pedal since then has no row - and an `update` against a missing
+ * row succeeds while changing nothing, which looks exactly like a save that
+ * worked and then lost the photo.
+ *
+ * `aliases` is only written when the form actually carried the field. The
+ * inline editor on a pedal page does not show it, and defaulting a missing
+ * field to `[]` would wipe aliases set on the full admin screen.
+ */
+export async function updateArtist(
+  _previous: ActionState,
+  form: FormData,
+): Promise<ActionState> {
+  if (!(await isAuthed())) return fail("Session expired - sign in again.");
+
+  const supabase = getAdminSupabase();
+  if (!supabase) {
+    return fail("SUPABASE_SERVICE_ROLE_KEY isn't set, so nothing can be saved.");
+  }
+
+  const matchKey = text(form, "match_key");
+  if (!matchKey) return fail("Missing the artist.");
+
+  const name = text(form, "name");
+  if (!name) return fail("Name is required.");
+
+  const imageUrl = text(form, "image_url");
+  if (imageUrl && !/^https:\/\//i.test(imageUrl)) {
+    // https only: an http image on an https page is blocked as mixed content
+    // and would silently show nothing.
+    return fail("The photo URL must start with https://");
+  }
+
+  const row: Record<string, unknown> = {
+    match_key: matchKey,
+    name,
+    image_url: imageUrl || null,
+    image_credit: text(form, "image_credit") || null,
+    known_for: text(form, "known_for") || null,
+  };
+
+  if (form.has("aliases")) {
+    // Normalised here as well as in the app, so an alias typed with capitals
+    // still matches at read time.
+    row.aliases = csv(form, "aliases").map((alias) =>
+      alias
+        .toLowerCase()
+        .normalize("NFD")
+        .replace(/[^a-z0-9]+/g, "-")
+        .replace(/^-+|-+$/g, ""),
+    );
+  }
+
+  const { error } = await supabase
+    .from("artists")
+    .upsert(row, { onConflict: "match_key" });
+
+  if (error) return fail(`Supabase refused it: ${error.message}`);
+
+  revalidatePath("/admin/artists");
+  // Artist photos appear on every pedal and clone page that names them, and
+  // those are statically generated - without this the new picture waits for the
+  // revalidate window. This is what makes one edit land across the whole site.
+  revalidatePath("/", "layout");
+
+  return { ok: true, message: `Saved ${name}.` };
 }
 
 /* -------------------------------------------------------------------------

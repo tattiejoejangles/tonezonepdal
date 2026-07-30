@@ -1,38 +1,59 @@
 /**
  * How close a clone gets to the original it copies.
  *
- * Was a pastel pill with a coloured ring round it and "78% MATCH" set in caps.
- * Nothing else on the site is built that way - the savings badge is a solid
- * gradient block, the brand tag is a flat chip - so the ringed pill read as
- * imported from somewhere else rather than part of the page.
+ * This is the single most useful number on the site - "£40 instead of £249" is
+ * only interesting once you know whether it actually sounds like the thing -
+ * and it was being rendered as a hairline meter and some grey text, quieter
+ * than the brand name above it. It is now a solid block in the same visual
+ * language as the savings badge, because those two facts are a pair and should
+ * carry the same weight.
  *
- * This version says the thing in words and shows the number as a filled meter,
- * which is what the number actually is. The band's own colour fills the track;
- * the label carries the meaning, so the colour is reinforcement rather than
- * the only signal (a red and an amber pill were otherwise the same object).
+ * The verdict leads and the number follows it. "Very close" is what someone is
+ * actually looking for; 84% is the supporting detail, not the headline.
  */
 
 interface Band {
   label: string;
-  /** Meter fill. Solid, matching the savings badge's treatment. */
+  /** Solid fill, mirroring SavingsBadge's treatment. */
   fill: string;
-  text: string;
+  /** Track fill for the inline meter. */
+  meter: string;
 }
 
 function bandFor(match: number): Band {
   if (match >= 90) {
-    return { label: "Near identical", fill: "bg-emerald-500", text: "text-emerald-800" };
+    return {
+      label: "Near identical",
+      fill: "bg-linear-to-r from-emerald-700 to-emerald-600",
+      meter: "bg-white",
+    };
   }
   if (match >= 80) {
-    return { label: "Very close", fill: "bg-emerald-500", text: "text-emerald-800" };
+    return {
+      label: "Very close",
+      fill: "bg-linear-to-r from-emerald-600 to-emerald-500",
+      meter: "bg-white",
+    };
   }
   if (match >= 70) {
-    return { label: "Close", fill: "bg-amber-500", text: "text-amber-800" };
+    return {
+      label: "Close",
+      fill: "bg-linear-to-r from-amber-600 to-amber-500",
+      meter: "bg-white",
+    };
   }
   if (match >= 55) {
-    return { label: "In the ballpark", fill: "bg-orange-500", text: "text-orange-800" };
+    return {
+      label: "In the ballpark",
+      fill: "bg-linear-to-r from-orange-600 to-orange-500",
+      meter: "bg-white",
+    };
   }
-  return { label: "Its own thing", fill: "bg-stone-400", text: "text-stone-600" };
+  return {
+    label: "Its own thing",
+    fill: "bg-linear-to-r from-stone-600 to-stone-500",
+    meter: "bg-white",
+  };
 }
 
 export function MatchBadge({
@@ -40,39 +61,51 @@ export function MatchBadge({
   size = "md",
 }: {
   match: number;
-  size?: "sm" | "md";
+  /** `lg` for a hero, `sm` inside a dialog, `md` everywhere else. */
+  size?: "sm" | "md" | "lg";
 }) {
   const band = bandFor(match);
-  const small = size === "sm";
+  const clamped = Math.min(100, Math.max(0, match));
+
+  const pad =
+    size === "lg" ? "px-4 py-2.5 text-sm" : size === "sm" ? "px-2.5 py-1 text-[11px]" : "px-3 py-1.5 text-xs";
+  const meterWidth = size === "lg" ? "w-16" : size === "sm" ? "w-8" : "w-10";
 
   return (
     <span
-      className="inline-flex items-center gap-2"
-      title={`${band.label} - ${match}% tonal match`}
+      className={`inline-flex items-center gap-2 rounded-full font-bold text-white shadow-sm ${band.fill} ${pad}`}
+      title={`${band.label} - ${clamped}% tonal match to the original`}
     >
-      {/* aria-hidden: the meter is a picture of the number that follows it. */}
+      <span className="tracking-wide whitespace-nowrap">
+        {band.label}
+      </span>
+
+      {/* The meter is a picture of the number beside it, so it's decorative. */}
       <span
         aria-hidden
-        className={`relative block overflow-hidden rounded-full bg-stone-200/80 ${
-          small ? "h-1 w-10" : "h-1.5 w-14"
-        }`}
+        className={`relative h-1 shrink-0 overflow-hidden rounded-full bg-black/25 ${meterWidth}`}
       >
         <span
-          className={`absolute inset-y-0 left-0 rounded-full ${band.fill}`}
-          style={{ width: `${Math.min(100, Math.max(0, match))}%` }}
+          className={`absolute inset-y-0 left-0 rounded-full ${band.meter}`}
+          style={{ width: `${clamped}%` }}
         />
       </span>
 
-      <span
-        className={`font-bold whitespace-nowrap ${band.text} ${
-          small ? "text-[11px]" : "text-xs"
-        }`}
-      >
-        {band.label}
-        <span className="ml-1 font-medium text-stone-400 tabular-nums">
-          {match}%
-        </span>
-      </span>
+      <span className="tabular-nums opacity-90">{clamped}%</span>
+    </span>
+  );
+}
+
+/**
+ * Label only, for tight spots like a listing card where the full badge would
+ * dominate a 300px column. Same bands, so the colour still means one thing.
+ */
+export function MatchTag({ match }: { match: number }) {
+  const band = bandFor(match);
+  return (
+    <span className={`tz-tag text-white ${band.fill}`}>
+      {band.label}
+      <span className="font-medium tabular-nums opacity-90">{match}%</span>
     </span>
   );
 }

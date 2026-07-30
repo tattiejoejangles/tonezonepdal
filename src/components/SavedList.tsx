@@ -8,12 +8,12 @@ import { formatPrice } from "@/lib/format";
 import type { SearchIndex } from "@/lib/search-index";
 
 /**
- * The saved pedals list.
+ * The saved gear list - "gear" because the list mixes pedals, amps and cabs.
  *
  * Bookmarks store only a kind and a slug. Everything shown here is resolved
- * against the search index the layout already builds, so a saved pedal always
+ * against the search index the layout already builds, so a saved item always
  * displays its current price and photo rather than a snapshot from whenever it
- * was saved - and a pedal that has since been removed simply drops out.
+ * was saved - and anything since removed simply drops out.
  */
 export function SavedList({ index }: { index: SearchIndex }) {
   const { bookmarks, remove, ready } = useBookmarks();
@@ -30,7 +30,7 @@ export function SavedList({ index }: { index: SearchIndex }) {
     .filter((item): item is NonNullable<typeof item> => item !== null);
 
   if (!ready) {
-    return <p className="tz-body text-sm text-stone-500">Loading your saved pedals…</p>;
+    return <p className="tz-body text-sm text-stone-500">Loading your saved gear…</p>;
   }
 
   if (items.length === 0) {
@@ -38,15 +38,15 @@ export function SavedList({ index }: { index: SearchIndex }) {
       <div className="tz-chamfer bg-white/70 px-6 py-16 text-center ring-1 ring-stone-200">
         <p className="text-lg font-bold text-stone-800">Nothing saved yet</p>
         <p className="tz-body mx-auto mt-2 max-w-md text-sm text-stone-500">
-          Hit <span className="font-bold">Save</span> on any pedal and it lands
-          here. Saved pedals live in this browser, so they stay private and need
-          no account - but they won&apos;t follow you to another device.
+          Hit <span className="font-bold">Save</span> on any pedal or amp and it
+          lands here. Saved gear lives in this browser, so it stays private and
+          needs no account - but it won&apos;t follow you to another device.
         </p>
         <Link
           href="/"
           className="tz-btn mt-5 inline-flex bg-linear-to-b from-stone-800 to-stone-950 px-6 py-3 text-sm tracking-wide text-white"
         >
-          Browse pedals
+          Browse gear
         </Link>
       </div>
     );

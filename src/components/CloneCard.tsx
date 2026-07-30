@@ -1,7 +1,9 @@
 import Link from "next/link";
 
+import { MatchTag } from "./MatchBadge";
 import { PedalImage } from "./PedalImage";
 import { formatPrice } from "@/lib/format";
+import { displayMatch } from "@/lib/reviews";
 import type { CloneResult } from "@/lib/filter";
 
 /**
@@ -12,18 +14,25 @@ import type { CloneResult } from "@/lib/filter";
  * special as the thing it copies - so in a mixed grid the two were
  * indistinguishable at a glance.
  *
- * Now it is flat white with a hairline grey edge and a grey tag: no tint, no
- * rule, no sheen. That absence is the point. It still lifts on hover, because
- * being the plain option shouldn't mean feeling broken.
+ * Now it is flat white with a hairline grey edge: no tint, no rule, no sheen.
+ * That absence is the point. It still lifts on hover, because being the plain
+ * option shouldn't mean feeling broken.
  */
-export function CloneCard({ result }: { result: CloneResult }) {
+export function CloneCard({
+  result,
+  onOpen,
+}: {
+  result: CloneResult;
+  /** When given, the card opens a preview instead of navigating. */
+  onOpen?: () => void;
+}) {
   const { alternative, original, saving } = result;
 
-  return (
-    <Link
-      href={`/clone/${alternative.slug}`}
-      className="tz-chamfer group relative flex flex-col overflow-hidden bg-white ring-1 ring-stone-200 transition-all duration-300 hover:-translate-y-1 hover:ring-stone-300 focus-visible:ring-2 focus-visible:ring-amber-500 focus-visible:outline-none"
-    >
+  const shell =
+    "tz-chamfer group relative flex flex-col overflow-hidden bg-white text-left ring-1 ring-stone-200 transition-all duration-300 hover:-translate-y-1 hover:ring-stone-300 focus-visible:ring-2 focus-visible:ring-amber-500 focus-visible:outline-none";
+
+  const body = (
+    <>
       <div className="tz-well relative aspect-4/3 rounded-none">
         <div className="h-full w-full transition-transform duration-500 group-hover:scale-105">
           <PedalImage
@@ -33,18 +42,22 @@ export function CloneCard({ result }: { result: CloneResult }) {
           />
         </div>
 
-        <span className="tz-eyebrow absolute top-3 left-3 rounded-full bg-white/90 px-2.5 py-1 text-stone-500 ring-1 ring-stone-200 backdrop-blur-sm">
-          Budget
-        </span>
+        {/* Ribbon rather than a floating pill: it's a label printed on the
+            photo, not a control. */}
+        <span className="tz-ribbon tz-ribbon--green top-[14%]">Budget</span>
 
         {saving.percent > 0 && (
-          <span className="absolute right-0 bottom-0 bg-emerald-600 px-3 py-1.5 text-sm font-bold text-white tabular-nums">
+          <span className="absolute right-0 bottom-0 rounded-tl-lg bg-linear-to-r from-emerald-700 to-emerald-600 px-3 py-1.5 text-sm font-bold text-white tabular-nums">
             −{saving.percent}%
           </span>
         )}
       </div>
 
       <div className="flex flex-1 flex-col gap-3 p-5">
+        <div className="-mt-1">
+          <MatchTag match={displayMatch(alternative)} />
+        </div>
+
         <div>
           <p className="tz-brand text-stone-500">{alternative.brand}</p>
           <h3 className="tz-heading mt-0.5 text-base text-stone-800">
@@ -69,6 +82,26 @@ export function CloneCard({ result }: { result: CloneResult }) {
           </div>
         </div>
       </div>
+    </>
+  );
+
+  if (onOpen) {
+    return (
+      <button
+        type="button"
+        onClick={onOpen}
+        aria-haspopup="dialog"
+        aria-label={`Quick look at the ${alternative.name}`}
+        className={`${shell} w-full cursor-pointer`}
+      >
+        {body}
+      </button>
+    );
+  }
+
+  return (
+    <Link href={`/clone/${alternative.slug}`} className={shell}>
+      {body}
     </Link>
   );
 }

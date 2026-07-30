@@ -9,6 +9,7 @@
     "lint": "eslint",
     "images": "node scripts/fetch-images.mjs",
     "details": "node scripts/fetch-details.mjs",
+    "specs": "node --env-file=.env.local scripts/fetch-specs.mjs",
     "images:missing": "node scripts/missing-images.mjs",
     "images:prune": "node scripts/prune-dead-images.mjs",
     "enrich": "node scripts/fetch-images.mjs && node scripts/fetch-details.mjs && node scripts/prune-dead-images.mjs",

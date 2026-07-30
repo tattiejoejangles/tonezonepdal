@@ -6,6 +6,7 @@ import { ProsCons } from "./ProsCons";
 import { RetailerButtons } from "./RetailerButtons";
 import { SavingsBadge } from "./SavingsBadge";
 import { calculateSavings, formatPrice } from "@/lib/format";
+import { displayMatch } from "@/lib/reviews";
 import type { Alternative } from "@/lib/types";
 
 /**
@@ -66,7 +67,13 @@ export function AlternativeCard({
         </div>
 
         <div className="min-w-0 flex-1 space-y-4">
-          <div className="flex flex-wrap items-start justify-between gap-x-4 gap-y-2">
+          {/* A grid, not a wrapping flex row.
+              `flex-wrap` meant a long blurb pushed the price block onto its own
+              line - so the price sat top-right on one card and bottom-left on
+              the next, which is exactly the thing the eye uses to compare
+              cards. Two grid columns keep the price in the same place on every
+              card and let the copy wrap under itself instead. */}
+          <div className="grid grid-cols-[minmax(0,1fr)_auto] items-start gap-x-4">
             <div className="min-w-0">
               <p className="tz-brand text-amber-700">{alternative.brand}</p>
               <h3 className="tz-heading mt-1 text-lg text-stone-900 transition-colors group-hover:text-amber-700">
@@ -76,16 +83,18 @@ export function AlternativeCard({
             </div>
 
             <div className="shrink-0 text-right">
-              <p className="tz-heading text-2xl text-stone-900">
+              <p className="tz-heading text-2xl text-stone-900 tabular-nums">
                 {formatPrice(alternative.priceGBP)}
               </p>
-              <p className="text-[11px] text-stone-400">approx. UK price</p>
+              <p className="text-[11px] whitespace-nowrap text-stone-400">
+                approx. UK price
+              </p>
             </div>
           </div>
 
           <div className="flex flex-wrap items-center gap-2">
             <SavingsBadge saving={saving} comparedTo={originalName} />
-            <MatchBadge match={alternative.matchQuality} />
+            <MatchBadge match={displayMatch(alternative)} />
             {onOpen && (
               <button
                 type="button"

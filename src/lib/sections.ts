@@ -1,5 +1,6 @@
 import type { Alternative, Category, OriginalWithAlternatives } from "./types";
 import { calculateSavings, type Savings } from "./format";
+import { AMP_CATEGORIES } from "./gear";
 
 /**
  * Home page organisation: genre groupings and the daily bargain pick.
@@ -23,13 +24,14 @@ export function genreNoun(genre: Genre, count: number): string {
   return count === 1 ? noun : `${noun}s`;
 }
 
-/** Categories that are not guitar pedals, so the pedal menu can exclude them. */
-export const NON_PEDAL_CATEGORIES: Category[] = [
-  "amp",
-  "amp-valve",
-  "amp-modelling",
-  "amp-cab",
-];
+/**
+ * Categories that are not guitar pedals, so the pedal menu can exclude them.
+ *
+ * Re-exported from `gear.ts` rather than listed again here. Two hand-maintained
+ * copies of "which categories are amps" is exactly how the noun helper ended up
+ * calling valve combos pedals while this list had them right.
+ */
+export const NON_PEDAL_CATEGORIES: Category[] = AMP_CATEGORIES;
 
 /**
  * Amp genres.

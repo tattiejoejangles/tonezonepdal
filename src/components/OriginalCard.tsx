@@ -17,18 +17,30 @@ import type { DirectoryResult } from "@/lib/filter";
 export function OriginalCard({
   result,
   priority = false,
+  onOpen,
 }: {
   result: DirectoryResult;
   priority?: boolean;
+  /**
+   * When given, the card opens a preview instead of navigating. The browse
+   * listings use this - losing your scroll position and your filters to read
+   * two lines of blurb is a bad trade. Genre bands still link straight
+   * through, where you arrived having already chosen a category.
+   */
+  onOpen?: () => void;
 }) {
   const { cheapest, bestSaving, alternatives } = result;
   const noun = gearNoun(result.category, alternatives.length);
 
-  return (
-    <Link
-      href={`/pedal/${result.slug}`}
-      className="tz-chamfer tz-legend tz-legend-edge group relative flex flex-col overflow-hidden transition-all duration-300 hover:-translate-y-1.5 focus-visible:ring-2 focus-visible:ring-amber-500 focus-visible:outline-none"
-    >
+  const shell =
+    "tz-chamfer tz-legend tz-legend-edge group relative flex flex-col overflow-hidden text-left transition-all duration-300 hover:-translate-y-1.5 focus-visible:ring-2 focus-visible:ring-amber-500 focus-visible:outline-none";
+
+  /* The card's insides, rendered into either a button or a link below. Held in
+     a variable rather than a little wrapper component, because defining a
+     component during render remounts the whole subtree on every parent
+     render. */
+  const body = (
+    <>
       {/* Always lit, not hover-only: this is the mark of an original. */}
       <span className="absolute inset-x-0 top-0 z-10 h-1 bg-linear-to-r from-amber-400 via-orange-500 to-rose-500" />
 
@@ -45,18 +57,21 @@ export function OriginalCard({
           />
         </div>
 
-        <span className="tz-eyebrow absolute top-3 left-3 rounded-full bg-stone-900/90 px-2.5 py-1 text-amber-300 shadow-sm backdrop-blur-sm">
-          Original
-        </span>
+        <span className="tz-ribbon tz-ribbon--dark top-[14%]">Original</span>
 
         {bestSaving && bestSaving.percent > 0 && (
-          <span className="absolute right-0 bottom-0 bg-linear-to-r from-emerald-600 to-emerald-500 px-3 py-1.5 text-sm font-bold text-white tabular-nums">
+          <span className="absolute right-0 bottom-0 rounded-tl-lg bg-linear-to-r from-emerald-700 to-emerald-600 px-3 py-1.5 text-sm font-bold text-white tabular-nums">
             −{bestSaving.percent}%
           </span>
         )}
       </div>
 
       <div className="relative z-[2] flex flex-1 flex-col gap-3 p-5">
+        {/* No tonal match here. An original is the reference - it has nothing
+            to be matched against - and the tag that used to sit here showed
+            its cheapest clone's score, which read as a rating of the original
+            itself. Match belongs on a clone, where it means something: the
+            clone cards, the alternatives panel and the compare table. */}
         <div>
           <p className="tz-brand text-amber-700">{result.brand}</p>
           <h3 className="tz-heading mt-0.5 text-base text-stone-900 transition-colors group-hover:text-amber-800">
@@ -87,6 +102,26 @@ export function OriginalCard({
           )}
         </div>
       </div>
+    </>
+  );
+
+  if (onOpen) {
+    return (
+      <button
+        type="button"
+        onClick={onOpen}
+        aria-haspopup="dialog"
+        aria-label={`Quick look at the ${result.name}`}
+        className={`${shell} w-full cursor-pointer`}
+      >
+        {body}
+      </button>
+    );
+  }
+
+  return (
+    <Link href={`/pedal/${result.slug}`} className={shell}>
+      {body}
     </Link>
   );
 }

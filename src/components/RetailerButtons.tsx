@@ -26,7 +26,10 @@ const BRANDS: Record<
   amazon: {
     accent: "bg-linear-to-br from-amber-300 to-amber-500",
     iconTone: "dark",
-    cta: "Buy on",
+    // "Search on", not "Buy on": the link goes to Amazon's search results for
+    // this pedal, not to a product page, so "Buy" promised something the
+    // click doesn't deliver. Same wording as the other two for that reason.
+    cta: "Search on",
     icon: <AmazonMark />,
   },
   reverb: {

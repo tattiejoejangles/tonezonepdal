@@ -4,8 +4,11 @@ import { useMemo, useState } from "react";
 
 import { CloneCard } from "./CloneCard";
 import { FilterBar } from "./FilterBar";
+import { GearPreview, type PreviewItem } from "./GearPreview";
 import { OriginalCard } from "./OriginalCard";
 import { SearchBar } from "./SearchBar";
+import { gearNoun } from "@/lib/gear";
+import { displayMatch } from "@/lib/reviews";
 import {
   brandOptions,
   filterAlternatives,
@@ -58,6 +61,7 @@ export function GearBrowser({
   const [price, setPrice] = useState<PriceRange>(UNBOUNDED);
   const [family, setFamily] = useState<string | null>(initialFamily);
   const [lens, setLens] = useState<Lens>("all");
+  const [preview, setPreview] = useState<PreviewItem | null>(null);
 
   // One chip per genre, not per category: "Distortion & Fuzz" covers two
   // categories and rendering one chip each gave it two identical buttons.
@@ -167,10 +171,52 @@ export function GearBrowser({
       {total > 0 ? (
         <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
           {originals.map((result, index) => (
-            <OriginalCard key={result.id} result={result} priority={index < 4} />
+            <OriginalCard
+              key={result.id}
+              result={result}
+              priority={index < 4}
+              onOpen={() =>
+                setPreview({
+                  kind: "original",
+                  href: `/pedal/${result.slug}`,
+                  name: result.name,
+                  brand: result.brand,
+                  blurb: result.blurb,
+                  imageUrl: result.imageUrl,
+                  priceGBP: result.priceGBP,
+                  searchQuery: result.searchQuery,
+                  cheapest: result.cheapest,
+                  alternativeCount: result.alternatives.length,
+                  noun: gearNoun(result.category, result.alternatives.length),
+                  itemNoun: gearNoun(result.category),
+                })
+              }
+            />
           ))}
           {clones.map((result) => (
-            <CloneCard key={result.alternative.id} result={result} />
+            <CloneCard
+              key={result.alternative.id}
+              result={result}
+              onOpen={() =>
+                setPreview({
+                  kind: "clone",
+                  href: `/clone/${result.alternative.slug}`,
+                  name: result.alternative.name,
+                  brand: result.alternative.brand,
+                  blurb: result.alternative.blurb,
+                  imageUrl: result.alternative.imageUrl,
+                  priceGBP: result.alternative.priceGBP,
+                  searchQuery: result.alternative.searchQuery,
+                  matchQuality: displayMatch(result.alternative),
+                  comparedTo: {
+                    name: result.original.name,
+                    priceGBP: result.original.priceGBP,
+                  },
+                  // A clone is whatever it copies.
+                  itemNoun: gearNoun(result.original.category),
+                })
+              }
+            />
           ))}
         </div>
       ) : (
@@ -187,6 +233,10 @@ export function GearBrowser({
             Reset filters
           </button>
         </div>
+      )}
+
+      {preview && (
+        <GearPreview item={preview} onClose={() => setPreview(null)} />
       )}
     </div>
   );

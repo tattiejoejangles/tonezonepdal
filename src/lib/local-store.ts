@@ -167,3 +167,47 @@ export function getVoterId(): string {
   write(VOTER_KEY, fresh);
   return fresh;
 }
+
+/* ------------------------------------------------------------------ */
+
+const REVIEWED_KEY = "tz_reviewed";
+
+/** Stable reference - a new [] each call would loop useSyncExternalStore. */
+const NOTHING_REVIEWED: string[] = [];
+
+/**
+ * Which clones this browser has already reviewed, by alternative id.
+ *
+ * Kept locally because the reviews themselves can no longer answer the
+ * question. A submitted review is `pending` until it is approved, and the RLS
+ * policy only lets the public read approved rows - deliberately, since the whole
+ * point of moderating prose is that unapproved prose is not readable. So the
+ * database cannot tell this browser "you already reviewed this one", and without
+ * that the form would invite a second review and then fail on the unique
+ * constraint.
+ *
+ * Only a UI nicety: clearing site data lets the form reappear, and the insert
+ * then fails on that same constraint, which the form reports honestly.
+ */
+export function useReviewed() {
+  const [reviewed, update] = useLocalValue<string[]>(
+    REVIEWED_KEY,
+    NOTHING_REVIEWED,
+  );
+  const ready = useHydrated();
+
+  const has = useCallback(
+    (alternativeId: string) => reviewed.includes(alternativeId),
+    [reviewed],
+  );
+
+  const add = useCallback(
+    (alternativeId: string) => {
+      if (reviewed.includes(alternativeId)) return;
+      update([alternativeId, ...reviewed]);
+    },
+    [reviewed, update],
+  );
+
+  return { has, add, ready };
+}

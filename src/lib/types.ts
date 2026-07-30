@@ -1,3 +1,6 @@
+import type { ResolvedArtist } from "./artists";
+import type { ReviewSummary } from "./reviews";
+
 /**
  * Core domain types for The ToneZone.
  *
@@ -110,8 +113,21 @@ export interface Alternative {
   /** Where it falls short. Honesty here is the whole point of the site. */
   cons: string[];
   popularity: number;
-  /** 0-100: how close this gets to the original's actual sound and feel. */
+  /**
+   * 0-100: our editorial judgement of how close this gets to the original.
+   *
+   * Stays the editorial number even once reviews exist. What the UI shows is
+   * `displayMatch()`, which blends this with `reviewSummary` - keeping the two
+   * apart is what lets a page say "we said 85, owners say 71".
+   */
   matchQuality: number;
+  /**
+   * Approved-review aggregate, attached by the catalogue loader.
+   *
+   * Absent when nothing has been approved, when Supabase is unreachable, or in
+   * the bundled fallback data - all of which mean "show the editorial number".
+   */
+  reviewSummary?: ReviewSummary;
   searchQuery?: string;
   aliases?: string[];
   /** Editorial summary of what players report. Stored in Supabase. */
@@ -140,7 +156,8 @@ export interface PedalDetail {
   specs: Spec[];
   /** True when `specs` is verified data rather than an empty placeholder. */
   specsKnown: boolean;
-  artists: string[];
+  /** Names as stored on the pedal, each resolved to a photo where we have one. */
+  artists: ResolvedArtist[];
   /** Whose artists these are - this pedal's, or the original it clones. */
   artistsAreForOriginal: boolean;
   /** Extra product shots for the modal gallery. */

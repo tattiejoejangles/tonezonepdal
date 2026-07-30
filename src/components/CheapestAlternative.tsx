@@ -24,11 +24,14 @@ export function CheapestAlternative({
   detail,
   originalName,
   originalPrice,
+  noun = "pedal",
 }: {
   alternative: Alternative;
   detail: PedalDetail;
   originalName: string;
   originalPrice: number;
+  /** "pedal" / "amp" / "cab", for the dialog's footer button. */
+  noun?: string;
 }) {
   const [open, setOpen] = useState(false);
   const saving = calculateSavings(originalPrice, alternative.priceGBP);
@@ -90,6 +93,7 @@ export function CheapestAlternative({
           originalName={originalName}
           originalPrice={originalPrice}
           href={`/clone/${alternative.slug}`}
+          noun={noun}
           onClose={() => setOpen(false)}
         />
       )}

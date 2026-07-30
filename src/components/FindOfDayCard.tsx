@@ -7,6 +7,7 @@ import { PedalImage } from "./PedalImage";
 import { PedalModal } from "./PedalModal";
 import { RetailerButtons } from "./RetailerButtons";
 import { formatPrice } from "@/lib/format";
+import { gearNoun } from "@/lib/gear";
 import type { DailyFind } from "@/lib/sections";
 import type { PedalDetail } from "@/lib/types";
 
@@ -35,6 +36,9 @@ export function FindOfDayCard({
 }) {
   const [open, setOpen] = useState(false);
   const { original, alternative, saving } = find;
+  // A clone has no category of its own - it is whatever it copies. The pick
+  // rotates over the whole catalogue, so this is regularly an amp.
+  const noun = gearNoun(original.category);
 
   return (
     <section aria-labelledby="find-of-day">
@@ -54,7 +58,7 @@ export function FindOfDayCard({
             Find of the Day
           </h2>
           <p className="tz-body text-xs text-stone-500">
-            Today&apos;s biggest gap between an original and its clone.
+            Today&apos;s biggest gap between an original {noun} and its clone.
           </p>
         </div>
       </div>
@@ -166,6 +170,7 @@ export function FindOfDayCard({
           originalName={original.name}
           originalPrice={original.priceGBP}
           href={`/clone/${alternative.slug}`}
+          noun={noun}
           onClose={() => setOpen(false)}
         />
       )}

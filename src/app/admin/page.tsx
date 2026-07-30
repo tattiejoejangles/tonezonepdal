@@ -38,12 +38,26 @@ export default async function AdminPage() {
         <div>
           <p className="tz-eyebrow text-amber-700">The Tone Zone</p>
           <h1 className="tz-heading mt-1.5 text-3xl text-stone-900">Add gear</h1>
-          <Link
-            href="/admin/suggestions"
-            className="tz-eyebrow mt-3 inline-block text-amber-700 hover:text-amber-900"
-          >
-            Review suggestions →
-          </Link>
+          <div className="mt-3 flex flex-wrap gap-4">
+            <Link
+              href="/admin/reviews"
+              className="tz-eyebrow text-amber-700 hover:text-amber-900"
+            >
+              Moderate reviews →
+            </Link>
+            <Link
+              href="/admin/suggestions"
+              className="tz-eyebrow text-amber-700 hover:text-amber-900"
+            >
+              Review suggestions →
+            </Link>
+            <Link
+              href="/admin/artists"
+              className="tz-eyebrow text-amber-700 hover:text-amber-900"
+            >
+              Artist photos →
+            </Link>
+          </div>
           <p className="tz-body mt-2 text-sm text-stone-600">
             Writes straight to Supabase. Pages pick it up within five minutes,
             or immediately on the next visit.
@@ -73,7 +87,7 @@ export default async function AdminPage() {
       <PedalForm originals={originals} />
 
       <p className="tz-body mt-10 border-t border-stone-200 pt-6 text-sm text-stone-500">
-        To change or delete a pedal, open its page on the site and use the{" "}
+        To change or delete an entry, open its page on the site and use the{" "}
         <span className="font-bold">Edit</span> button - it only appears while
         you are signed in here.
       </p>

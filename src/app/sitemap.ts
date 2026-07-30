@@ -29,6 +29,11 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const staticPages: MetadataRoute.Sitemap = [
     { url: `${base}/`, changeFrequency: "daily", priority: 1 },
     { url: `${base}/pedals`, changeFrequency: "daily", priority: 0.9 },
+    { url: `${base}/amps`, changeFrequency: "daily", priority: 0.9 },
+    { url: `${base}/legal/terms`, changeFrequency: "yearly", priority: 0.2 },
+    { url: `${base}/legal/privacy`, changeFrequency: "yearly", priority: 0.2 },
+    { url: `${base}/legal/affiliates`, changeFrequency: "yearly", priority: 0.2 },
+    { url: `${base}/legal/trademarks`, changeFrequency: "yearly", priority: 0.2 },
   ];
 
   const genrePages: MetadataRoute.Sitemap = [...GENRES, AMPS_GENRE].map((genre) => ({

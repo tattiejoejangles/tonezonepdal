@@ -101,42 +101,99 @@ function SiteHeader({ searchIndex }: { searchIndex: SearchIndex }) {
 function SiteFooter() {
   return (
     <footer className="mt-16 border-t border-stone-200/70 bg-white/60">
-      {/* Two lanes on desktop: the mark on the left, the small print on the
-          right. The footer is the one place with room for the full lockup, and
-          the wide waveform is what stops a bare block of legal text reading as
-          the page having simply run out. */}
-      <div className="tz-page grid gap-8 py-10 text-sm text-stone-500 md:grid-cols-[minmax(0,18rem)_1fr] md:gap-14">
-        <div>
-          <TzLockup
-            className="h-12 w-auto text-stone-800"
-            title="The Tone Zone"
-          />
-          <p className="mt-3 text-base font-bold text-stone-700">The Tone Zone</p>
-          <p className="tz-body mt-1 text-xs text-stone-400">
-            Great tone, not boutique prices.
-          </p>
+      <div className="tz-page py-12 text-sm text-stone-500">
+        <div className="grid gap-10 md:grid-cols-[minmax(0,20rem)_1fr] md:gap-16">
+          <div>
+            <TzLockup className="h-12 w-auto text-stone-800" title="The Tone Zone" />
+            <p className="mt-3 text-base font-bold text-stone-700">The Tone Zone</p>
+            <p className="tz-body mt-1 text-xs text-stone-400">
+              Great tone, not boutique prices.
+            </p>
+          </div>
+
+          <div className="grid gap-8 sm:grid-cols-3">
+            <FooterColumn title="Browse">
+              <FooterLink href="/pedals">All pedals</FooterLink>
+              <FooterLink href="/amps">All amps</FooterLink>
+              <FooterLink href="/boards">Boards</FooterLink>
+              <FooterLink href="/saved">Saved gear</FooterLink>
+            </FooterColumn>
+
+            <FooterColumn title="Help out">
+              <FooterLink href="/suggest">Make a suggestion</FooterLink>
+              <FooterLink href="/suggest">Report a wrong price</FooterLink>
+              <FooterLink href="/legal/trademarks">Takedown requests</FooterLink>
+            </FooterColumn>
+
+            <FooterColumn title="Legal">
+              <FooterLink href="/legal/terms">Terms of use</FooterLink>
+              <FooterLink href="/legal/privacy">Privacy &amp; cookies</FooterLink>
+              <FooterLink href="/legal/affiliates">Affiliate disclosure</FooterLink>
+              <FooterLink href="/legal/trademarks">Trademarks</FooterLink>
+            </FooterColumn>
+          </div>
         </div>
 
-        <div className="space-y-3">
-          <p>
+        {/* The disclosures that have to be visible on every page rather than
+            one click away: the affiliate relationship, the fact prices are
+            estimates, and that we are nobody's official anything. */}
+        <div className="mt-10 space-y-3 border-t border-stone-200/70 pt-8">
+          <p className="tz-body max-w-3xl text-xs">
+            Prices are approximate UK street prices, recorded by hand and not fed live
+            from any retailer - they change constantly, so always check the
+            retailer&apos;s own listing before buying. Nothing here is an offer to sell.
+          </p>
+          <p className="tz-body max-w-3xl text-xs">
+            Some outbound links are affiliate links, and we may earn a commission at no
+            extra cost to you. As an Amazon Associate we earn from qualifying purchases.
+            Commission never affects which alternatives we list or how we rate them -{" "}
             <Link
-              href="/suggest"
-              className="text-sm font-bold text-amber-700 underline underline-offset-4 hover:text-amber-900"
+              href="/legal/affiliates"
+              className="font-bold text-amber-700 underline underline-offset-2 hover:text-amber-900"
             >
-              Spotted something wrong? Make a suggestion
+              full disclosure
             </Link>
+            .
           </p>
-          <p className="tz-body max-w-2xl">
-            Prices are approximate UK street prices and change constantly - always check
-            the retailer before buying. Some outbound links are affiliate links, which
-            means we may earn a commission at no extra cost to you.
-          </p>
-          <p className="max-w-2xl text-xs text-stone-400">
+          <p className="max-w-3xl text-xs text-stone-400">
             All product and brand names are trademarks of their respective owners, used
-            here for identification and comparison only.
+            here for identification and comparison only. The Tone Zone is not affiliated
+            with, endorsed by or authorised by any manufacturer or retailer named on this
+            site. Tonal match figures and comparisons are editorial opinion.
+          </p>
+          <p className="text-xs text-stone-400">
+            © {new Date().getFullYear()} The Tone Zone.
           </p>
         </div>
       </div>
     </footer>
+  );
+}
+
+function FooterColumn({
+  title,
+  children,
+}: {
+  title: string;
+  children: React.ReactNode;
+}) {
+  return (
+    <div>
+      <p className="tz-eyebrow mb-3 text-stone-400">{title}</p>
+      <ul className="space-y-2">{children}</ul>
+    </div>
+  );
+}
+
+function FooterLink({ href, children }: { href: string; children: React.ReactNode }) {
+  return (
+    <li>
+      <Link
+        href={href}
+        className="text-sm font-medium text-stone-600 transition-colors hover:text-amber-700"
+      >
+        {children}
+      </Link>
+    </li>
   );
 }

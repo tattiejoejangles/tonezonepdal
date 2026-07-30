@@ -4,7 +4,7 @@ import { notFound } from "next/navigation";
 
 import { AdminTools } from "@/components/admin/AdminTools";
 import { BookmarkButton } from "@/components/BookmarkButton";
-import { CloneRating } from "@/components/CloneRating";
+import { CloneReviews } from "@/components/CloneReviews";
 import { MatchBadge } from "@/components/MatchBadge";
 import { PedalDemos } from "@/components/PedalDemos";
 import { PedalImage } from "@/components/PedalImage";
@@ -12,13 +12,16 @@ import { ProsCons } from "@/components/ProsCons";
 import { RetailerButtons } from "@/components/RetailerButtons";
 import { SavingsBadge } from "@/components/SavingsBadge";
 import { ArtistChips, SpecList } from "@/components/SpecList";
+import { getArtistIndex } from "@/data/artists";
 import {
   getAllAlternatives,
   getAlternativeBySlug,
   getDetail,
 } from "@/data/catalogue";
+import { getApprovedReviews } from "@/data/reviews";
 import { calculateSavings, formatPrice } from "@/lib/format";
 import { gearNoun } from "@/lib/gear";
+import { displayMatch } from "@/lib/reviews";
 
 /** Regenerate every 5 minutes, so image URLs added in Supabase appear quickly. */
 export const revalidate = 300;
@@ -58,9 +61,19 @@ export default async function ClonePage({
 
   const { alternative, original } = found;
   const saving = calculateSavings(original.priceGBP, alternative.priceGBP);
-  const detail = getDetail(alternative, original.artists ?? []);
+  const detail = getDetail(
+    alternative,
+    original.artists ?? [],
+    await getArtistIndex(),
+  );
   // A clone has no category of its own - it is whatever it copies.
   const noun = gearNoun(original.category);
+
+  // The badge shows our rating blended with approved reviews; the reviews
+  // section is handed both numbers so it can explain any gap between them.
+  const summary = alternative.reviewSummary ?? null;
+  const effective = displayMatch(alternative);
+  const reviews = await getApprovedReviews(alternative.id);
 
   return (
     <div className="tz-page py-8 sm:py-10">
@@ -94,9 +107,7 @@ export default async function ClonePage({
               priority
               sizes="(max-width: 768px) 100vw, 320px"
             />
-            <span className="tz-eyebrow absolute top-3 left-3 rounded-full bg-amber-400 px-2.5 py-1 text-stone-900">
-              Budget
-            </span>
+            <span className="tz-ribbon tz-ribbon--green top-[10%]">Budget</span>
           </div>
 
           <div className="flex flex-col gap-5">
@@ -112,14 +123,40 @@ export default async function ClonePage({
 
             <div className="flex flex-wrap items-center gap-2">
               <SavingsBadge saving={saving} comparedTo={original.name} />
-              <MatchBadge match={alternative.matchQuality} />
+              <MatchBadge match={effective} />
             </div>
 
+            {/* The community score in one line, linking down to the section
+                that holds the detail and the form. The star widget that used to
+                sit here duplicated everything below it. */}
             <div className="border-t border-stone-100 pt-4">
-              <CloneRating
-                alternativeId={alternative.id}
-                originalName={original.name}
-              />
+              {summary && summary.votes > 0 && summary.average != null ? (
+                <a
+                  href="#reviews"
+                  className="tz-body group inline-flex flex-wrap items-baseline gap-x-2 text-sm text-stone-600"
+                >
+                  <span className="font-bold text-stone-900 tabular-nums">
+                    {summary.average.toFixed(1)}/5
+                  </span>
+                  <span>
+                    from {summary.votes}{" "}
+                    {summary.votes === 1 ? "player" : "players"}
+                  </span>
+                  <span className="font-bold text-amber-700 underline decoration-amber-500 decoration-2 underline-offset-4 group-hover:text-amber-900">
+                    Read the reviews
+                  </span>
+                </a>
+              ) : (
+                <a
+                  href="#reviews"
+                  className="tz-body text-sm text-stone-600"
+                >
+                  No reviews yet.{" "}
+                  <span className="font-bold text-amber-700 underline decoration-amber-500 decoration-2 underline-offset-4 hover:text-amber-900">
+                    Be the first
+                  </span>
+                </a>
+              )}
             </div>
           </div>
 
@@ -138,10 +175,29 @@ export default async function ClonePage({
               <RetailerButtons pedal={alternative} />
             </div>
 
-            <div className="mt-4 flex flex-wrap items-center gap-2 border-t border-stone-200/80 pt-4">
-              <BookmarkButton kind="clone" slug={alternative.slug} />
-              <AdminTools kind="alternative" slug={alternative.slug} />
+            {/* Save and Compare are one stack of equal-width buttons; the admin
+                Edit link stays its own size because only one person sees it. */}
+            <div className="mt-4 border-t border-stone-200/80 pt-4">
+              <BookmarkButton kind="clone" slug={alternative.slug} full />
             </div>
+
+            <Link
+              href={`/compare?a=${alternative.slug}`}
+              className="tz-btn mt-3 flex w-full items-center justify-center gap-2 bg-white px-5 py-2.5 text-xs tracking-wider text-stone-700 uppercase ring-1 ring-stone-300 hover:text-stone-900"
+            >
+              <svg
+                viewBox="0 0 24 24"
+                aria-hidden
+                className="h-3.5 w-3.5"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2.5"
+                strokeLinecap="round"
+              >
+                <path d="M8 7H3m0 0 3-3M3 7l3 3M16 17h5m0 0-3 3m3-3-3-3" />
+              </svg>
+              Compare
+            </Link>
 
             <Link
               href={`/suggest?kind=alternative&slug=${alternative.slug}`}
@@ -149,6 +205,8 @@ export default async function ClonePage({
             >
               Suggest a change
             </Link>
+
+            <AdminTools kind="alternative" slug={alternative.slug} />
           </div>
         </div>
       </section>
@@ -176,7 +234,11 @@ export default async function ClonePage({
 
         {detail.verdict && (
           <div className="tz-chamfer border border-amber-200 bg-amber-50/70 p-5">
-            <p className="tz-eyebrow mb-1 text-amber-800">What players say</p>
+            {/* "Our verdict", not "What players say" - that heading now belongs
+                to the community review section further down, and having both on
+                one page read the same made our editorial line look like a quote
+                from a reviewer. */}
+            <p className="tz-eyebrow mb-1 text-amber-800">Our verdict</p>
             <p className="tz-body text-sm text-stone-700">{detail.verdict}</p>
           </div>
         )}
@@ -196,7 +258,7 @@ export default async function ClonePage({
         <section className="tz-chamfer bg-white p-6 tz-card ring-1 ring-stone-200/60">
           <h2 className="tz-heading mb-4 text-xl text-stone-900">Specs</h2>
           {detail.specsKnown ? (
-            <SpecList specs={detail.specs} />
+            <SpecList specs={detail.specs} grouped />
           ) : (
             <p className="tz-body text-sm text-stone-500">Not confirmed yet.</p>
           )}
@@ -221,6 +283,18 @@ export default async function ClonePage({
           )}
         </section>
       </div>
+
+      {/* Scroll target for the score line in the hero. */}
+      <div id="reviews" className="scroll-mt-24" />
+      <CloneReviews
+        alternativeId={alternative.id}
+        originalName={original.name}
+        noun={noun}
+        summary={summary}
+        reviews={reviews}
+        editorialMatch={alternative.matchQuality}
+        effective={effective}
+      />
 
       <PedalDemos brand={alternative.brand} name={alternative.name} noun={noun} />
     </div>

@@ -1,6 +1,7 @@
 import type { Alternative, Category, OriginalWithAlternatives } from "./types";
 import type { SearchIndex } from "./search-index";
 import { calculateSavings, type Savings } from "./format";
+import { displayMatch } from "./reviews";
 
 /**
  * Pure search / filter / sort logic for the directory.
@@ -240,7 +241,9 @@ function sortAlternatives(alternatives: Alternative[], sort: SortId): Alternativ
     case "popular":
       return sorted.sort((a, b) => b.popularity - a.popularity);
     case "match":
-      return sorted.sort((a, b) => b.matchQuality - a.matchQuality);
+      // Sorts on the adjusted number, so "closest match" orders the list the
+      // same way the badges on it read.
+      return sorted.sort((a, b) => displayMatch(b) - displayMatch(a));
     case "price-asc":
     default:
       return sorted.sort((a, b) => a.priceGBP - b.priceGBP);
@@ -317,8 +320,8 @@ function sortResults(results: DirectoryResult[], sort: SortId): DirectoryResult[
         // With a query, relevance wins. Without one, fall back to how close
         // the best available clone actually gets to the original.
         if (a.relevance !== b.relevance) return b.relevance - a.relevance;
-        const bestA = Math.max(...a.alternatives.map((alt) => alt.matchQuality));
-        const bestB = Math.max(...b.alternatives.map((alt) => alt.matchQuality));
+        const bestA = Math.max(...a.alternatives.map(displayMatch));
+        const bestB = Math.max(...b.alternatives.map(displayMatch));
         if (bestA !== bestB) return bestB - bestA;
         return b.popularity - a.popularity;
       });

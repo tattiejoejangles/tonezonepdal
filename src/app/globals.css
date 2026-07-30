@@ -465,6 +465,159 @@ input[type="search"]::-webkit-search-cancel-button {
 }
 
 /* ---------------------------------------------------------------------------
+   Long-form prose, for the legal pages.
+
+   Four documents don't justify a typography plugin, and these are the only
+   pages on the site with more than a paragraph of running text.
+   --------------------------------------------------------------------------- */
+.tz-prose {
+  color: #44403c;
+  font-weight: 300;
+  line-height: 1.7;
+}
+
+.tz-prose h1 {
+  font-family: var(--font-display);
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  line-height: 1.1;
+  font-size: 2rem;
+  color: var(--tz-ink);
+}
+
+.tz-prose h2 {
+  font-family: var(--font-display);
+  font-weight: 700;
+  letter-spacing: -0.01em;
+  font-size: 1.125rem;
+  color: var(--tz-ink);
+  margin-top: 2.25rem;
+  margin-bottom: 0.5rem;
+}
+
+.tz-prose p,
+.tz-prose ul,
+.tz-prose ol {
+  margin-block: 0.85rem;
+  max-width: 42rem;
+}
+
+.tz-prose ul,
+.tz-prose ol {
+  padding-left: 1.25rem;
+}
+
+.tz-prose ul {
+  list-style: disc;
+}
+
+.tz-prose ol {
+  list-style: decimal;
+}
+
+.tz-prose li {
+  margin-block: 0.35rem;
+}
+
+.tz-prose a {
+  color: #b45309;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+.tz-prose a:hover {
+  color: #92400e;
+}
+
+.tz-prose strong {
+  font-weight: 700;
+  color: var(--tz-ink);
+}
+
+.tz-prose .tz-updated {
+  font-size: 0.8125rem;
+  color: #a8a29e;
+  margin-top: 0.5rem;
+}
+
+/* ---------------------------------------------------------------------------
+   Ribbons.
+
+   Replaces the floating rounded pill that used to sit over the corner of a
+   product photo. A pill hovering in white space reads as a UI control you can
+   press; a ribbon anchored to the edge of the image reads as a label printed
+   on it, which is what these are.
+
+   Built flush to the left edge with a notch cut out of the trailing end, and a
+   darker fold tucked under the left so it looks wrapped round the card rather
+   than pasted on top. clip-path does the notch - a real fold would need two
+   extra elements.
+   --------------------------------------------------------------------------- */
+.tz-ribbon {
+  position: absolute;
+  left: 0;
+  z-index: 4;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.375rem;
+  padding: 0.3rem 1.25rem 0.3rem 0.75rem;
+  font-weight: 800;
+  font-size: 0.625rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: #fff;
+  white-space: nowrap;
+  /* Straight left edge, notched right end. */
+  clip-path: polygon(0 0, 100% 0, calc(100% - 0.55rem) 50%, 100% 100%, 0 100%);
+  box-shadow: 0 2px 8px -2px rgba(16, 15, 14, 0.45);
+}
+
+/* The fold: a small dark wedge under the left edge. */
+.tz-ribbon::before {
+  content: "";
+  position: absolute;
+  top: 100%;
+  left: 0;
+  width: 0.4rem;
+  height: 0.4rem;
+  background: currentColor;
+  opacity: 0.35;
+  clip-path: polygon(0 0, 100% 0, 0 100%);
+}
+
+.tz-ribbon--green {
+  background: linear-gradient(100deg, #047857 0%, #10b981 100%);
+}
+
+.tz-ribbon--dark {
+  background: linear-gradient(100deg, #1c1917 0%, #44403c 100%);
+}
+
+.tz-ribbon--amber {
+  background: linear-gradient(100deg, #b45309 0%, #f59e0b 100%);
+}
+
+/* ---------------------------------------------------------------------------
+   Tags.
+
+   For the small labels that are NOT buttons - brand names, "Original",
+   category chips. A cut corner rather than a full oval: it tells the eye
+   "label" instead of "press me", which is the distinction the site was
+   missing when every piece of metadata looked like a control.
+   --------------------------------------------------------------------------- */
+.tz-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  padding: 0.3rem 0.6rem;
+  font-weight: 700;
+  font-size: 0.625rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  border-radius: 0.25rem 0.5rem 0.25rem 0.5rem;
+}
+
+/* ---------------------------------------------------------------------------
    The "legendary" treatment, for originals.
 
    Originals and clones are both just cards, and telling them apart used to

@@ -28,7 +28,10 @@ export function AlternativesPanel({
   /** "pedal" or "amp" - amps are not pedals and the copy shouldn't say so. */
   noun?: string;
 }) {
-  const [sort, setSort] = useState<SortId>("price-asc");
+  // Closest match by default. Cheapest-first put whichever plastic box was
+  // £3 less at the top of a list whose entire purpose is "which of these
+  // actually sounds like the original".
+  const [sort, setSort] = useState<SortId>("match");
   const [openSlug, setOpenSlug] = useState<string | null>(null);
 
   const sorted = useMemo(() => {
@@ -108,6 +111,7 @@ export function AlternativesPanel({
           originalName={originalName}
           originalPrice={originalPrice}
           href={`/clone/${open.alternative.slug}`}
+          noun={noun}
           onClose={() => setOpenSlug(null)}
         />
       )}

@@ -11,6 +11,7 @@ import { RetailerButtons } from "./RetailerButtons";
 import { SavingsBadge } from "./SavingsBadge";
 import { ArtistChips, SpecList } from "./SpecList";
 import { calculateSavings, formatPrice } from "@/lib/format";
+import { displayMatch } from "@/lib/reviews";
 import type { Alternative, PedalDetail } from "@/lib/types";
 
 interface Props {
@@ -18,8 +19,16 @@ interface Props {
   detail: PedalDetail;
   originalName: string;
   originalPrice: number;
-  /** When set, the footer offers a way out to this pedal's own page. */
+  /** When set, the footer offers a way out to this item's own page. */
   href?: string;
+  /**
+   * "pedal" / "amp" / "cab", from `gearNoun` on the original's category.
+   *
+   * The footer button read "Go to pedal" for everything, so an amp picked as
+   * Find of the Day offered to take you to a pedal. Defaults to "pedal" because
+   * that is what the great majority of the catalogue is.
+   */
+  noun?: string;
   onClose: () => void;
 }
 
@@ -31,6 +40,7 @@ export function PedalModal({
   originalName,
   originalPrice,
   href,
+  noun = "pedal",
   onClose,
 }: Props) {
   const [slide, setSlide] = useState(0);
@@ -159,7 +169,7 @@ role="presentation"
                 {formatPrice(alternative.priceGBP)}
               </span>
               <SavingsBadge saving={saving} comparedTo={originalName} size="sm" />
-              <MatchBadge match={alternative.matchQuality} size="sm" />
+              <MatchBadge match={displayMatch(alternative)} size="sm" />
             </div>
 
             {/* Slide tabs */}
@@ -193,7 +203,7 @@ role="presentation"
                   <p className="tz-body text-sm text-stone-600">{alternative.blurb}</p>
                   {detail.verdict && (
                     <div className="mt-3 border-l-2 border-amber-500 bg-amber-50/60 p-3">
-                      <p className="tz-eyebrow mb-1 text-amber-800">What players say</p>
+                      <p className="tz-eyebrow mb-1 text-amber-800">Our verdict</p>
                       <p className="tz-body text-sm text-stone-700">{detail.verdict}</p>
                     </div>
                   )}
@@ -262,7 +272,7 @@ role="presentation"
                   onClick={onClose}
                   className="tz-btn flex w-full items-center justify-center gap-2 bg-linear-to-b from-stone-800 to-stone-950 px-5 py-2.5 text-xs tracking-wider text-white uppercase"
                 >
-                  Go to pedal
+                  Go to {noun}
                   <svg viewBox="0 0 24 24" className="h-3.5 w-3.5" fill="none" stroke="currentColor" strokeWidth="3">
                     <path d="m9 6 6 6-6 6" />
                   </svg>
