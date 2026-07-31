@@ -4,8 +4,9 @@ import { notFound } from "next/navigation";
 
 import { AdminTools } from "@/components/admin/AdminTools";
 import { BookmarkButton } from "@/components/BookmarkButton";
-import { ClonesOf, type ClonedOriginalView } from "@/components/ClonesOf";
 import { CloneReviews } from "@/components/CloneReviews";
+import { LeaveReviewButton } from "@/components/ReviewForm";
+import { SimilarPedals, type SimilarItem } from "@/components/SimilarPedals";
 import { MatchBadge } from "@/components/MatchBadge";
 import { PedalDemos } from "@/components/PedalDemos";
 import { PedalImage } from "@/components/PedalImage";
@@ -74,36 +75,63 @@ export default async function ClonePage({
   const effective = displayMatch(alternative);
   const reviews = await getApprovedReviews(alternative.id);
 
-  // Every original this clone stands in for, with the detail each popup needs
-  // resolved here so opening one costs no round trip. Falls back to the single
-  // original when the pairings table is empty, so the row never disappears.
+  /**
+   * "Also similar to…" - where else to go from here.
+   *
+   * Siblings first: other clones of the same original, ordered by how close
+   * their match is to this one's, because the closest comparison to a pedal is
+   * the other attempt at the same circuit. Then anything else in the genre,
+   * most popular first, so the row still fills on a pedal that has no siblings.
+   * The original itself is included among the genre picks - it is the obvious
+   * "what am I actually copying" click.
+   */
   const catalogue = await getCatalogue();
-  const pairings =
-    alternative.clonesOf && alternative.clonesOf.length > 0
-      ? alternative.clonesOf
-      : [
-          {
-            id: original.id,
-            slug: original.slug,
-            name: original.name,
-            brand: original.brand,
-            priceGBP: original.priceGBP,
-            imageUrl: original.imageUrl,
-            category: original.category,
-            matchQuality: alternative.matchQuality,
-            primary: true,
-          },
-        ];
+  const sameGenre = catalogue.filter(
+    (entry) => entry.category === original.category,
+  );
 
-  const clonedOriginals: ClonedOriginalView[] = pairings.map((entry) => {
-    const full = catalogue.find((candidate) => candidate.id === entry.id);
-    return {
-      original: entry,
-      detail: getDetail(full ?? { slug: entry.slug, imageUrl: entry.imageUrl }, [], artistIndex),
-      description: full?.description ?? "",
-      blurb: full?.blurb ?? "",
-    };
-  });
+  const siblings: SimilarItem[] = (
+    catalogue.find((entry) => entry.id === original.id)?.alternatives ?? []
+  )
+    .filter((alt) => alt.slug !== alternative.slug)
+    .sort(
+      (a, b) =>
+        Math.abs(displayMatch(a) - effective) -
+        Math.abs(displayMatch(b) - effective),
+    )
+    .map((alt) => ({
+      slug: alt.slug,
+      name: alt.name,
+      brand: alt.brand,
+      priceGBP: alt.priceGBP,
+      imageUrl: alt.imageUrl,
+      matchQuality: displayMatch(alt),
+      blurb: alt.blurb,
+      comparedTo: original.name,
+      kind: "clone" as const,
+    }));
+
+  const genrePicks: SimilarItem[] = sameGenre
+    .sort((a, b) => b.popularity - a.popularity)
+    .map((entry) => ({
+      slug: entry.slug,
+      name: entry.name,
+      brand: entry.brand,
+      priceGBP: entry.priceGBP,
+      imageUrl: entry.imageUrl,
+      blurb: entry.blurb,
+      kind: "original" as const,
+    }));
+
+  // Siblings lead, genre fills the rest. Deduped on slug so an entry can't
+  // appear twice, and capped at a row or two.
+  const similar: SimilarItem[] = [];
+  const seen = new Set<string>([alternative.slug]);
+  for (const item of [...siblings, ...genrePicks]) {
+    if (seen.has(item.slug) || similar.length >= 12) continue;
+    seen.add(item.slug);
+    similar.push(item);
+  }
 
   return (
     <div className="tz-page py-8 sm:py-10">
@@ -137,7 +165,11 @@ export default async function ClonePage({
               priority
               sizes="(max-width: 768px) 100vw, 320px"
             />
-            <span className="tz-ribbon tz-ribbon--green top-[10%]">Budget</span>
+            {/* The saving, as a yellow block pinned to the top-left corner. It
+                used to be a badge in a row with the match, where the single
+                most persuasive fact on the page - "£60 less" - had the same
+                weight as everything beside it. */}
+            <SavingsBadge saving={saving} comparedTo={original.name} corner />
           </div>
 
           <div className="flex flex-col gap-5">
@@ -151,15 +183,14 @@ export default async function ClonePage({
               </p>
             </div>
 
-            <div className="flex flex-wrap items-center gap-2">
-              <SavingsBadge saving={saving} comparedTo={original.name} />
-              <MatchBadge match={effective} />
+            {/* The match, on its own and at full size. It is the number the
+                whole site exists to give, so it no longer shares a row. */}
+            <div>
+              <MatchBadge match={effective} size="lg" />
             </div>
 
-            {/* The community score in one line, linking down to the section
-                that holds the detail and the form. The star widget that used to
-                sit here duplicated everything below it. */}
-            <div className="border-t border-stone-100 pt-4">
+            {/* Rating and the way in to leaving one, side by side. */}
+            <div className="flex flex-wrap items-center gap-x-4 gap-y-3 border-t border-stone-100 pt-4">
               {summary && summary.votes > 0 && summary.average != null ? (
                 <a
                   href="#reviews"
@@ -177,16 +208,16 @@ export default async function ClonePage({
                   </span>
                 </a>
               ) : (
-                <a
-                  href="#reviews"
-                  className="tz-body text-sm text-stone-600"
-                >
-                  No reviews yet.{" "}
-                  <span className="font-bold text-amber-700 underline decoration-amber-500 decoration-2 underline-offset-4 hover:text-amber-900">
-                    Be the first
-                  </span>
-                </a>
+                <span className="tz-body text-sm text-stone-500">
+                  No reviews yet.
+                </span>
               )}
+
+              <LeaveReviewButton
+                alternativeId={alternative.id}
+                originalName={original.name}
+                noun={noun}
+              />
             </div>
           </div>
 
@@ -213,7 +244,7 @@ export default async function ClonePage({
 
             <Link
               href={`/compare?a=${alternative.slug}`}
-              className="tz-btn mt-3 flex w-full items-center justify-center gap-2 bg-white px-5 py-2.5 text-xs tracking-wider text-stone-700 uppercase ring-1 ring-stone-300 hover:text-stone-900"
+              className="tz-btn mt-3 flex w-full items-center justify-center gap-2 bg-white px-5 py-2.5 text-xs text-stone-700  ring-1 ring-stone-300 hover:text-stone-900"
             >
               <svg
                 viewBox="0 0 24 24"
@@ -240,71 +271,63 @@ export default async function ClonePage({
           </div>
         </div>
 
-        {/* Our verdict and the cross-sell, as a band inside the hero rather
-            than two cards floating under it. They were a separate row of boxes
-            that read as unrelated to the product above them, and left the hero
-            card ending abruptly on a thin strip of white. Inside the same card
-            they read as part of the pitch, which is what they are - and the two
-            of them fill the width the hero already occupies. Tinted panels
-            rather than bordered cards, because a card inside a card is one
-            frame too many. */}
-        <div className="grid gap-px border-t border-stone-200/70 bg-stone-200/70 sm:grid-cols-2">
-          {detail.verdict && (
-            <div className="bg-amber-50/80 p-6 sm:p-7">
-              {/* "Our verdict", not "What players say" - that heading belongs to
-                  the community review section further down, and having both on
-                  one page read the same made our editorial line look like a
-                  quote from a reviewer. */}
-              <p className="tz-eyebrow mb-1.5 text-amber-800">Our verdict</p>
-              <p className="tz-body text-sm text-stone-700">{detail.verdict}</p>
-            </div>
-          )}
-
-          {/* The cross-sell now leads with the original's photo rather than
-              just naming it - you recognise a Tube Screamer on sight long
-              before you read the words - and opens the same detail popup the
-              row below uses, so "more info" and "go to pedal" are two steps
-              rather than one blind jump onto another product page. */}
-          <div
-            className={`flex flex-col bg-indigo-50 p-6 sm:p-7 ${
-              // Spans both columns when there is no verdict beside it, so the
-              // band never ends on a half-width panel.
-              detail.verdict ? "" : "sm:col-span-2"
-            }`}
-          >
-            <p className="tz-eyebrow text-indigo-700">Looking for the real deal?</p>
-
-            <div className="mt-3 flex items-center gap-4">
-              <div className="tz-well relative h-20 w-20 shrink-0 rounded bg-white">
-                <PedalImage
-                  src={original.imageUrl}
-                  name={original.name}
-                  brand={original.brand}
-                  sizes="80px"
-                />
-              </div>
-
-              <p className="tz-body min-w-0 text-sm text-indigo-950">
-                This is a budget alternative to the{" "}
-                <span className="font-bold">{original.name}</span>, which sells
-                for about {formatPrice(original.priceGBP)}.
-              </p>
-            </div>
-
-            <Link
-              href={`/pedal/${original.slug}`}
-              className="tz-btn mt-4 w-fit bg-indigo-700 px-5 py-2.5 text-sm text-white"
-            >
-              See the original
-              <svg viewBox="0 0 24 24" className="h-4 w-4" fill="none" stroke="currentColor" strokeWidth="3">
-                <path d="m9 6 6 6-6 6" />
-              </svg>
-            </Link>
+        {/* The cross-sell, as a compact strip along the foot of the hero. It
+            was a half-width panel the same size as the verdict beside it, which
+            gave "here is the expensive one you didn't buy" the same weight as
+            our actual opinion of what you are looking at. One line, one photo,
+            one button. */}
+        <div className="flex flex-wrap items-center gap-x-4 gap-y-3 border-t border-stone-200/70 bg-indigo-50 px-6 py-4 sm:px-8">
+          <div className="tz-well relative h-14 w-14 shrink-0 rounded bg-white">
+            <PedalImage
+              src={original.imageUrl}
+              name={original.name}
+              brand={original.brand}
+              sizes="56px"
+            />
           </div>
+
+          <div className="min-w-0 flex-1">
+            <p className="tz-eyebrow text-indigo-700">
+              Looking for the real deal?
+            </p>
+            <p className="tz-body mt-0.5 text-sm text-indigo-950">
+              Copies the <span className="font-bold">{original.name}</span>,
+              about {formatPrice(original.priceGBP)}.
+            </p>
+          </div>
+
+          <Link
+            href={`/pedal/${original.slug}`}
+            className="tz-btn shrink-0 bg-indigo-700 px-4 py-2 text-sm text-white"
+          >
+            See the original
+            <svg viewBox="0 0 24 24" className="h-4 w-4" fill="none" stroke="currentColor" strokeWidth="3">
+              <path d="m9 6 6 6-6 6" />
+            </svg>
+          </Link>
         </div>
       </section>
 
-      <ClonesOf items={clonedOriginals} clonePrice={alternative.priceGBP} />
+      {/* Our verdict, overlapping the hero's bottom-left corner.
+
+          Pulled up over the card rather than stacked under it, so it reads as
+          a note stuck onto the product above rather than as the next section
+          down. `z-10` and a shadow put it in front; the negative margin is
+          undone below `sm`, where a card overlapping another card on a 375px
+          screen is just two things on top of each other. */}
+      {detail.verdict && (
+        <div className="relative z-10 px-0 sm:-mt-10 sm:pl-8">
+          <div className="tz-chamfer max-w-2xl border-l-4 border-amber-500 bg-amber-50 p-6 shadow-lg sm:p-7">
+            {/* "Our verdict", not "What players say" - that heading belongs to
+                the community review section further down, and having both on
+                one page read the same made our editorial line look like a
+                quote from a reviewer. */}
+            <p className="tz-eyebrow mb-1.5 text-amber-800">Our verdict</p>
+            <p className="tz-body text-sm text-stone-700">{detail.verdict}</p>
+          </div>
+        </div>
+      )}
+
 
       {/* Three panels on one row rather than one tall panel beside a stack of
           two: pros/cons, specs and players are siblings, and reading them as
@@ -349,14 +372,14 @@ export default async function ClonePage({
       {/* Scroll target for the score line in the hero. */}
       <div id="reviews" className="scroll-mt-24" />
       <CloneReviews
-        alternativeId={alternative.id}
         originalName={original.name}
-        noun={noun}
         summary={summary}
         reviews={reviews}
         editorialMatch={alternative.matchQuality}
         effective={effective}
       />
+
+      <SimilarPedals items={similar} />
 
       <PedalDemos brand={alternative.brand} name={alternative.name} noun={noun} />
     </div>

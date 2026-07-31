@@ -246,7 +246,7 @@ function ArtistDialog({
           <button
             type="submit"
             disabled={pending}
-            className="tz-btn bg-stone-900 px-6 py-2.5 text-xs tracking-wider text-white uppercase disabled:opacity-40"
+            className="tz-btn bg-stone-900 px-6 py-2.5 text-xs text-white disabled:opacity-40"
           >
             {pending ? "Saving…" : "Save artist"}
           </button>

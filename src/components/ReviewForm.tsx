@@ -1,6 +1,7 @@
 "use client";
 
-import { useId, useState } from "react";
+import { useEffect, useId, useState } from "react";
+import { createPortal } from "react-dom";
 
 import { getVoterId, useReviewed } from "@/lib/local-store";
 import {
@@ -9,6 +10,133 @@ import {
   type QuestionId,
 } from "@/lib/reviews";
 import { getSupabase } from "@/lib/supabase";
+
+/**
+ * The button that opens the form, for the top of a clone page.
+ *
+ * The form used to sit permanently in a panel at the foot of the page, beside
+ * the reviews. It is a nine-control form, so it dominated whatever it sat next
+ * to and pushed the reviews themselves - the thing people came to read - into a
+ * narrow column. Behind a button it costs one line until somebody wants it, and
+ * it can sit next to the rating at the top where the decision to review is
+ * actually made.
+ */
+export function LeaveReviewButton({
+  alternativeId,
+  originalName,
+  noun,
+}: {
+  alternativeId: string;
+  originalName: string;
+  noun: string;
+}) {
+  const [open, setOpen] = useState(false);
+  const { has, ready } = useReviewed();
+  const already = ready && has(alternativeId);
+
+  // Nothing to open if the database isn't configured - the form would only be
+  // able to tell you it can't save.
+  if (getSupabase() === null) return null;
+
+  return (
+    <>
+      <button
+        type="button"
+        onClick={() => setOpen(true)}
+        aria-haspopup="dialog"
+        disabled={already}
+        className="tz-btn bg-stone-900 px-4 py-2 text-sm text-white disabled:opacity-40"
+      >
+        <svg
+          viewBox="0 0 24 24"
+          aria-hidden
+          className="h-4 w-4"
+          fill="currentColor"
+        >
+          <path d="m12 3 2.7 5.9 6.3.7-4.7 4.3 1.3 6.1-5.6-3.2-5.6 3.2 1.3-6.1L3 9.6l6.3-.7z" />
+        </svg>
+        {already ? "Review submitted" : "Leave a review"}
+      </button>
+
+      {open && (
+        <ReviewDialog
+          alternativeId={alternativeId}
+          originalName={originalName}
+          noun={noun}
+          onClose={() => setOpen(false)}
+        />
+      )}
+    </>
+  );
+}
+
+function ReviewDialog({
+  alternativeId,
+  originalName,
+  noun,
+  onClose,
+}: {
+  alternativeId: string;
+  originalName: string;
+  noun: string;
+  onClose: () => void;
+}) {
+  const titleId = useId();
+
+  useEffect(() => {
+    const onKey = (event: KeyboardEvent) => {
+      if (event.key === "Escape") onClose();
+    };
+    document.addEventListener("keydown", onKey);
+    const previous = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    return () => {
+      document.removeEventListener("keydown", onKey);
+      document.body.style.overflow = previous;
+    };
+  }, [onClose]);
+
+  if (typeof document === "undefined") return null;
+
+  return createPortal(
+    <div
+      className="tz-fade fixed inset-0 z-50 flex items-end justify-center bg-stone-950/70 p-0 backdrop-blur-sm sm:items-center sm:p-6"
+      onClick={onClose}
+      role="presentation"
+    >
+      <div
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby={titleId}
+        onClick={(event) => event.stopPropagation()}
+        className="tz-pop relative max-h-[92dvh] w-full max-w-lg overflow-y-auto overscroll-contain bg-white shadow-2xl sm:max-h-[88dvh] sm:rounded-lg"
+      >
+        <button
+          type="button"
+          onClick={onClose}
+          aria-label="Close"
+          className="absolute top-3 right-3 z-10 flex h-9 w-9 items-center justify-center rounded bg-stone-900/85 text-white transition hover:bg-stone-900"
+        >
+          <svg viewBox="0 0 24 24" className="h-4 w-4" fill="none" stroke="currentColor" strokeWidth="2.5">
+            <path d="m6 6 12 12M18 6 6 18" />
+          </svg>
+        </button>
+
+        <div id={titleId} className="sr-only">
+          Review the {originalName} alternative
+        </div>
+
+        <ReviewForm
+          alternativeId={alternativeId}
+          originalName={originalName}
+          noun={noun}
+          bare
+        />
+      </div>
+    </div>,
+    document.body,
+  );
+}
 
 /**
  * Leave a review: stars, three questions, a comment. One screen.
@@ -33,11 +161,14 @@ export function ReviewForm({
   alternativeId,
   originalName,
   noun,
+  bare = false,
 }: {
   alternativeId: string;
   originalName: string;
   /** "pedal" / "amp" / "cab", for copy that would otherwise say "pedal". */
   noun: string;
+  /** Inside the dialog, which supplies its own frame. */
+  bare?: boolean;
 }) {
   const { has, add, ready } = useReviewed();
   const [rating, setRating] = useState(0);
@@ -92,7 +223,13 @@ export function ReviewForm({
 
   if (done || (ready && has(alternativeId))) {
     return (
-      <div className="tz-chamfer border border-emerald-200 bg-emerald-50/70 p-5">
+      <div
+        className={
+          bare
+            ? "p-6"
+            : "tz-chamfer border border-emerald-200 bg-emerald-50/70 p-5"
+        }
+      >
         <p className="tz-eyebrow mb-1 text-emerald-800">Thanks</p>
         <p className="tz-body text-sm text-emerald-950">
           {done
@@ -104,8 +241,12 @@ export function ReviewForm({
   }
 
   return (
-    <div className="tz-chamfer border border-stone-200 bg-stone-50/70 p-5">
-      <h3 className="tz-heading text-base text-stone-900">
+    <div
+      className={
+        bare ? "p-6" : "tz-chamfer border border-stone-200 bg-stone-50/70 p-5"
+      }
+    >
+      <h3 className="tz-heading text-lg text-stone-900">
         Reviewed this {noun}?
       </h3>
       <p className="tz-body mt-1 mb-4 text-xs text-stone-500">
@@ -231,7 +372,7 @@ export function ReviewForm({
           type="button"
           onClick={submit}
           disabled={saving || rating < 1}
-          className="tz-btn bg-stone-900 px-6 py-2.5 text-xs tracking-wider text-white uppercase disabled:opacity-40"
+          className="tz-btn bg-stone-900 px-6 py-2.5 text-xs text-white disabled:opacity-40"
         >
           {saving ? "Sending…" : "Submit review"}
         </button>

@@ -37,7 +37,7 @@ export function DeletePedal({
       <button
         type="button"
         onClick={() => setConfirming(true)}
-        className="tz-btn bg-white px-5 py-2.5 text-xs tracking-wider text-rose-700 uppercase ring-1 ring-rose-300 hover:bg-rose-100"
+        className="tz-btn bg-white px-5 py-2.5 text-xs text-rose-700  ring-1 ring-rose-300 hover:bg-rose-100"
       >
         Delete
       </button>
@@ -56,7 +56,7 @@ export function DeletePedal({
       <button
         type="submit"
         disabled={pending}
-        className="tz-btn bg-rose-700 px-5 py-2.5 text-xs tracking-wider text-white uppercase disabled:opacity-40"
+        className="tz-btn bg-rose-700 px-5 py-2.5 text-xs text-white disabled:opacity-40"
       >
         {pending ? "Deleting..." : "Yes, delete"}
       </button>

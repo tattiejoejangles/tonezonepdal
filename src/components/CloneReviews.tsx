@@ -1,4 +1,3 @@
-import { ReviewForm } from "./ReviewForm";
 import {
   MATCH_BLEND_HALF_WEIGHT,
   QUESTIONS,
@@ -8,30 +7,27 @@ import {
 } from "@/lib/reviews";
 
 /**
- * "What players say" - the community score, the reviews, and the form.
+ * "What players say" - the community score and the reviews themselves.
  *
- * A server component now. The version this replaces fetched everything in the
- * browser after mount, because scores could change at any moment and a cached
- * page would show one visitor somebody else's vote. Moderation removes that
- * problem: a review only becomes visible when it is approved, which is a
+ * Entirely a server component. The version this replaces fetched everything in
+ * the browser after mount, because scores could change at any moment and a
+ * cached page would show one visitor somebody else's vote. Moderation removes
+ * that problem: a review only becomes visible when it is approved, which is a
  * deliberate act on an admin screen, so the five-minute revalidate window the
  * page already has is close enough. Rendering on the server means no loading
  * skeleton, no layout shift, and the same numbers the listing cards use.
  *
- * Only the form is a client component, because only the form writes.
+ * The form is no longer here at all - it lives behind "Leave a review" at the
+ * top of the page, which is where the decision to write one is made.
  */
 export function CloneReviews({
-  alternativeId,
   originalName,
-  noun,
   summary,
   reviews,
   editorialMatch,
   effective,
 }: {
-  alternativeId: string;
   originalName: string;
-  noun: string;
   summary: ReviewSummary | null;
   reviews: CloneReview[];
   /** Our own judgement, for the "we said / owners say" line. */
@@ -49,7 +45,10 @@ export function CloneReviews({
         <h2 className="tz-heading text-xl text-stone-900">What players say</h2>
       </div>
 
-      <div className="grid gap-6 lg:grid-cols-[minmax(0,1fr)_minmax(0,26rem)]">
+      {/* One column now. The form used to sit in a second lane here and, being
+          nine controls tall, dominated the reviews it was meant to sit beside.
+          It lives behind "Leave a review" at the top of the page instead. */}
+      <div className="grid gap-6">
         <div className="space-y-6">
           {/* The score ------------------------------------------------------ */}
           <div className="tz-chamfer bg-white p-6 tz-card ring-1 ring-stone-200/60">
@@ -184,11 +183,6 @@ export function CloneReviews({
           )}
         </div>
 
-        <ReviewForm
-          alternativeId={alternativeId}
-          originalName={originalName}
-          noun={noun}
-        />
       </div>
     </section>
   );

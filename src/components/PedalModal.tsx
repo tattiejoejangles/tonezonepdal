@@ -270,7 +270,7 @@ role="presentation"
                 <Link
                   href={href}
                   onClick={onClose}
-                  className="tz-btn flex w-full items-center justify-center gap-2 bg-stone-900 px-5 py-2.5 text-xs tracking-wider text-white uppercase"
+                  className="tz-btn flex w-full items-center justify-center gap-2 bg-stone-900 px-5 py-2.5 text-xs text-white"
                 >
                   Go to {noun}
                   <svg viewBox="0 0 24 24" className="h-3.5 w-3.5" fill="none" stroke="currentColor" strokeWidth="3">

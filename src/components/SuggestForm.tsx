@@ -63,7 +63,7 @@ export function SuggestForm({
         </p>
         <Link
           href={target ? `/${target.kind === "original" ? "pedal" : "clone"}/${target.slug}` : "/pedals"}
-          className="tz-btn mt-6 inline-flex bg-stone-900 px-6 py-3 text-xs tracking-wider text-white uppercase"
+          className="tz-btn mt-6 inline-flex bg-stone-900 px-6 py-3 text-xs text-white"
         >
           {target ? `Back to the ${target.name}` : "Browse pedals"}
         </Link>
@@ -178,7 +178,7 @@ export function SuggestForm({
         <button
           type="submit"
           disabled={pending}
-          className="tz-btn bg-stone-900 px-8 py-3 text-xs tracking-wider text-white uppercase disabled:opacity-40"
+          className="tz-btn bg-stone-900 px-8 py-3 text-xs text-white disabled:opacity-40"
         >
           {pending ? "Sending…" : "Send suggestion"}
         </button>

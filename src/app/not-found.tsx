@@ -21,13 +21,13 @@ export default function NotFound() {
       <div className="mt-8 flex flex-wrap items-center justify-center gap-3">
         <Link
           href="/pedals"
-          className="tz-btn bg-stone-900 px-6 py-3 text-xs tracking-wider text-white uppercase"
+          className="tz-btn bg-stone-900 px-6 py-3 text-xs text-white"
         >
           Browse everything
         </Link>
         <Link
           href="/"
-          className="tz-btn bg-white px-6 py-3 text-xs tracking-wider text-stone-700 uppercase ring-1 ring-stone-200"
+          className="tz-btn bg-white px-6 py-3 text-xs text-stone-700  ring-1 ring-stone-200"
         >
           Home
         </Link>

@@ -39,7 +39,7 @@ export function BookmarkButton({
       disabled={!ready}
       aria-pressed={saved}
       title={saved ? "Remove from saved" : "Save for later"}
-      className={`tz-btn tracking-wider uppercase disabled:opacity-50 ${
+      className={`tz-btn disabled:opacity-50 ${
         full ? "flex w-full px-5 py-2.5 text-xs" : "px-4 py-2 text-[11px]"
       } ${
         saved

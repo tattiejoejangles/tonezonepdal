@@ -173,7 +173,7 @@ export function PedalForm({
             {(["pedal", "amp"] as const).map((value) => (
               <label
                 key={value}
-                className={`tz-btn cursor-pointer px-5 py-2.5 text-xs tracking-wider uppercase ${
+                className={`tz-btn cursor-pointer px-5 py-2.5 text-xs  ${
                   gear === value
                     ? "bg-amber-500 text-white shadow-md"
                     : "bg-white text-stone-600 ring-1 ring-stone-200"
@@ -204,7 +204,7 @@ export function PedalForm({
             {(["original", "alternative"] as const).map((value) => (
               <label
                 key={value}
-                className={`tz-btn cursor-pointer px-5 py-2.5 text-xs tracking-wider uppercase ${
+                className={`tz-btn cursor-pointer px-5 py-2.5 text-xs  ${
                   kind === value
                     ? "bg-stone-900 text-white shadow-md"
                     : "bg-white text-stone-600 ring-1 ring-stone-200"
@@ -549,7 +549,7 @@ export function PedalForm({
         <button
           type="submit"
           disabled={pending}
-          className="tz-btn bg-stone-900 px-8 py-3 text-sm tracking-wider text-white uppercase disabled:opacity-40"
+          className="tz-btn bg-stone-900 px-8 py-3 text-sm text-white disabled:opacity-40"
         >
           {pending
             ? "Saving..."

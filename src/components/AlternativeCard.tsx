@@ -99,7 +99,7 @@ export function AlternativeCard({
               <button
                 type="button"
                 onClick={onOpen}
-                className="tz-btn relative z-20 ml-auto bg-stone-900 px-3 py-1.5 text-[11px] tracking-wider text-white uppercase"
+                className="tz-btn relative z-20 ml-auto bg-stone-900 px-3 py-1.5 text-[11px] text-white "
               >
                 More info
                 <svg viewBox="0 0 24 24" className="h-3 w-3" fill="none" stroke="currentColor" strokeWidth="3">

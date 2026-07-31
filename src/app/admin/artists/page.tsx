@@ -119,7 +119,7 @@ export default async function AdminArtistsPage({
 
         <button
           type="submit"
-          className="tz-btn bg-stone-900 px-6 py-2.5 text-xs tracking-wider text-white uppercase"
+          className="tz-btn bg-stone-900 px-6 py-2.5 text-xs text-white"
         >
           Apply
         </button>

@@ -186,7 +186,7 @@ export default async function PedalPage({
 
             <Link
               href={`/compare?a=${pedal.slug}`}
-              className="tz-btn mt-3 flex w-full items-center justify-center gap-2 bg-white px-5 py-2.5 text-xs tracking-wider text-stone-700 uppercase ring-1 ring-stone-300 hover:text-stone-900"
+              className="tz-btn mt-3 flex w-full items-center justify-center gap-2 bg-white px-5 py-2.5 text-xs text-stone-700  ring-1 ring-stone-300 hover:text-stone-900"
             >
               <svg
                 viewBox="0 0 24 24"

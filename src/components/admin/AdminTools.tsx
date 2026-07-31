@@ -36,7 +36,7 @@ export function AdminTools({
       title="Edit this entry"
       // Carries its own top margin: it renders nothing for visitors, so a
       // spacer div around it in the page would leave dead space for everyone.
-      className="tz-btn mt-3 inline-flex bg-stone-900 px-3 py-2 text-[11px] tracking-wider text-white uppercase hover:bg-stone-700"
+      className="tz-btn mt-3 inline-flex bg-stone-900 px-3 py-2 text-[11px] text-white  hover:bg-stone-700"
     >
       <svg
         viewBox="0 0 24 24"

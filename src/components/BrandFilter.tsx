@@ -81,7 +81,7 @@ export function BrandFilter({
         aria-haspopup="listbox"
         aria-expanded={open}
         onClick={() => setOpen((value) => !value)}
-        className={`tz-btn flex items-center gap-2 px-4 py-2 text-xs tracking-wider whitespace-nowrap uppercase focus-visible:ring-2 focus-visible:ring-amber-500 focus-visible:ring-offset-2 focus-visible:outline-none ${
+        className={`tz-btn flex items-center gap-2 px-4 py-2 text-xs whitespace-nowrap  focus-visible:ring-2 focus-visible:ring-amber-500 focus-visible:ring-offset-2 focus-visible:outline-none ${
           value
             ? "bg-stone-900 text-white shadow-md"
             : "bg-white text-stone-600 ring-1 ring-stone-200 hover:text-stone-900"
