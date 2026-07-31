@@ -151,25 +151,75 @@ export default async function ClonePage({
         </Link>
       </nav>
 
-      {/* The cross-sell and verdict panels used to live in the middle lane,
-          which ran ~540px tall against a 300px image and a 216px buy stack -
-          i.e. roughly 550px of empty card across the two bottom corners. They
-          are a full-width band below the hero now. */}
-      <section className="tz-chamfer overflow-hidden bg-white tz-card ring-1 ring-stone-200/60">
+      {/* No `overflow-hidden`: the verdict below deliberately hangs out of the
+          bottom-left corner, and clipping the card would cut it in half. */}
+      <section className="tz-chamfer relative bg-white tz-card ring-1 ring-stone-200/60">
         <div className="grid gap-8 p-6 sm:p-8 md:grid-cols-[minmax(0,300px)_1fr] md:gap-10 lg:grid-cols-[minmax(0,320px)_1fr_minmax(0,17rem)] lg:gap-8">
-          <div className="tz-well relative aspect-square self-start">
-            <PedalImage
-              src={alternative.imageUrl}
-              name={alternative.name}
-              brand={alternative.brand}
-              priority
-              sizes="(max-width: 768px) 100vw, 320px"
-            />
-            {/* The saving, as a yellow block pinned to the top-left corner. It
-                used to be a badge in a row with the match, where the single
-                most persuasive fact on the page - "£60 less" - had the same
-                weight as everything beside it. */}
-            <SavingsBadge saving={saving} comparedTo={original.name} corner />
+          {/* `self-stretch`, not `self-start`: the column has to run the full
+              height of the row for the verdict to be able to sit at the bottom
+              of it and fill the corner. */}
+          <div className="flex flex-col gap-5 self-stretch">
+            <div className="tz-well relative aspect-square">
+              <PedalImage
+                src={alternative.imageUrl}
+                name={alternative.name}
+                brand={alternative.brand}
+                priority
+                sizes="(max-width: 768px) 100vw, 320px"
+              />
+              {/* The saving, as a yellow block pinned to the top-left corner. It
+                  used to be a badge in a row with the match, where the single
+                  most persuasive fact on the page - "£60 less" - had the same
+                  weight as everything beside it. */}
+              <SavingsBadge saving={saving} comparedTo={original.name} corner />
+            </div>
+
+            {/* Our verdict, filling the empty corner under the photo and
+                hanging out of the bottom of the card.
+
+                The left column ended at the photo, leaving a tall block of
+                blank white beneath it while the middle lane ran on - the single
+                biggest piece of dead space on the page. The negative bottom
+                margin is what makes it overhang: the grid stops counting the
+                last 2.5rem of its height, so the card ends above it and the
+                quote sits proud of the corner. Undone below `sm`, where one
+                card overlapping another on a 375px screen is just two things in
+                the same place.
+
+                `mt-auto` pins it to the foot of the column and `translate-y`
+                pushes it past the card edge - a transform rather than a margin
+                so the card's own height is unaffected and the overhang is the
+                same 32px whichever column happens to be the taller. */}
+            {detail.verdict && (
+              <figure className="relative z-10 mt-auto sm:translate-y-16">
+                <blockquote className="tz-chamfer relative flex h-full flex-col justify-center bg-amber-50 px-7 py-6 shadow-lg ring-1 ring-amber-200">
+                  {/* Decorative: the quotation is already marked up as one, and
+                      a screen reader announcing two stray quote marks helps
+                      nobody. */}
+                  <span
+                    aria-hidden
+                    className="pointer-events-none absolute -top-2 left-2 font-serif text-6xl leading-none text-amber-300 select-none"
+                  >
+                    &ldquo;
+                  </span>
+                  <span
+                    aria-hidden
+                    className="pointer-events-none absolute right-2 -bottom-7 font-serif text-6xl leading-none text-amber-300 select-none"
+                  >
+                    &rdquo;
+                  </span>
+
+                  {/* "Our verdict", not "What players say" - that heading
+                      belongs to the community review section further down. */}
+                  <p className="tz-eyebrow relative mb-2 text-amber-800">
+                    Our verdict
+                  </p>
+                  <p className="tz-body relative text-sm text-stone-700">
+                    {detail.verdict}
+                  </p>
+                </blockquote>
+              </figure>
+            )}
           </div>
 
           <div className="flex flex-col gap-5">
@@ -219,6 +269,45 @@ export default async function ClonePage({
                 noun={noun}
               />
             </div>
+
+            {/* The cross-sell, inside the card and inset to the right of this
+                lane - so it sits between the copy and the buy stack rather than
+                becoming its own full-width band, which gave "here is the
+                expensive one you didn't buy" the same weight as the product
+                being looked at. `mt-auto` drops it to the bottom of the lane,
+                where it lines up with the verdict in the column beside it. */}
+            <aside className="mt-auto w-full max-w-sm self-end rounded bg-indigo-50 p-4 ring-1 ring-indigo-100">
+              <p className="tz-eyebrow text-indigo-700">
+                Looking for the real deal?
+              </p>
+
+              <div className="mt-2.5 flex items-center gap-3">
+                <div className="tz-well relative h-12 w-12 shrink-0 rounded bg-white">
+                  <PedalImage
+                    src={original.imageUrl}
+                    name={original.name}
+                    brand={original.brand}
+                    sizes="48px"
+                  />
+                </div>
+
+                <p className="tz-body min-w-0 text-xs text-indigo-950">
+                  Copies the{" "}
+                  <span className="font-bold">{original.name}</span>, about{" "}
+                  {formatPrice(original.priceGBP)}.
+                </p>
+              </div>
+
+              <Link
+                href={`/pedal/${original.slug}`}
+                className="tz-btn mt-3 w-full bg-indigo-700 px-4 py-2 text-xs text-white"
+              >
+                See the original
+                <svg viewBox="0 0 24 24" className="h-3.5 w-3.5" fill="none" stroke="currentColor" strokeWidth="3">
+                  <path d="m9 6 6 6-6 6" />
+                </svg>
+              </Link>
+            </aside>
           </div>
 
           {/* Full width at two columns, its own lane once there's room. */}
@@ -270,69 +359,13 @@ export default async function ClonePage({
             <AdminTools kind="alternative" slug={alternative.slug} />
           </div>
         </div>
-
-        {/* The cross-sell, as a compact strip along the foot of the hero. It
-            was a half-width panel the same size as the verdict beside it, which
-            gave "here is the expensive one you didn't buy" the same weight as
-            our actual opinion of what you are looking at. One line, one photo,
-            one button. */}
-        <div className="flex flex-wrap items-center gap-x-4 gap-y-3 border-t border-stone-200/70 bg-indigo-50 px-6 py-4 sm:px-8">
-          <div className="tz-well relative h-14 w-14 shrink-0 rounded bg-white">
-            <PedalImage
-              src={original.imageUrl}
-              name={original.name}
-              brand={original.brand}
-              sizes="56px"
-            />
-          </div>
-
-          <div className="min-w-0 flex-1">
-            <p className="tz-eyebrow text-indigo-700">
-              Looking for the real deal?
-            </p>
-            <p className="tz-body mt-0.5 text-sm text-indigo-950">
-              Copies the <span className="font-bold">{original.name}</span>,
-              about {formatPrice(original.priceGBP)}.
-            </p>
-          </div>
-
-          <Link
-            href={`/pedal/${original.slug}`}
-            className="tz-btn shrink-0 bg-indigo-700 px-4 py-2 text-sm text-white"
-          >
-            See the original
-            <svg viewBox="0 0 24 24" className="h-4 w-4" fill="none" stroke="currentColor" strokeWidth="3">
-              <path d="m9 6 6 6-6 6" />
-            </svg>
-          </Link>
-        </div>
       </section>
-
-      {/* Our verdict, overlapping the hero's bottom-left corner.
-
-          Pulled up over the card rather than stacked under it, so it reads as
-          a note stuck onto the product above rather than as the next section
-          down. `z-10` and a shadow put it in front; the negative margin is
-          undone below `sm`, where a card overlapping another card on a 375px
-          screen is just two things on top of each other. */}
-      {detail.verdict && (
-        <div className="relative z-10 px-0 sm:-mt-10 sm:pl-8">
-          <div className="tz-chamfer max-w-2xl border-l-4 border-amber-500 bg-amber-50 p-6 shadow-lg sm:p-7">
-            {/* "Our verdict", not "What players say" - that heading belongs to
-                the community review section further down, and having both on
-                one page read the same made our editorial line look like a
-                quote from a reviewer. */}
-            <p className="tz-eyebrow mb-1.5 text-amber-800">Our verdict</p>
-            <p className="tz-body text-sm text-stone-700">{detail.verdict}</p>
-          </div>
-        </div>
-      )}
-
 
       {/* Three panels on one row rather than one tall panel beside a stack of
           two: pros/cons, specs and players are siblings, and reading them as
-          siblings is easier when their headings line up. */}
-      <div className="mt-6 grid gap-6 lg:grid-cols-3">
+          siblings is easier when their headings line up. `mt-16` rather than
+          `mt-6` leaves room for the verdict hanging out of the card above. */}
+      <div className="mt-6 grid gap-6 sm:mt-16 lg:grid-cols-3">
         <section className="tz-chamfer bg-white p-6 tz-card ring-1 ring-stone-200/60">
           <h2 className="tz-heading mb-4 text-xl text-stone-900">
             How it compares to the {original.name}
