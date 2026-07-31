@@ -325,7 +325,7 @@ export function ReviewForm({
                       className={`h-9 w-9 rounded-lg text-xs font-bold transition-colors ${
                         active
                           ? "bg-stone-900 text-white shadow-sm"
-                          : "bg-white text-stone-500 ring-1 ring-stone-200 hover:text-stone-900"
+                          : "bg-white text-stone-500 hover:text-stone-900"
                       }`}
                     >
                       {value}

@@ -30,7 +30,7 @@ export function SuggestionCard({ suggestion }: { suggestion: Suggestion }) {
       : null;
 
   return (
-    <article className="tz-chamfer bg-white p-5 tz-card ring-1 ring-stone-200/60">
+    <article className="tz-panel p-5">
       <div className="flex flex-wrap items-center gap-2">
         <span
           className={`tz-eyebrow rounded px-2.5 py-1 ${
@@ -101,7 +101,7 @@ export function SuggestionCard({ suggestion }: { suggestion: Suggestion }) {
               name="decision"
               value="rejected"
               disabled={pending}
-              className="tz-btn bg-white px-5 py-2 text-xs text-stone-700  ring-1 ring-stone-200 disabled:opacity-40"
+              className="tz-btn bg-white px-5 py-2 text-xs text-stone-700  disabled:opacity-40"
             >
               Reject
             </button>

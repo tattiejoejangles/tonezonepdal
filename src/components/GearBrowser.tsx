@@ -145,7 +145,7 @@ export function GearBrowser({
               className={`min-h-11 shrink-0 rounded-full px-4 text-xs font-bold tracking-wide whitespace-nowrap transition-colors focus-visible:ring-2 focus-visible:ring-amber-500 focus-visible:outline-none ${
                 selected
                   ? "bg-stone-900 text-white shadow-sm"
-                  : "bg-white text-stone-600 ring-1 ring-stone-200 hover:text-stone-900"
+                  : "tz-panel text-stone-600 hover:text-stone-900"
               }`}
             >
               {entry.label}
@@ -220,7 +220,7 @@ export function GearBrowser({
           ))}
         </div>
       ) : (
-        <div className="tz-chamfer bg-white/70 px-6 py-16 text-center ring-1 ring-stone-200">
+        <div className="tz-panel tz-panel--flat px-6 py-16 text-center">
           <p className="text-lg font-bold text-stone-800">Nothing matches</p>
           <p className="tz-body mx-auto mt-2 max-w-md text-sm text-stone-500">
             Try a wider price range, or a different brand.

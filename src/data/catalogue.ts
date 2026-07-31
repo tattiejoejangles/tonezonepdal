@@ -9,6 +9,7 @@ import type {
   Spec,
 } from "@/lib/types";
 import { resolveArtists, type ArtistIndex } from "@/lib/artists";
+import type { Relationship } from "@/lib/relationship";
 import type { ReviewSummary } from "@/lib/reviews";
 import { buildSearchIndex, type SearchIndex } from "@/lib/search-index";
 import { getSupabase } from "@/lib/supabase";
@@ -101,6 +102,7 @@ interface PairingRow {
   original_id: string;
   position: number;
   match_quality: number | null;
+  relationship: Relationship | null;
 }
 
 /**
@@ -200,6 +202,7 @@ function mapAlternative(
             imageUrl: pickImage(original),
             category: original.category,
             matchQuality: pairing.match_quality ?? row.match_quality,
+            relationship: pairing.relationship ?? "alternative",
             primary: original.id === row.original_id,
           };
         })
@@ -221,6 +224,10 @@ function mapAlternative(
     popularity: row.popularity,
     matchQuality: matchOverride ?? row.match_quality,
     clonesOf,
+    // The primary pairing's relationship, so a listing card can label itself
+    // without walking `clonesOf`.
+    relationship:
+      clonesOf.find((entry) => entry.primary)?.relationship ?? "alternative",
     reviewSummary,
     searchQuery: row.search_query ?? undefined,
     verdict: row.verdict ?? undefined,
@@ -312,6 +319,7 @@ async function loadCatalogue(): Promise<OriginalWithAlternatives[]> {
           original_id: alt.original_id,
           position: 0,
           match_quality: null,
+          relationship: null,
         }))
       : ((pairingsResult.data ?? []) as PairingRow[]);
 

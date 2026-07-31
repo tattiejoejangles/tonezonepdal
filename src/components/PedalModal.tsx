@@ -141,7 +141,7 @@ role="presentation"
                     className={`relative h-14 w-14 shrink-0 overflow-hidden rounded-lg bg-white transition ${
                       index === image
                         ? "ring-2 ring-amber-500"
-                        : "opacity-60 ring-1 ring-stone-300 hover:opacity-100"
+                        : "opacity-60 shadow-[inset_0_0_0_1px_var(--tz-line)] hover:opacity-100"
                     }`}
                   >
                     <PedalImage

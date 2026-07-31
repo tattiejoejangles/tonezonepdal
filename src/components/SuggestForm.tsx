@@ -43,7 +43,7 @@ export function SuggestForm({
 
   if (state.ok) {
     return (
-      <div className="tz-chamfer bg-white p-8 text-center tz-card ring-1 ring-stone-200/60">
+      <div className="tz-chamfer bg-white p-8 text-center">
         <span className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-emerald-100">
           <svg
             viewBox="0 0 24 24"

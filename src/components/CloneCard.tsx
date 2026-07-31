@@ -4,6 +4,7 @@ import { MatchTag } from "./MatchBadge";
 import { PedalImage } from "./PedalImage";
 import { formatPrice } from "@/lib/format";
 import { displayMatch } from "@/lib/reviews";
+import { relationshipLabel } from "@/lib/relationship";
 import type { CloneResult } from "@/lib/filter";
 
 /**
@@ -29,7 +30,7 @@ export function CloneCard({
   const { alternative, original, saving } = result;
 
   const shell =
-    "tz-chamfer group relative flex flex-col overflow-hidden bg-white text-left ring-1 ring-stone-200 transition-all duration-300  hover:ring-stone-300 focus-visible:ring-2 focus-visible:ring-amber-500 focus-visible:outline-none";
+    "tz-panel tz-card-hover group relative flex flex-col overflow-hidden text-left transition-shadow duration-300 focus-visible:ring-2 focus-visible:ring-amber-500 focus-visible:outline-none";
 
   const body = (
     <>
@@ -44,7 +45,11 @@ export function CloneCard({
 
         {/* Ribbon rather than a floating pill: it's a label printed on the
             photo, not a control. */}
-        <span className="tz-ribbon tz-ribbon--green top-[14%]">Budget</span>
+        {/* What it is, not just that it is cheap. "Budget" was on every one
+            of these regardless of whether it was a real circuit copy. */}
+        <span className="tz-ribbon tz-ribbon--green top-[14%]">
+          {relationshipLabel(alternative.relationship ?? "alternative")}
+        </span>
 
         {saving.percent > 0 && (
           <span className="absolute right-0 bottom-0 rounded-tl-lg bg-emerald-700 px-3 py-1.5 text-sm font-bold text-white tabular-nums">

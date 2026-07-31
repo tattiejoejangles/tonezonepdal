@@ -172,7 +172,7 @@ function ArtistDialog({
         </p>
 
         <div className="mt-4 flex gap-4">
-          <div className="tz-chamfer relative aspect-square w-24 shrink-0 overflow-hidden bg-stone-900 ring-1 ring-stone-200">
+          <div className="tz-chamfer relative aspect-square w-24 shrink-0 overflow-hidden bg-stone-900">
             {url ? (
               /* Arbitrary pasted hosts can't pass next/image's allowlist. */
               // eslint-disable-next-line @next/next/no-img-element

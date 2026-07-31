@@ -1,4 +1,5 @@
 import type { ResolvedArtist } from "./artists";
+import type { Relationship } from "./relationship";
 import type { ReviewSummary } from "./reviews";
 
 /**
@@ -113,6 +114,12 @@ export interface ClonedOriginal {
   category: Category;
   /** This pairing's match, falling back to the clone's own. */
   matchQuality: number;
+  /**
+   * What this budget pedal is to that original - a copy, a reworking, or a
+   * different circuit doing the same job. Per pairing, because the same box
+   * can be a clone of one pedal and merely an alternative to another.
+   */
+  relationship: Relationship;
   /** True for the original the clone's own page leads with. */
   primary: boolean;
 }
@@ -154,6 +161,14 @@ export interface Alternative {
    * apart is what lets a page say "we said 85, owners say 71".
    */
   matchQuality: number;
+  /**
+   * What this is to its PRIMARY original - clone, inspired, or alternative.
+   *
+   * Mirrors that pairing's `relationship` so a listing card can label itself
+   * without walking `clonesOf`. Absent in the bundled fallback data, where the
+   * safest reading is the least specific one.
+   */
+  relationship?: Relationship;
   /**
    * Approved-review aggregate, attached by the catalogue loader.
    *

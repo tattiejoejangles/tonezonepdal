@@ -87,7 +87,7 @@ export function NavMenu({
       {open && (
         <div
           id={menuId}
-          className="tz-pop absolute top-full right-0 z-40 mt-3 w-72 bg-white shadow-2xl ring-1 ring-stone-200"
+          className="tz-pop absolute top-full right-0 z-40 mt-3 w-72 bg-white shadow-2xl"
         >
           {items.map((item) => (
             <Link

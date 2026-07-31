@@ -116,7 +116,7 @@ export default async function ComparePage({
           {right ? (
             <CompareTable left={left} right={right} />
           ) : (
-            <div className="tz-chamfer bg-white/70 px-6 py-16 text-center ring-1 ring-stone-200">
+            <div className="tz-panel tz-panel--flat px-6 py-16 text-center">
               <p className="text-lg font-bold text-stone-800">
                 Choose something to compare
               </p>

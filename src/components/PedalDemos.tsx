@@ -89,7 +89,7 @@ export function PedalDemos({
           {demos.map((demo) => (
             <article
               key={demo.videoId}
-              className="tz-chamfer tz-card overflow-hidden bg-white ring-1 ring-stone-200/60"
+              className="tz-chamfer tz-card overflow-hidden tz-panel"
             >
               <div className="relative aspect-video w-full bg-stone-900">
                 <iframe
@@ -111,7 +111,7 @@ export function PedalDemos({
           ))}
         </div>
       ) : (
-        <div className="tz-chamfer bg-white/70 px-6 py-10 text-center ring-1 ring-stone-200">
+        <div className="tz-chamfer bg-white/70 px-6 py-10 text-center">
           <p className="tz-body text-sm text-stone-600">
             No demos here yet for this {noun}.
           </p>

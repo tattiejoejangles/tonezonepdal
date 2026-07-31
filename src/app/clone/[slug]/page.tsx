@@ -24,6 +24,7 @@ import {
 import { getApprovedReviews } from "@/data/reviews";
 import { calculateSavings, formatPrice } from "@/lib/format";
 import { gearNoun } from "@/lib/gear";
+import { RELATIONSHIP_COPY } from "@/lib/relationship";
 import { displayMatch } from "@/lib/reviews";
 
 /** Regenerate every 5 minutes, so image URLs added in Supabase appear quickly. */
@@ -71,6 +72,9 @@ export default async function ClonePage({
 
   // The badge shows our rating blended with approved reviews; the reviews
   // section is handed both numbers so it can explain any gap between them.
+  // What this actually is to the pedal it sits against: a circuit copy, a
+  // reworking of it, or a different circuit doing the same job.
+  const relationship = RELATIONSHIP_COPY[alternative.relationship ?? "alternative"];
   const summary = alternative.reviewSummary ?? null;
   const effective = displayMatch(alternative);
   const reviews = await getApprovedReviews(alternative.id);
@@ -153,7 +157,7 @@ export default async function ClonePage({
 
       {/* No `overflow-hidden`: the verdict below deliberately hangs out of the
           bottom-left corner, and clipping the card would cut it in half. */}
-      <section className="tz-chamfer relative bg-white tz-card ring-1 ring-stone-200/60">
+      <section className="tz-panel relative">
         <div className="grid gap-8 p-6 sm:p-8 md:grid-cols-[minmax(0,300px)_1fr] md:gap-10 lg:grid-cols-[minmax(0,320px)_1fr_minmax(0,17rem)] lg:gap-8">
           {/* `self-stretch`, not `self-start`: the column has to run the full
               height of the row for the verdict to be able to sit at the bottom
@@ -233,10 +237,19 @@ export default async function ClonePage({
               </p>
             </div>
 
-            {/* The match, on its own and at full size. It is the number the
-                whole site exists to give, so it no longer shares a row. */}
-            <div>
+            {/* The match, at full size, with what this thing actually is
+                beside it. Everything used to be labelled a "clone", which is
+                wrong often enough to matter - a TO800 really is a Tube Screamer
+                circuit, a BD-2 is not, and calling both a clone sets somebody
+                up to be disappointed by the one that isn't. */}
+            <div className="flex flex-wrap items-center gap-2">
               <MatchBadge match={effective} size="lg" />
+              <span
+                title={relationship.hint}
+                className={`tz-tag ${relationship.tone}`}
+              >
+                {relationship.label}
+              </span>
             </div>
 
             {/* Rating and the way in to leaving one, side by side. */}
@@ -292,7 +305,7 @@ export default async function ClonePage({
                 </div>
 
                 <p className="tz-body min-w-0 text-xs text-indigo-950">
-                  Copies the{" "}
+                  This is {relationship.phrase} the{" "}
                   <span className="font-bold">{original.name}</span>, about{" "}
                   {formatPrice(original.priceGBP)}.
                 </p>
@@ -311,7 +324,7 @@ export default async function ClonePage({
           </div>
 
           {/* Full width at two columns, its own lane once there's room. */}
-          <div className="tz-chamfer self-start border-t border-stone-100 bg-stone-50/80 p-5 md:col-span-2 lg:col-span-1 lg:border-t-0">
+          <div className="tz-inset self-start p-5 md:col-span-2 lg:col-span-1 lg:border-t-0">
             <p className="tz-eyebrow text-stone-400">Buy this {noun}</p>
 
             <p className="tz-heading mt-2 text-3xl text-stone-900 tabular-nums">
@@ -333,7 +346,7 @@ export default async function ClonePage({
 
             <Link
               href={`/compare?a=${alternative.slug}`}
-              className="tz-btn mt-3 flex w-full items-center justify-center gap-2 bg-white px-5 py-2.5 text-xs text-stone-700  ring-1 ring-stone-300 hover:text-stone-900"
+              className="tz-btn mt-3 flex w-full items-center justify-center gap-2 bg-white px-5 py-2.5 text-xs text-stone-700 shadow-[inset_0_0_0_1px_var(--tz-line-strong)] hover:text-stone-900"
             >
               <svg
                 viewBox="0 0 24 24"
@@ -366,14 +379,14 @@ export default async function ClonePage({
           siblings is easier when their headings line up. `mt-16` rather than
           `mt-6` leaves room for the verdict hanging out of the card above. */}
       <div className="mt-6 grid gap-6 sm:mt-16 lg:grid-cols-3">
-        <section className="tz-chamfer bg-white p-6 tz-card ring-1 ring-stone-200/60">
+        <section className="tz-panel p-6">
           <h2 className="tz-heading mb-4 text-xl text-stone-900">
             How it compares to the {original.name}
           </h2>
           <ProsCons pros={alternative.pros} cons={alternative.cons} />
         </section>
 
-        <section className="tz-chamfer bg-white p-6 tz-card ring-1 ring-stone-200/60">
+        <section className="tz-panel p-6">
           <h2 className="tz-heading mb-4 text-xl text-stone-900">Specs</h2>
           {detail.specsKnown ? (
             <SpecList specs={detail.specs} />
@@ -382,7 +395,7 @@ export default async function ClonePage({
           )}
         </section>
 
-        <section className="tz-chamfer bg-white p-6 tz-card ring-1 ring-stone-200/60">
+        <section className="tz-panel p-6">
           <h2 className="tz-heading mb-4 text-xl text-stone-900">Players</h2>
           {detail.artists.length > 0 ? (
             <>

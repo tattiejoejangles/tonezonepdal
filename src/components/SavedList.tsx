@@ -35,7 +35,7 @@ export function SavedList({ index }: { index: SearchIndex }) {
 
   if (items.length === 0) {
     return (
-      <div className="tz-chamfer bg-white/70 px-6 py-16 text-center ring-1 ring-stone-200">
+      <div className="tz-panel tz-panel--flat px-6 py-16 text-center">
         <p className="text-lg font-bold text-stone-800">Nothing saved yet</p>
         <p className="tz-body mx-auto mt-2 max-w-md text-sm text-stone-500">
           Hit <span className="font-bold">Save</span> on any pedal or amp and it
@@ -57,7 +57,7 @@ export function SavedList({ index }: { index: SearchIndex }) {
       {items.map(({ mark, entry }) => (
         <li
           key={`${mark.kind}-${mark.slug}`}
-          className="tz-chamfer tz-card tz-card-hover group relative flex items-center gap-4 bg-white p-4 ring-1 ring-stone-200/60"
+          className="tz-panel tz-card-hover group relative flex items-center gap-4 p-4"
         >
           <Link
             href={entry.kind === "original" ? `/pedal/${entry.slug}` : `/clone/${entry.slug}`}

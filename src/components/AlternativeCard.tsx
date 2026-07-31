@@ -35,7 +35,7 @@ export function AlternativeCard({
   const saving = calculateSavings(originalPrice, alternative.priceGBP);
 
   return (
-    <article className="tz-chamfer tz-card-hover group relative overflow-hidden bg-white tz-card ring-1 ring-stone-200/60 hover:ring-amber-400/50">
+    <article className="tz-panel tz-card-hover group relative overflow-hidden">
       {/* Accent edge that fills in on hover. */}
       <span className="absolute inset-x-0 top-0 h-1 origin-left scale-x-0 bg-amber-500 transition-transform duration-300 group-hover:scale-x-100" />
 

@@ -83,6 +83,10 @@ export default async function EditPedalPage({
       alsoOriginalIds: (alternative.clonesOf ?? [])
         .filter((entry) => !entry.primary)
         .map((entry) => entry.id),
+      relationship:
+        (alternative.clonesOf ?? []).find((entry) => entry.primary)?.relationship ??
+        alternative.relationship ??
+        "alternative",
       matchQuality: alternative.matchQuality,
       pros: alternative.pros,
       cons: alternative.cons,

@@ -9,10 +9,33 @@
 
 :root {
   color-scheme: light;
-  --tz-surface: #f6f6f7;
   --tz-ink: #1c1917;
   --tz-accent: #ea580c;
   --tz-night: #0b1020;
+
+  /* Surfaces.
+
+     Three tones, and every panel on the site uses one of them:
+
+       page   the warm paper the whole thing sits on
+       raised a card lifted off it
+       sunken  a well inside a card - filters, buy panels, spec strips
+
+     They differ by enough to be read as different planes without a border,
+     which is the point. Everything used to be pure white on near-white with a
+     grey ring drawn around it - the default Tailwind card - so the page was
+     fifty identical outlined rectangles and no hierarchy at all. Depth now
+     comes from the tone and a hairline that is only *just* visible, so cards
+     group and separate by weight rather than by outline. */
+  --tz-page: #f4f2ef;
+  --tz-raised: #ffffff;
+  --tz-sunken: #faf8f5;
+  --tz-line: rgba(28, 25, 23, 0.08);
+  --tz-line-strong: rgba(28, 25, 23, 0.14);
+
+  /* Kept for the ambient backdrop, which still reads it. */
+  --tz-surface: var(--tz-page);
+
   /* The original-card treatment, as flat colour rather than a gradient. */
   --tz-legend-surface: #fffaf3;
   --tz-legend-edge: rgba(217, 119, 6, 0.3);
@@ -28,8 +51,16 @@
      treatment moves together instead of drifting per component. */
   --tz-radius: 0.375rem;
   --tz-radius-lg: 0.5rem;
-  --tz-shadow: 0 1px 2px rgba(16, 15, 14, 0.05);
-  --tz-shadow-lift: 0 2px 8px -2px rgba(16, 15, 14, 0.14);
+
+  /* Two-part shadows: a tight contact shadow that grounds the card, and a wide
+     soft one that gives it height. A single stepped shadow reads as a sticker;
+     these read as an object on a surface. */
+  --tz-shadow:
+    0 1px 1px rgba(28, 25, 23, 0.04),
+    0 1px 3px rgba(28, 25, 23, 0.05);
+  --tz-shadow-lift:
+    0 1px 2px rgba(28, 25, 23, 0.06),
+    0 10px 24px -10px rgba(28, 25, 23, 0.18);
 }
 
 html {
@@ -83,10 +114,14 @@ body {
      page ends up taller than the visible area. dvh tracks the real viewport;
      the vh line above stays as the fallback for browsers without it. */
   min-height: 100dvh;
+  /* A warm paper tone with the faintest wash at the top. It was two saturated
+     radial gradients meeting in the middle of the header, which is the stock
+     "generated landing page" backdrop; pulled right back, it now just stops the
+     page reading as flat grey behind the white cards. */
   background:
-    radial-gradient(1100px 520px at 6% -10%, #fff1dd 0%, transparent 58%),
-    radial-gradient(900px 460px at 94% -6%, #e6f2ec 0%, transparent 52%),
-    var(--tz-surface);
+    radial-gradient(1200px 460px at 8% -12%, rgba(255, 236, 210, 0.55) 0%, transparent 60%),
+    radial-gradient(1000px 420px at 92% -8%, rgba(219, 238, 229, 0.45) 0%, transparent 55%),
+    var(--tz-page);
   background-attachment: fixed;
   color: var(--tz-ink);
 }
@@ -320,6 +355,44 @@ input[type="search"]::-webkit-search-cancel-button {
 
 .tz-card-hover:hover {
   box-shadow: var(--tz-shadow-lift);
+}
+
+/* ---------------------------------------------------------------------------
+   Panels.
+
+   One class instead of `bg-white ring-1 ring-stone-200/60 tz-card` repeated on
+   fifty elements. That combination is the default Tailwind card, and fifty of
+   them on a page is fifty outlined rectangles of identical weight - the reason
+   the site read as a template rather than as a product.
+
+   `.tz-panel` is the raised one: paper-white, grounded by a shadow, with a
+   hairline that is only just visible and exists to keep the edge crisp against
+   the warm page rather than to draw a box.
+
+   `.tz-inset` is the sunken one - a well inside a panel, for buy stacks, filter
+   bars and spec strips. No shadow and no border: it reads as a recess because
+   it is darker than what surrounds it, which is how a recess actually reads.
+   --------------------------------------------------------------------------- */
+.tz-panel {
+  background: var(--tz-raised);
+  border-radius: var(--tz-radius-lg);
+  box-shadow:
+    inset 0 0 0 1px var(--tz-line),
+    var(--tz-shadow);
+}
+
+.tz-panel--flat {
+  box-shadow: inset 0 0 0 1px var(--tz-line);
+}
+
+.tz-inset {
+  background: var(--tz-sunken);
+  border-radius: var(--tz-radius);
+}
+
+/* A rule that separates without drawing a full box. */
+.tz-rule {
+  border-color: var(--tz-line);
 }
 
 /**

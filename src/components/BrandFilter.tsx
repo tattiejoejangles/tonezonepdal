@@ -84,7 +84,7 @@ export function BrandFilter({
         className={`tz-btn flex items-center gap-2 px-4 py-2 text-xs whitespace-nowrap  focus-visible:ring-2 focus-visible:ring-amber-500 focus-visible:ring-offset-2 focus-visible:outline-none ${
           value
             ? "bg-stone-900 text-white shadow-md"
-            : "bg-white text-stone-600 ring-1 ring-stone-200 hover:text-stone-900"
+            : "bg-white text-stone-600 hover:text-stone-900"
         }`}
       >
         {value ?? "All brands"}
@@ -111,7 +111,7 @@ export function BrandFilter({
       )}
 
       {open && (
-        <div className="tz-pop absolute top-full left-0 z-40 mt-2 w-64 bg-white shadow-2xl ring-1 ring-stone-200">
+        <div className="tz-pop absolute top-full left-0 z-40 mt-2 w-64 bg-white shadow-2xl">
           <div className="border-b border-stone-100 p-2">
             <input
               ref={searchRef}

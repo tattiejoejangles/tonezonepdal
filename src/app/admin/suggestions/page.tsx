@@ -153,7 +153,7 @@ export default async function SuggestionsPage({
           editor.
         </p>
       ) : suggestions.length === 0 ? (
-        <p className="tz-chamfer bg-white/70 px-6 py-16 text-center text-sm text-stone-500 ring-1 ring-stone-200">
+        <p className="tz-chamfer bg-white/70 px-6 py-16 text-center text-sm text-stone-500">
           Nothing {activeStatus} here.
         </p>
       ) : (
@@ -182,7 +182,7 @@ function Chip({
       className={`rounded px-3.5 py-2 text-xs font-bold tracking-wide capitalize transition-colors ${
         active
           ? "bg-stone-900 text-white shadow-sm"
-          : "bg-white text-stone-600 ring-1 ring-stone-200 hover:text-stone-900"
+          : "bg-white text-stone-600 hover:text-stone-900"
       }`}
     >
       {children}

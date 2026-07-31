@@ -10,6 +10,7 @@ import {
   passwordMatches,
   sessionToken,
 } from "@/lib/admin-auth";
+import { isRelationship } from "@/lib/relationship";
 import { SPEC_FIELDS } from "@/lib/specs";
 import { getAdminSupabase } from "@/lib/supabase-admin";
 import { CATEGORIES, type Category } from "@/lib/types";
@@ -315,8 +316,14 @@ async function savePairings(
     .map((value) => String(value))
     .filter((value) => value && value !== primaryId);
 
+  // Only the primary carries the relationship: the form asks the question once,
+  // about the pedal this one leads with. Extra pairings default to the safest
+  // reading and are corrected in Supabase if they need to differ.
+  const chosen = text(form, "relationship");
+  const relationship = isRelationship(chosen) ? chosen : "alternative";
+
   const rows = [
-    { alternative_id: alternativeId, original_id: primaryId, position: 0 },
+    { alternative_id: alternativeId, original_id: primaryId, position: 0, relationship },
     ...[...new Set(also)].map((originalId, index) => ({
       alternative_id: alternativeId,
       original_id: originalId,

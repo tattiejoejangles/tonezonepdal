@@ -51,7 +51,7 @@ export function CloneReviews({
       <div className="grid gap-6">
         <div className="space-y-6">
           {/* The score ------------------------------------------------------ */}
-          <div className="tz-chamfer bg-white p-6 tz-card ring-1 ring-stone-200/60">
+          <div className="tz-panel p-6">
             {votes > 0 && summary?.average != null ? (
               <>
                 <div className="flex flex-wrap items-center gap-x-4 gap-y-2">
@@ -136,7 +136,7 @@ export function CloneReviews({
               {withComments.map((review) => (
                 <li
                   key={review.id}
-                  className="tz-chamfer bg-white p-4 ring-1 ring-stone-200/60"
+                  className="tz-panel p-4"
                 >
                   <div className="flex items-center gap-2">
                     <Stars value={review.rating} size="sm" />

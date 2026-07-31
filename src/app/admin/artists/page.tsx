@@ -131,7 +131,7 @@ export default async function AdminArtistsPage({
           <code>supabase/seed/08-artists.sql</code> in the Supabase SQL editor.
         </p>
       ) : artists.length === 0 ? (
-        <p className="tz-chamfer bg-white/70 px-6 py-16 text-center text-sm text-stone-500 ring-1 ring-stone-200">
+        <p className="tz-chamfer bg-white/70 px-6 py-16 text-center text-sm text-stone-500">
           Nobody matches that.
         </p>
       ) : (

@@ -90,7 +90,7 @@ export function SearchBar({
             className={`w-full rounded-md border-0 py-4 pr-24 pl-14 text-base font-medium outline-none ${
               dark
                 ? "bg-[#151c30] text-white placeholder:text-stone-500"
-                : "bg-white text-stone-900 shadow-sm ring-1 ring-stone-200 placeholder:text-stone-400"
+                : "bg-white text-stone-900 shadow-sm placeholder:text-stone-400"
             }`}
           />
 

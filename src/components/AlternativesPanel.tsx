@@ -79,7 +79,7 @@ export function AlternativesPanel({
               id="alt-sort"
               value={sort}
               onChange={(event) => setSort(event.target.value as SortId)}
-              className="border-0 bg-white py-2 pr-8 pl-3 text-sm font-bold text-stone-800 shadow-sm ring-1 ring-stone-200 focus:ring-2 focus:ring-amber-500 focus:outline-none"
+              className="tz-panel border-0 py-2 pr-8 pl-3 text-sm font-bold text-stone-800 focus:ring-2 focus:ring-amber-500 focus:outline-none"
             >
               {SORT_OPTIONS.map((option) => (
                 <option key={option.id} value={option.id}>

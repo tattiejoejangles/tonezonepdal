@@ -27,7 +27,7 @@ export default function NotFound() {
         </Link>
         <Link
           href="/"
-          className="tz-btn bg-white px-6 py-3 text-xs text-stone-700  ring-1 ring-stone-200"
+          className="tz-btn bg-white px-6 py-3 text-xs text-stone-700 "
         >
           Home
         </Link>

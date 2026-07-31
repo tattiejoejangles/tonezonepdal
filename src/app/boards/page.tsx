@@ -39,7 +39,7 @@ export default function BoardsPage() {
         </Link>
         <Link
           href="/saved"
-          className="tz-btn bg-white px-6 py-3 text-xs text-stone-700  ring-1 ring-stone-200"
+          className="tz-btn bg-white px-6 py-3 text-xs text-stone-700 "
         >
           Your saved gear
         </Link>

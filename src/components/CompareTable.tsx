@@ -58,13 +58,13 @@ export function CompareTable({
   return (
     <div className="space-y-6">
       {/* Headline: the two of them, and who is cheaper. */}
-      <div className="tz-chamfer overflow-hidden bg-white tz-card ring-1 ring-stone-200/60">
+      <div className="tz-panel overflow-hidden">
         <div className="grid gap-6 p-5 sm:p-6 md:grid-cols-2">
           <ItemHead item={left} cheapest={cheaper === "left"} />
           <ItemHead item={right} cheapest={cheaper === "right"} />
         </div>
 
-        <p className="border-t border-stone-100 bg-stone-50/70 px-5 py-3 text-sm font-bold text-stone-700 sm:px-6">
+        <p className="border-t tz-rule bg-[var(--tz-sunken)] px-5 py-3 text-sm font-bold text-stone-700 sm:px-6">
           {priceVerdict(left, right)}
         </p>
       </div>
@@ -256,7 +256,7 @@ function Scorecard({
 }) {
   if (points.length === 0) {
     return (
-      <div className="tz-chamfer bg-white p-5 tz-card ring-1 ring-stone-200/60">
+      <div className="tz-panel p-5">
         <h3 className="tz-heading text-base text-stone-900">Nothing to split them</h3>
         <p className="tz-body mt-1 text-sm text-stone-500">
           Same price, and neither has published a figure the other one has. Read
@@ -270,8 +270,8 @@ function Scorecard({
   const forRight = points.filter((point) => point.winner === "right");
 
   return (
-    <div className="tz-chamfer overflow-hidden bg-white tz-card ring-1 ring-stone-200/60">
-      <h3 className="tz-eyebrow border-b border-stone-100 bg-stone-50/70 px-5 py-3 text-stone-500">
+    <div className="tz-panel overflow-hidden">
+      <h3 className="tz-eyebrow border-b tz-rule bg-[var(--tz-sunken)] px-5 py-3 text-stone-500">
         Who wins what
       </h3>
       <div className="grid gap-x-5 md:grid-cols-2 md:divide-x md:divide-stone-100">
@@ -474,8 +474,8 @@ function CompareSection({
   children: React.ReactNode;
 }) {
   return (
-    <section className="tz-chamfer overflow-hidden bg-white tz-card ring-1 ring-stone-200/60">
-      <h3 className="tz-eyebrow border-b border-stone-100 bg-stone-50/70 px-5 py-3 text-stone-500">
+    <section className="tz-panel overflow-hidden">
+      <h3 className="tz-eyebrow border-b tz-rule bg-[var(--tz-sunken)] px-5 py-3 text-stone-500">
         {title}
       </h3>
       <div className="divide-y divide-stone-100">{children}</div>

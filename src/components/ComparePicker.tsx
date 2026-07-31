@@ -51,7 +51,7 @@ export function ComparePicker({
   }, [options, query]);
 
   return (
-    <div className="tz-chamfer bg-white p-4 tz-card ring-1 ring-stone-200/60">
+    <div className="tz-chamfer bg-white p-4">
       <p className="tz-eyebrow text-stone-500">Compare against</p>
       <p className="tz-body mt-1 mb-3 text-xs text-stone-500">
         {options.length} others in {genreLabel}, cheapest first.

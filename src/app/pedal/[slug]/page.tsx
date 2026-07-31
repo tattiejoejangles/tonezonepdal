@@ -120,7 +120,7 @@ export default async function PedalPage({
           to three times taller than the two beside it and left a few hundred
           pixels of empty card in both bottom corners. They're a band of their
           own below now, where they get full width to line up in. */}
-      <section className="tz-chamfer overflow-hidden bg-white tz-card ring-1 ring-stone-200/60">
+      <section className="tz-panel overflow-hidden">
         <div className="grid gap-8 p-6 sm:p-8 md:grid-cols-[minmax(0,300px)_1fr] md:gap-10 lg:grid-cols-[minmax(0,320px)_1fr_minmax(0,17rem)] lg:gap-8">
           <div>
             <div className="tz-well relative aspect-square">
@@ -166,7 +166,7 @@ export default async function PedalPage({
           {/* Full width while the grid is two columns, its own lane once
               there's room. `self-start` so it doesn't stretch to the row
               height and leave a tall empty box under the last button. */}
-          <div className="tz-chamfer self-start border-t border-stone-100 bg-stone-50/80 p-5 md:col-span-2 lg:col-span-1 lg:border-t-0">
+          <div className="tz-inset self-start p-5 md:col-span-2 lg:col-span-1 lg:border-t-0">
             <p className="tz-eyebrow text-stone-400">Buy the original</p>
 
             <p className="tz-heading mt-2 text-3xl text-stone-900 tabular-nums">
@@ -186,7 +186,7 @@ export default async function PedalPage({
 
             <Link
               href={`/compare?a=${pedal.slug}`}
-              className="tz-btn mt-3 flex w-full items-center justify-center gap-2 bg-white px-5 py-2.5 text-xs text-stone-700  ring-1 ring-stone-300 hover:text-stone-900"
+              className="tz-btn mt-3 flex w-full items-center justify-center gap-2 bg-white px-5 py-2.5 text-xs text-stone-700 shadow-[inset_0_0_0_1px_var(--tz-line-strong)] hover:text-stone-900"
             >
               <svg
                 viewBox="0 0 24 24"
@@ -217,14 +217,14 @@ export default async function PedalPage({
       {hasDetails && (
         <div className="mt-6 grid gap-6 lg:grid-cols-2">
           {originalDetail.specsKnown && (
-            <section className="tz-chamfer bg-white p-6 tz-card ring-1 ring-stone-200/60">
+            <section className="tz-panel p-6">
               <h2 className="tz-heading mb-3 text-xl text-stone-900">Specs</h2>
               <SpecList specs={originalDetail.specs} />
             </section>
           )}
 
           {artists.length > 0 && (
-            <section className="tz-chamfer bg-white p-6 tz-card ring-1 ring-stone-200/60">
+            <section className="tz-panel p-6">
               <h2 className="tz-heading mb-3 text-xl text-stone-900">Played by</h2>
               <ArtistChips artists={originalDetail.artists} />
             </section>

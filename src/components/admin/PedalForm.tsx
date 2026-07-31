@@ -5,6 +5,7 @@ import { useActionState, useState } from "react";
 
 import { createPedal, updatePedal, type ActionState } from "@/app/admin/actions";
 import { categoriesFor, gearTypeOf, type GearType } from "@/lib/gear";
+import { RELATIONSHIPS, RELATIONSHIP_COPY } from "@/lib/relationship";
 import { fieldsFor, resolveSpecs, SPEC_FIELDS } from "@/lib/specs";
 import { CATEGORIES, type Category, type Spec } from "@/lib/types";
 
@@ -40,6 +41,8 @@ export interface PedalDraft {
   originalId?: string;
   /** Alternatives only: additional originals this is also an alternative to. */
   alsoOriginalIds?: string[];
+  /** Alternatives only: clone / inspired / alternative, for the primary. */
+  relationship?: string;
   matchQuality?: number;
   pros?: string[];
   cons?: string[];
@@ -176,7 +179,7 @@ export function PedalForm({
                 className={`tz-btn cursor-pointer px-5 py-2.5 text-xs  ${
                   gear === value
                     ? "bg-amber-500 text-white shadow-md"
-                    : "bg-white text-stone-600 ring-1 ring-stone-200"
+                    : "bg-white text-stone-600"
                 }`}
               >
                 <input
@@ -207,7 +210,7 @@ export function PedalForm({
                 className={`tz-btn cursor-pointer px-5 py-2.5 text-xs  ${
                   kind === value
                     ? "bg-stone-900 text-white shadow-md"
-                    : "bg-white text-stone-600 ring-1 ring-stone-200"
+                    : "bg-white text-stone-600"
                 }`}
               >
                 <input
@@ -256,6 +259,38 @@ export function PedalForm({
               ))}
             </select>
           </Field>
+
+          {/* What it is to that original. Everything was stored as a clone,
+              which is only true for the direct circuit copies. */}
+          <fieldset className="mt-4">
+            <legend className="tz-eyebrow mb-1.5 text-stone-500">
+              And it is…
+            </legend>
+            <div className="grid gap-1.5 sm:grid-cols-3">
+              {RELATIONSHIPS.map((value) => (
+                <label
+                  key={value}
+                  className="flex cursor-pointer items-start gap-2 rounded bg-white p-2 text-xs"
+                >
+                  <input
+                    type="radio"
+                    name="relationship"
+                    value={value}
+                    defaultChecked={(draft?.relationship ?? "alternative") === value}
+                    className="mt-0.5 h-4 w-4 shrink-0 accent-amber-600"
+                  />
+                  <span className="min-w-0">
+                    <span className="block font-bold text-stone-800">
+                      {RELATIONSHIP_COPY[value].label}
+                    </span>
+                    <span className="block text-stone-500">
+                      {RELATIONSHIP_COPY[value].hint}
+                    </span>
+                  </span>
+                </label>
+              ))}
+            </div>
+          </fieldset>
 
           {linkable.length === 0 && (
             <p className="mt-2 text-xs text-rose-700">

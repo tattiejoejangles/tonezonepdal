@@ -188,7 +188,7 @@ function NavDropdown({ section }: { section: NavSection }) {
           id={menuId}
           className="tz-pop absolute top-full left-1/2 z-40 w-72 -translate-x-1/2 pt-3"
         >
-          <div className="tz-chamfer overflow-hidden bg-white shadow-2xl ring-1 ring-stone-200">
+          <div className="tz-chamfer overflow-hidden bg-white shadow-2xl">
             {section.genres.map((genre) => (
               <Link
                 key={genre.id}

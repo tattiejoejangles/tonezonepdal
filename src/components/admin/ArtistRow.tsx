@@ -28,12 +28,12 @@ export function ArtistRow({ artist }: { artist: Artist }) {
   return (
     <form
       action={action}
-      className="tz-chamfer bg-white p-4 tz-card ring-1 ring-stone-200/60"
+      className="tz-chamfer bg-white p-4"
     >
       <input type="hidden" name="match_key" value={artist.matchKey} />
 
       <div className="flex gap-4">
-        <div className="tz-chamfer relative aspect-square w-24 shrink-0 overflow-hidden bg-stone-900 ring-1 ring-stone-200">
+        <div className="tz-chamfer relative aspect-square w-24 shrink-0 overflow-hidden bg-stone-900">
           {artist.imageUrl ? (
             /* Arbitrary pasted hosts can't pass next/image's allowlist. */
             // eslint-disable-next-line @next/next/no-img-element
