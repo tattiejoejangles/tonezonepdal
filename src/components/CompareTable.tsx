@@ -45,7 +45,7 @@ export function CompareTable({
   left: ComparableItem;
   right: ComparableItem;
 }) {
-  const groups = buildSpecRows(left, right);
+  const specRows = buildSpecRows(left, right);
   const points = headToHead(left, right);
   const coverage = specCoverage(left, right);
   const cheaper =
@@ -147,22 +147,16 @@ export function CompareTable({
         </Row>
       </CompareSection>
 
-      {/* The spec sheet, canonical order, one section per group. */}
-      {groups.length === 0 ? (
-        <CompareSection title="Specs">
+      {/* The spec sheet: one row per vocabulary field, always the same order. */}
+      <CompareSection title="Specs">
+        {specRows.length === 0 ? (
           <p className="px-5 py-4 text-sm text-stone-500">
             Neither has confirmed specs yet.
           </p>
-        </CompareSection>
-      ) : (
-        groups.map((group) => (
-          <CompareSection key={`${group.group}-${group.label}`} title={group.label}>
-            {group.rows.map((row) => (
-              <SpecRow key={row.label} row={row} />
-            ))}
-          </CompareSection>
-        ))
-      )}
+        ) : (
+          specRows.map((row) => <SpecRow key={row.label} row={row} />)
+        )}
+      </CompareSection>
 
       {(left.pros?.length || right.pros?.length) && (
         <CompareSection title="Pros and cons">

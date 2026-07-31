@@ -2,33 +2,71 @@
 
 How the spec sheet works, and how to fill it in.
 
+## The fields
+
+Eight for a pedal, nine for an amp, always in this order:
+
+| Pedal | Amp |
+| --- | --- |
+| Power | Power |
+| Current draw | Power output |
+| Bypass | Valves |
+| Connections | Speaker |
+| Dimensions | Channels |
+| Weight | Connections |
+| Enclosure | Dimensions |
+| Features | Weight |
+| | Enclosure |
+| | Features |
+
+That is the whole vocabulary, and the admin form offers exactly those and
+nothing else. It used to be a free textarea of `Label | value` lines, which is
+how the catalogue reached around **sixty** distinct labels for what is really a
+dozen facts: `Current Draw` beside `Current draw`, dimensions split into
+Width/Depth/Height on some rows and one `Dimensions` on others, values typed
+into the label (`Current Draw: 7mA` with nothing beside it), and a long tail of
+one-offs like `DSP Processing` and `Chassis Layout`. Two pedals could not be
+read side by side because they were not describing themselves in the same words.
+
+**Dimensions is one field** — `73 × 129 × 59 mm`, entered as one line. The
+numbers are pulled apart internally so the comparison can work out board space
+and say which is smaller, but that is a derivation, not three things to fill in.
+
+**Features is the catch-all**, and the reason nothing had to be deleted to get
+down to this list. For a delay or a modeller, "9 modes, 200 presets" is the most
+useful line on the sheet and there is nowhere else for it.
+
 ## The shape
 
-Specs are stored per pedal as a list of label/value pairs in the `specs` jsonb
-column — the same shape the admin form edits. There is no column per field,
-deliberately: what is worth stating varies by pedal, and a table with a column
-for every possible field would give every row forty nulls.
+Specs are stored per item as label/value pairs in the `specs` jsonb column.
+There is no column per field, deliberately: what is worth stating varies by
+item, and a table with a column for every possible field would give every row
+forty nulls.
 
-`src/lib/specs.ts` adds the layer that makes those free pairs comparable:
+`src/lib/specs.ts` is what makes those pairs comparable:
 
-- **One canonical name per field.** The catalogue had arrived at `Current Draw`
-  and `Current draw` as separate facts, a label reading `Bypass: True Bypass`
-  with an empty value, and one row spelled `nput Impedance`. Each field carries
-  an alias list, so old spellings keep resolving without a data migration.
-- **Units and a direction.** `Weight` is grams and lower is better; `Max delay`
-  is milliseconds and higher is better. That is what lets the comparison say
+- **One canonical name per field**, with an alias list so old spellings keep
+  resolving. Nothing had to be re-typed.
+- **Units and a direction.** `Weight` is grams and lower is better; `Power
+  output` is watts and higher is better. That is what lets the comparison say
   "25g better" and "3× better" instead of printing two strings.
-- **Derived fields.** Board space (cm²) is computed from width × depth. No
-  retailer publishes it and it is the number that answers "will this fit".
-- **Combined rows are split.** A single `Dimensions: 73 x 129 x 59 mm` row is
-  expanded into Width, Depth and Height, so a pedal quoting one row lines up
-  against one quoting three.
+- **Board space**, derived from width × depth. No retailer publishes it and it
+  is the number that answers "will this fit".
 
-Anything with no canonical home is kept and shown under "Also listed" rather
-than dropped — an unrecognised label is a fact we haven't catalogued yet.
-
-The comparison holds no data of its own. Filling in a pedal's specs improves its
+The comparison holds no data of its own. Filling in an item's specs improves its
 own page and every comparison it appears in, at once.
+
+## Re-normalising
+
+If old-shaped rows appear again (a bulk import, say):
+
+```bash
+node --env-file=.env.local scripts/normalise-specs.mjs --dry
+```
+
+It resolves every row through the same module the site renders through and
+prints what it would rewrite, plus every value it would drop, so anything worth
+keeping can be added to `features`' alias list first. Drop `--dry` to write.
 
 ## The sourcing rule
 
@@ -62,10 +100,10 @@ opaque model codes. So the script covers BOSS and the rest is done by hand.
 
 ### By hand, for everything else
 
-Sign into `/admin`, open the pedal's page on the site, and use the **Edit**
-button. Add rows using the canonical labels in `SPEC_FIELDS`
-(`src/lib/specs.ts`) — Width, Depth, Height, Weight, Current draw, Bypass,
-Enclosure, and so on. Values keep their units: `73mm`, `360g`, `10mA`, `1MΩ`.
+Sign into `/admin`, open the item's page on the site, and use the **Edit**
+button. The form gives you one box per field — fill in what you can confirm and
+leave the rest blank. Values keep their units: `73 × 129 × 59 mm`, `360g`,
+`10mA`.
 
 Sweetwater's product pages are the best single source for dimensions and weight
 if you are reading them in a browser; they simply cannot be fetched by a script.
@@ -75,7 +113,7 @@ if you are reading them in a browser; they simply cannot be fetched by a script.
 Fully specced from the manufacturer: the BOSS DS-1, BD-2, CH-1, MT-2, GE-7 and
 RV-6, plus the Strymon Sunset (no published weight). Enclosure dimensions on the
 eight combined/vintage BOSS entries. Everything else carries whatever it already
-had — usually Power and Connections.
+had — usually Power, Connections and Bypass.
 
-The comparison prints its own coverage at the foot of every page ("We have 11 of
-37 fields for the …"), so the gap is visible rather than hidden.
+The comparison prints its own coverage at the foot of every page ("We have 7 of
+8 fields for the …"), so the gap is visible rather than hidden.

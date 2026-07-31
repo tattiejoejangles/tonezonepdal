@@ -1,6 +1,6 @@
 import { ArtistEditor } from "./admin/ArtistEditor";
 import type { ResolvedArtist } from "@/lib/artists";
-import { groupedSpecs } from "@/lib/specs";
+import { resolveSpecs } from "@/lib/specs";
 import type { PedalDetail } from "@/lib/types";
 
 /**
@@ -21,63 +21,29 @@ import type { PedalDetail } from "@/lib/types";
 export function SpecList({
   specs,
   size = "md",
-  grouped = false,
 }: {
   specs: PedalDetail["specs"];
   size?: "sm" | "md";
-  /**
-   * Group and order the rows by the canonical vocabulary in `lib/specs.ts`.
-   *
-   * On for the full pedal and clone pages, where a sheet long enough to need
-   * subheadings is now normal and "Size & weight" then "Power" then "Signal"
-   * reads far better than the order the rows happen to be stored in. Off in the
-   * dialog, which shows a handful of rows in a panel too small for headings.
-   *
-   * Both paths render the same canonicalised labels, so a pedal reads the same
-   * whichever surface you meet it on - and the same way the comparison reads it.
-   */
-  grouped?: boolean;
 }) {
   const text = size === "sm" ? "text-xs" : "text-sm";
 
-  if (!grouped) {
-    return <Rows specs={specs} text={text} />;
-  }
+  // Resolved through the vocabulary so every pedal lists the same fields in the
+  // same order - Power, Current draw, Bypass, Connections, Dimensions, Weight,
+  // Enclosure, Features - whatever the rows happen to be called in storage. The
+  // comparison reads them through the same resolver, so a pedal's own page and
+  // any comparison it appears in can never disagree.
+  const resolved = resolveSpecs(specs).map((spec) => ({
+    label: spec.label,
+    value: spec.value,
+  }));
 
-  const groups = groupedSpecs(specs);
+  // Nothing matched the vocabulary at all: show what there is rather than an
+  // empty panel.
+  const rows = resolved.length > 0 ? resolved : specs;
 
-  // Nothing resolved to a canonical field and there were no extras either -
-  // fall back rather than render an empty sheet.
-  if (groups.length === 0) return <Rows specs={specs} text={text} />;
-
-  return (
-    <div className="space-y-4">
-      {groups.map((group) => (
-        <div key={`${group.group}-${group.label}`}>
-          <p className="tz-eyebrow mb-1 text-stone-400">{group.label}</p>
-          <Rows
-            specs={group.specs.map((spec) => ({
-              label: spec.label,
-              value: spec.value,
-            }))}
-            text={text}
-          />
-        </div>
-      ))}
-    </div>
-  );
-}
-
-function Rows({
-  specs,
-  text,
-}: {
-  specs: PedalDetail["specs"];
-  text: string;
-}) {
   return (
     <dl className="divide-y divide-stone-100">
-      {specs.map((spec) => (
+      {rows.map((spec) => (
         <div
           key={spec.label}
           className="grid gap-x-4 gap-y-0.5 py-2 sm:grid-cols-[minmax(0,9rem)_1fr]"

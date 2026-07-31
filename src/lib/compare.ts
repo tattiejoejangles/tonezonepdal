@@ -1,14 +1,13 @@
-import { gearNoun } from "./gear";
+import { gearNoun, gearTypeOf } from "./gear";
 import type { Savings } from "./format";
 import { calculateSavings } from "./format";
 import { displayMatch, type ReviewSummary } from "./reviews";
 import {
-  resolveSpecs,
+  footprintOf,
   specCompleteness,
+  specsByField,
   SPEC_FIELDS,
-  SPEC_GROUPS,
   type SpecField,
-  type SpecGroup,
 } from "./specs";
 import type {
   Alternative,
@@ -224,94 +223,103 @@ function describeMargin(
 }
 
 /**
- * The spec table, canonicalised and grouped.
+ * The spec table: one row per vocabulary field, always in the same order.
  *
  * Both sides are resolved through `lib/specs.ts` first, so the rows are the
  * shared vocabulary rather than whatever each side happened to call things -
  * which is what stops "Current Draw" and "Current draw" appearing as two
- * separate facts, and what lets a pedal quoting one "Dimensions" row line up
- * against one quoting width, depth and height separately.
+ * separate facts, and what lets a pedal that stored width, depth and height
+ * separately line up against one that stored a single Dimensions row.
  *
- * Union rather than intersection, still: "this one lists its current draw and
- * that one doesn't" is useful, and an intersection would hide it. Rows neither
- * side has are dropped by the caller.
+ * Union rather than intersection: "this one lists its current draw and that one
+ * doesn't" is useful, and an intersection would hide it. Fields neither side
+ * has are dropped.
+ *
+ * Board space is appended after Dimensions when both sides quote three numbers.
+ * It is derived rather than stored - no retailer publishes it - and it is the
+ * number that actually answers "will this fit on my board".
  */
 export function buildSpecRows(
   left: ComparableItem,
   right: ComparableItem,
-): { group: SpecGroup; label: string; rows: CompareRow[] }[] {
-  const leftSpecs = resolveSpecs(left.specs);
-  const rightSpecs = resolveSpecs(right.specs);
+): CompareRow[] {
+  const leftSpecs = specsByField(left.specs);
+  const rightSpecs = specsByField(right.specs);
 
-  const groups = SPEC_GROUPS.map(({ id, label }) => {
-    const rows: CompareRow[] = [];
+  const rows: CompareRow[] = [];
 
-    for (const field of SPEC_FIELDS) {
-      if (field.group !== id) continue;
+  for (const field of SPEC_FIELDS) {
+    const l = leftSpecs.get(field.id);
+    const r = rightSpecs.get(field.id);
+    if (!l && !r) continue;
 
-      const l = leftSpecs.byField.get(field.id);
-      const r = rightSpecs.byField.get(field.id);
-      if (!l && !r) continue;
+    const row: CompareRow = {
+      label: field.label,
+      left: l?.value ?? null,
+      right: r?.value ?? null,
+      differs: Boolean(l && r && normalise(l.value) !== normalise(r.value)),
+      empty: false,
+      hint: field.hint,
+      winner: null,
+    };
 
-      const row: CompareRow = {
-        label: field.label,
-        left: l?.value ?? null,
-        right: r?.value ?? null,
-        differs: Boolean(l && r && normalise(l.value) !== normalise(r.value)),
-        empty: false,
-        hint: field.hint,
-        winner: null,
-      };
-
-      // A winner needs a direction, both amounts, and an actual difference.
-      const direction = field.numeric?.direction;
-      if (direction && l?.amount != null && r?.amount != null && l.amount !== r.amount) {
-        const leftWins =
-          direction === "lower" ? l.amount < r.amount : l.amount > r.amount;
-        row.winner = leftWins ? "left" : "right";
-        row.margin = describeMargin(field, l.amount, r.amount);
-      }
-
-      rows.push(row);
+    // A winner needs a direction, both amounts, and an actual difference.
+    const direction = field.numeric?.direction;
+    if (direction && l?.amount != null && r?.amount != null && l.amount !== r.amount) {
+      const leftWins =
+        direction === "lower" ? l.amount < r.amount : l.amount > r.amount;
+      row.winner = leftWins ? "left" : "right";
+      row.margin = describeMargin(field, l.amount, r.amount);
     }
 
-    return { group: id, label, rows };
-  }).filter((group) => group.rows.length > 0);
+    rows.push(row);
 
-  // Anything outside the vocabulary, so an uncatalogued label is still shown
-  // rather than silently dropped from the comparison.
-  const extraLabels: string[] = [];
-  const leftExtras = new Map(leftSpecs.extras.map((s) => [normalise(s.label), s]));
-  const rightExtras = new Map(rightSpecs.extras.map((s) => [normalise(s.label), s]));
-  for (const k of leftExtras.keys()) extraLabels.push(k);
-  for (const k of rightExtras.keys()) {
-    if (!extraLabels.includes(k)) extraLabels.push(k);
+    if (field.id === "dimensions") {
+      const boardRow = boardSpaceRow(l?.value, r?.value);
+      if (boardRow) rows.push(boardRow);
+    }
   }
 
-  if (extraLabels.length > 0) {
-    groups.push({
-      group: "build",
-      label: "Also listed",
-      rows: extraLabels.map((k) => {
-        const l = leftExtras.get(k);
-        const r = rightExtras.get(k);
-        return {
-          label: l?.label ?? r?.label ?? k,
-          left: l?.value ?? null,
-          right: r?.value ?? null,
-          differs: Boolean(l && r && normalise(l.value) !== normalise(r.value)),
-          empty: false,
-          winner: null,
-        };
-      }),
-    });
-  }
-
-  return groups;
+  return rows;
 }
 
+/** The derived board-space row that follows Dimensions. */
+function boardSpaceRow(
+  leftValue: string | undefined,
+  rightValue: string | undefined,
+): CompareRow | null {
+  const l = leftValue ? footprintOf(leftValue) : null;
+  const r = rightValue ? footprintOf(rightValue) : null;
+  if (l == null && r == null) return null;
+
+  const row: CompareRow = {
+    label: "Board space",
+    hint: "Width × depth, worked out from the dimensions above.",
+    left: l == null ? null : `${l.toFixed(0)} cm²`,
+    right: r == null ? null : `${r.toFixed(0)} cm²`,
+    differs: l != null && r != null && Math.round(l) !== Math.round(r),
+    empty: false,
+    winner: null,
+  };
+
+  if (l != null && r != null && Math.round(l) !== Math.round(r)) {
+    row.winner = l < r ? "left" : "right";
+    row.margin = describeMargin(BOARD_SPACE_FIELD, l, r);
+  }
+
+  return row;
+}
+
+/** Stand-in field so board space can use the same margin formatter. */
+const BOARD_SPACE_FIELD: SpecField = {
+  id: "footprint",
+  label: "Board space",
+  appliesTo: "all",
+  numeric: { unit: "cm²", direction: "lower" },
+};
+
 /**
- * How many canonical fields each side fills in.
+ * How many vocabulary fields each side fills in.
  *
  * Shown on the comparison because it is the honest caveat on everything above
  * it: a pedal that lists six specs and one that lists two are not equally
@@ -320,8 +328,8 @@ export function buildSpecRows(
  */
 export function specCoverage(left: ComparableItem, right: ComparableItem) {
   return {
-    left: specCompleteness(left.specs),
-    right: specCompleteness(right.specs),
+    left: specCompleteness(left.specs, gearTypeOf(left.category)),
+    right: specCompleteness(right.specs, gearTypeOf(right.category)),
   };
 }
 
@@ -425,22 +433,36 @@ export function headToHead(
 
   // The physical axes, read straight out of the resolved specs so they stay in
   // step with the table below rather than being computed a second way.
-  const leftSpecs = resolveSpecs(left.specs).byField;
-  const rightSpecs = resolveSpecs(right.specs).byField;
+  const leftSpecs = specsByField(left.specs);
+  const rightSpecs = specsByField(right.specs);
 
-  for (const id of ["footprint", "weight", "current_draw"] as const) {
+  // Board space first: it is the one people actually choose on.
+  const leftBoard = footprintOf(leftSpecs.get("dimensions")?.value ?? "");
+  const rightBoard = footprintOf(rightSpecs.get("dimensions")?.value ?? "");
+  if (leftBoard != null && rightBoard != null && Math.round(leftBoard) !== Math.round(rightBoard)) {
+    const leftWins = leftBoard < rightBoard;
+    points.push({
+      label: "Takes less board space",
+      winner: leftWins ? "left" : "right",
+      detail: `${(leftWins ? leftBoard : rightBoard).toFixed(0)} cm²`,
+      margin: describeMargin(BOARD_SPACE_FIELD, leftBoard, rightBoard),
+    });
+  }
+
+  for (const id of ["weight", "current_draw", "power_output"] as const) {
     const field = SPEC_FIELDS.find((candidate) => candidate.id === id);
     const l = leftSpecs.get(id)?.amount;
     const r = rightSpecs.get(id)?.amount;
     if (!field || l == null || r == null || l === r) continue;
 
-    const leftWins = l < r;
+    const better = field.numeric?.direction === "higher" ? Math.max : Math.min;
+    const leftWins = better(l, r) === l;
     const label =
-      id === "footprint"
-        ? "Takes less board space"
-        : id === "weight"
-          ? "Lighter"
-          : "Draws less current";
+      id === "weight"
+        ? "Lighter"
+        : id === "current_draw"
+          ? "Draws less current"
+          : "More power";
 
     points.push({
       label,

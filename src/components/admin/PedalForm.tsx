@@ -5,6 +5,7 @@ import { useActionState, useState } from "react";
 
 import { createPedal, updatePedal, type ActionState } from "@/app/admin/actions";
 import { categoriesFor, gearTypeOf, type GearType } from "@/lib/gear";
+import { fieldsFor, resolveSpecs, SPEC_FIELDS } from "@/lib/specs";
 import { CATEGORIES, type Category, type Spec } from "@/lib/types";
 
 export interface OriginalOption {
@@ -72,8 +73,37 @@ function Field({
 
 const listText = (values?: string[]) => (values ?? []).join("\n");
 const csvText = (values?: string[]) => (values ?? []).join(", ");
-const specText = (values?: Spec[]) =>
-  (values ?? []).map((spec) => `${spec.label} | ${spec.value}`).join("\n");
+
+/**
+ * The stored value for one spec field.
+ *
+ * Resolved through the vocabulary rather than matched on the label directly, so
+ * a record still holding an old spelling - "Current Draw", or Width/Depth/Height
+ * instead of one Dimensions - prefills the right box instead of appearing empty
+ * and being silently wiped on the next save.
+ */
+const specValue = (values: Spec[] | undefined, label: string) =>
+  resolveSpecs(values ?? []).find((spec) => spec.label === label)?.value ?? "";
+
+/**
+ * Amp or pedal, for an existing record.
+ *
+ * A clone has no category of its own - it is whatever it copies - so its gear
+ * type has to come from the original it is linked to. Without that step an amp
+ * clone opened as "pedal", which now matters: the spec fields on offer depend
+ * on the gear type, so it would have been shown the pedal set and saving would
+ * have dropped its Speaker, Valves and Channels.
+ */
+function initialGear(
+  draft: PedalDraft | undefined,
+  originals: OriginalOption[],
+): GearType {
+  if (!draft) return "pedal";
+  if (draft.category) return gearTypeOf(draft.category as Category);
+
+  const parent = originals.find((original) => original.id === draft.originalId);
+  return parent ? gearTypeOf(parent.category) : "pedal";
+}
 
 /**
  * One form for both adding and editing.
@@ -107,9 +137,7 @@ export function PedalForm({
    * everything below: the category list for an original, and which originals a
    * clone may be linked to.
    */
-  const [gear, setGear] = useState<GearType>(
-    draft?.category ? gearTypeOf(draft.category as Category) : "pedal",
-  );
+  const [gear, setGear] = useState<GearType>(() => initialGear(draft, originals));
 
   const isOriginal = kind === "original";
   const categories = categoriesFor(gear, CATEGORIES);
@@ -415,20 +443,52 @@ export function PedalForm({
         </Field>
       </div>
 
-      <Field
-        label="Specs"
-        hint="One per line as: Label | value. Leave blank if unverified - the site says so rather than guessing."
-      >
-        <textarea
-          name="specs"
-          rows={5}
-          defaultValue={specText(draft?.specs)}
-          placeholder={
-            "Power | 9V DC centre-negative (2.1mm)\nCurrent draw | 30 mA\nBypass | True bypass"
-          }
-          className={inputClass}
-        />
-      </Field>
+      {/* Specs: one input per vocabulary field, in the order they display.
+          This was a free textarea of "Label | value" lines, which is how the
+          catalogue reached ~60 labels for a dozen facts - "Current Draw" beside
+          "Current draw", dimensions split three ways, values typed into the
+          label. Offering the fields themselves means every pedal describes
+          itself in the same words, which is what makes two of them comparable
+          line for line. */}
+      <fieldset className="border-t border-stone-200 pt-6">
+        <legend className="tz-heading text-lg text-stone-900">Specs</legend>
+        <p className="tz-body mt-1 mb-4 text-sm text-stone-500">
+          Leave a field blank if it isn&apos;t confirmed - the site says
+          &ldquo;not listed&rdquo; rather than guessing, and the comparison
+          counts how many are filled in.
+        </p>
+
+        <div className="grid gap-4 sm:grid-cols-2">
+          {fieldsFor(gear).map((field) => (
+            <Field key={field.id} label={field.label} hint={field.hint}>
+              <input
+                name={`specs_${field.id}`}
+                defaultValue={specValue(draft?.specs, field.label)}
+                placeholder={field.placeholder}
+                className={inputClass}
+              />
+            </Field>
+          ))}
+        </div>
+
+        {/* Values belonging to the other gear type are carried through hidden
+            rather than left out of the form. A field with no input submits as
+            blank and the action treats blank as "clear it", so without this an
+            amp opened as a pedal - or a gear type toggled by accident - would
+            silently drop its Speaker, Valves and Channels on save. */}
+        {SPEC_FIELDS.filter(
+          (field) =>
+            !fieldsFor(gear).some((shown) => shown.id === field.id) &&
+            specValue(draft?.specs, field.label),
+        ).map((field) => (
+          <input
+            key={field.id}
+            type="hidden"
+            name={`specs_${field.id}`}
+            value={specValue(draft?.specs, field.label)}
+          />
+        ))}
+      </fieldset>
 
       {/* Submit ------------------------------------------------------------- */}
       <div className="flex flex-wrap items-center gap-4 border-t border-stone-200 pt-6">

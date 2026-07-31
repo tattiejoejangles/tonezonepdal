@@ -219,7 +219,7 @@ export default async function PedalPage({
           {originalDetail.specsKnown && (
             <section className="tz-chamfer bg-white p-6 tz-card ring-1 ring-stone-200/60">
               <h2 className="tz-heading mb-3 text-xl text-stone-900">Specs</h2>
-              <SpecList specs={originalDetail.specs} grouped />
+              <SpecList specs={originalDetail.specs} />
             </section>
           )}
 

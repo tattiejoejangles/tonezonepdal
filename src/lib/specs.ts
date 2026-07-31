@@ -1,301 +1,237 @@
 import type { Spec } from "./types";
 
 /**
- * The canonical spec vocabulary.
+ * The spec vocabulary: a short, fixed, ordered list of fields.
  *
- * Specs are stored per pedal as free label/value pairs - that shape stays,
- * because it is what the admin form edits and what a spec sheet actually is:
- * what's worth stating varies by pedal, and inventing a column for every
- * possible field would give every row forty nulls.
+ * Specs are stored per item as free label/value pairs - that shape stays,
+ * because it is what the database column holds. What this module does is fix
+ * WHICH labels are allowed, what order they appear in, and how the old
+ * spellings map onto them.
  *
- * What this module adds on top is agreement about names and units. The
- * catalogue had arrived at "Current Draw" and "Current draw" as separate facts,
- * a label reading "Bypass: True Bypass" whose value was also "True Bypass", and
- * one row spelled "nput Impedance". Compared side by side those produce
- * duplicate rows, or worse, a row that looks like a difference when both pedals
- * say the same thing.
+ * It is deliberately short. The catalogue had drifted to ~60 distinct labels:
+ * "Current Draw" and "Current draw" as separate facts, dimensions split three
+ * ways as Width/Depth/Height on some pedals and one "Dimensions" row on others,
+ * a label reading "Current Draw: 7mA" with an empty value beside it, and a long
+ * tail of one-offs like "DSP Processing" and "Chassis Layout". Two pedals could
+ * not be compared line for line because they were not describing themselves in
+ * the same words.
  *
- * So: every field has one canonical label, a set of aliases that resolve to it,
- * a group, a position, and - where the value is a quantity - a unit and a
- * direction. The direction is what lets the comparison say "180g lighter"
- * instead of printing two strings and leaving the reader to subtract.
+ * Now there are eight fields for a pedal and nine for an amp, always in the
+ * same order, and the admin form offers exactly those and nothing else. Old
+ * labels keep resolving through `aliases`, so nothing had to be re-typed.
+ *
+ * DIMENSIONS IS ONE FIELD. It reads as one fact - "112 × 68 × 40 mm" - and is
+ * entered as one. The numbers are still pulled apart internally so the
+ * comparison can work out board space and say which is smaller, but that is a
+ * derivation, not three things to fill in.
  */
 
-export type SpecGroup =
-  | "size"
-  | "power"
-  | "signal"
-  | "controls"
-  | "build"
-  | "amp";
+/** Whether a field belongs on a pedal, an amp, or both. */
+export type AppliesTo = "all" | "pedal" | "amp";
 
-export const SPEC_GROUPS: { id: SpecGroup; label: string }[] = [
-  { id: "size", label: "Size & weight" },
-  { id: "power", label: "Power" },
-  { id: "signal", label: "Signal & sound" },
-  { id: "controls", label: "Controls & connections" },
-  { id: "build", label: "Build" },
-  { id: "amp", label: "Amplifier" },
-];
-
-/**
- * Which way is better for a quantity.
- *
- * "lower" for the things you want less of - board space, weight, current draw,
- * output impedance. "higher" for headroom, delay time, presets. Fields with no
- * entry here are facts rather than merits: 9V DC is not better or worse than
- * 18V DC, it is different, and pretending otherwise would put a winner's tick
- * against half the table for no reason.
- */
 export type Direction = "lower" | "higher";
 
 export interface SpecField {
   id: string;
-  /** The one spelling used everywhere it is displayed. */
+  /** The one spelling used everywhere - display, admin form, comparison. */
   label: string;
-  group: SpecGroup;
+  appliesTo: AppliesTo;
   /**
-   * Alternate labels found in the data, normalised by `key()` before matching.
-   * Add to this rather than editing rows when a new spelling turns up.
+   * Old labels that resolve here, normalised by `key()` before matching. Add to
+   * this rather than re-typing rows when a new spelling turns up.
    */
   aliases?: string[];
   /** Present when the value is a quantity that can be compared numerically. */
-  numeric?: { unit: string; direction?: Direction };
-  /** Shown as help text against the row in the comparison. */
+  numeric?: { unit: string; direction: Direction };
+  /** Shown under the field in the admin form and against the comparison row. */
   hint?: string;
+  placeholder?: string;
 }
 
 /**
- * Ordered: the comparison and the spec sheet both render in this sequence, so
- * the same fact is always in the same place on every pedal.
+ * Ordered. Filtering by gear type preserves the order, so a pedal reads
+ * Power → Current draw → Bypass → Connections → Dimensions → Weight →
+ * Enclosure → Features, and an amp reads Power → Power output → Valves →
+ * Speaker → Channels → Connections → Dimensions → Weight → Enclosure →
+ * Features.
  */
 export const SPEC_FIELDS: SpecField[] = [
-  // Size & weight ----------------------------------------------------------
-  {
-    id: "width",
-    label: "Width",
-    group: "size",
-    aliases: ["width mm"],
-    numeric: { unit: "mm", direction: "lower" },
-    hint: "Across the board. The number that decides what else fits.",
-  },
-  {
-    id: "depth",
-    label: "Depth",
-    group: "size",
-    aliases: ["length", "depth mm"],
-    numeric: { unit: "mm", direction: "lower" },
-  },
-  {
-    id: "height",
-    label: "Height",
-    group: "size",
-    aliases: ["height mm"],
-    numeric: { unit: "mm", direction: "lower" },
-  },
-  {
-    id: "footprint",
-    label: "Board space",
-    group: "size",
-    numeric: { unit: "cm²", direction: "lower" },
-    hint: "Width × depth - derived, so two pedals quoted differently still compare.",
-  },
-  {
-    id: "weight",
-    label: "Weight",
-    group: "size",
-    aliases: ["mass"],
-    numeric: { unit: "g", direction: "lower" },
-  },
-
-  // Power ------------------------------------------------------------------
   {
     id: "power",
     label: "Power",
-    group: "power",
+    appliesTo: "all",
     aliases: [
       "power supply",
       "power parameters",
-      "psu",
-      "power requirements",
       "power needs",
+      "power requirement",
+      "power requirements",
+      "power consumption",
+      "psu",
+      "battery",
+      "internal operating voltage",
+      "9v dc centre negative",
     ],
+    placeholder: "9V DC centre-negative (2.1mm)",
+    hint: "Voltage and polarity, and whether it takes a battery.",
   },
   {
     id: "current_draw",
     label: "Current draw",
-    group: "power",
-    aliases: ["current consumption", "power consumption", "draw"],
+    appliesTo: "pedal",
+    aliases: ["current consumption", "draw", "current draw 7ma"],
     numeric: { unit: "mA", direction: "lower" },
+    placeholder: "30mA",
     hint: "How much of your power supply it uses.",
   },
-  { id: "battery", label: "Battery", group: "power", aliases: ["batteries"] },
-
-  // Signal & sound ---------------------------------------------------------
   {
     id: "bypass",
     label: "Bypass",
-    group: "signal",
-    aliases: ["bypass type", "bypass setup", "switching", "bypass: true bypass"],
-  },
-  {
-    id: "circuit",
-    label: "Circuit",
-    group: "signal",
+    appliesTo: "pedal",
     aliases: [
-      "circuit type",
-      "circuitry",
-      "signal line",
-      "signal path",
-      "analogue digital",
-      "dsp processing",
+      "bypass type",
+      "bypass setup",
+      "bypass modes",
+      "switching",
+      "bypass true bypass",
     ],
-    // No bare "type" alias: it turns up meaning enclosure type, amp type and
-    // effect type, and binding it to one of those would quietly misfile the
-    // other two.
+    placeholder: "True bypass",
   },
-  {
-    id: "clipping",
-    label: "Clipping",
-    group: "signal",
-    aliases: ["clipping diodes", "diodes"],
-  },
-  {
-    id: "input_impedance",
-    label: "Input impedance",
-    group: "signal",
-    // The typo below is in the live data. Listing it here fixes the row without
-    // a data migration, and harmlessly does nothing once the row is corrected.
-    aliases: ["nput impedance", "input z"],
-    numeric: { unit: "Ω", direction: "higher" },
-  },
-  {
-    id: "output_impedance",
-    label: "Output impedance",
-    group: "signal",
-    aliases: ["output z"],
-    numeric: { unit: "Ω", direction: "lower" },
-  },
-  {
-    id: "delay_time",
-    label: "Max delay",
-    group: "signal",
-    aliases: ["delay time", "delay range", "max delay time"],
-    numeric: { unit: "ms", direction: "higher" },
-  },
-  {
-    id: "sample_rate",
-    label: "Sample rate",
-    group: "signal",
-    aliases: ["sampling rate", "a d conversion"],
-  },
-  {
-    id: "noise",
-    label: "Noise floor",
-    group: "signal",
-    aliases: ["signal to noise", "signal to noise ratio", "residual noise"],
-  },
-
-  // Controls & connections -------------------------------------------------
-  {
-    id: "controls",
-    label: "Controls",
-    group: "controls",
-    aliases: ["knobs", "control layout"],
-  },
-  {
-    id: "connections",
-    label: "Connections",
-    group: "controls",
-    aliases: ["input output", "i o", "jacks", "sockets", "audio paths"],
-  },
-  // Inputs and outputs get their own fields rather than both aliasing to
-  // Connections. Several pedals list the two separately, and folding them
-  // together meant the second one silently lost to the first.
-  { id: "inputs", label: "Inputs", group: "controls" },
-  { id: "outputs", label: "Outputs", group: "controls" },
-  {
-    id: "eq",
-    label: "EQ",
-    group: "controls",
-    aliases: ["tone controls", "eq section"],
-  },
-  { id: "stereo", label: "Stereo", group: "controls", aliases: ["true stereo"] },
-  {
-    id: "extras",
-    label: "Extra I/O",
-    group: "controls",
-    aliases: ["midi", "expression", "expression pedal", "tap tempo", "footswitch jack"],
-  },
-  {
-    id: "presets",
-    label: "Presets",
-    group: "controls",
-    aliases: ["memory", "patches"],
-    numeric: { unit: "", direction: "higher" },
-  },
-  {
-    id: "effects",
-    label: "Effects",
-    group: "controls",
-    aliases: ["available engines", "modes", "voicings", "algorithms"],
-  },
-
-  // Build ------------------------------------------------------------------
-  {
-    id: "enclosure",
-    label: "Enclosure",
-    group: "build",
-    aliases: ["enclosure material", "housing", "case", "chassis", "chassis layout"],
-  },
-  {
-    id: "footswitch",
-    label: "Footswitch",
-    group: "build",
-    aliases: ["switch", "switch type"],
-  },
-  { id: "made_in", label: "Made in", group: "build", aliases: ["country of origin", "origin"] },
-  { id: "warranty", label: "Warranty", group: "build", aliases: ["guarantee"] },
-
-  // Amplifier --------------------------------------------------------------
   {
     id: "power_output",
     label: "Power output",
-    group: "amp",
+    appliesTo: "amp",
     aliases: ["output wattage", "wattage", "rms power", "output power"],
     numeric: { unit: "W", direction: "higher" },
-  },
-  {
-    id: "speaker",
-    label: "Speaker",
-    group: "amp",
-    aliases: ["speakers", "speaker type", "driver", "speaker configuration"],
-  },
-  {
-    id: "channels",
-    label: "Channels",
-    group: "amp",
-    numeric: { unit: "", direction: "higher" },
+    placeholder: "15W RMS",
   },
   {
     id: "valves",
     label: "Valves",
-    group: "amp",
-    aliases: ["tubes", "valve complement"],
+    appliesTo: "amp",
+    aliases: [
+      "tubes",
+      "valve complement",
+      "preamp tubes",
+      "power tubes",
+      "amplifier type",
+    ],
+    placeholder: "12AX7 preamp, EL84 power",
   },
-  { id: "preamp_valves", label: "Preamp valves", group: "amp", aliases: ["preamp tubes"] },
-  { id: "power_valves", label: "Power valves", group: "amp", aliases: ["power tubes"] },
-  { id: "amp_type", label: "Amp type", group: "amp", aliases: ["amplifier type"] },
-  { id: "reverb", label: "Reverb", group: "amp" },
-  { id: "cabinet", label: "Cabinet", group: "amp", aliases: ["cab", "cabinet type"] },
+  {
+    id: "speaker",
+    label: "Speaker",
+    appliesTo: "amp",
+    aliases: ["speakers", "speaker type", "speaker configuration", "driver"],
+    placeholder: "1 x 12\" Celestion",
+  },
+  {
+    id: "channels",
+    label: "Channels",
+    appliesTo: "amp",
+    numeric: { unit: "", direction: "higher" },
+    placeholder: "2",
+  },
+  {
+    id: "connections",
+    label: "Connections",
+    appliesTo: "all",
+    aliases: [
+      "inputs",
+      "outputs",
+      "connectors",
+      "connectivity",
+      "audio paths",
+      "input output",
+      "i o",
+      "jacks",
+      "sockets",
+    ],
+    placeholder: "1/4\" mono in / out",
+  },
+  {
+    id: "dimensions",
+    label: "Dimensions",
+    appliesTo: "all",
+    // Width, depth and height are aliases so the rows that were stored split
+    // still resolve; `resolveSpecs` recombines them into one value.
+    aliases: ["size", "width", "depth", "height", "length"],
+    placeholder: "73 × 129 × 59 mm",
+    hint: "Width × depth × height. One line.",
+  },
+  {
+    id: "weight",
+    label: "Weight",
+    appliesTo: "all",
+    aliases: ["mass"],
+    numeric: { unit: "g", direction: "lower" },
+    placeholder: "360g",
+  },
+  {
+    id: "enclosure",
+    label: "Enclosure",
+    appliesTo: "all",
+    aliases: [
+      "enclosure material",
+      "housing",
+      "housing material",
+      "chassis",
+      "chassis layout",
+      "case",
+    ],
+    placeholder: "Die-cast metal",
+  },
+  {
+    id: "features",
+    label: "Features",
+    appliesTo: "all",
+    // The catch-all, and the reason nothing had to be deleted to get from ~60
+    // labels to this list. For a delay or a modeller "9 modes, 200 presets" is
+    // the most useful line on the sheet and there is nowhere else for it.
+    aliases: [
+      "effects",
+      "engines",
+      "available engines",
+      "number of modes",
+      "modes",
+      "onboard presets",
+      "presets",
+      "memory",
+      "patches",
+      "eq",
+      "delay time",
+      "max delay",
+      "reverb",
+      "extras",
+      "circuit type",
+      "circuitry",
+      "signal line",
+      "signal path",
+      "dsp processing",
+      "clipping diodes",
+      "controls",
+    ],
+    placeholder: "8 modes, tap tempo",
+    hint: "Anything else worth stating - modes, presets, tap tempo.",
+  },
 ];
+
+export const FIELD_BY_ID = new Map(SPEC_FIELDS.map((field) => [field.id, field]));
+
+/** The fields offered for one kind of gear, in order. */
+export function fieldsFor(type: "pedal" | "amp"): SpecField[] {
+  return SPEC_FIELDS.filter(
+    (field) => field.appliesTo === "all" || field.appliesTo === type,
+  );
+}
 
 /**
  * Matching key for a label: lowercase, punctuation collapsed to single spaces.
  *
- * Exactly the same normalisation is applied to a stored label and to every
- * alias, which is what makes "Current Draw", "current draw" and "Current-Draw"
- * one field.
+ * Applied identically to a stored label and to every alias, which is what makes
+ * "Current Draw", "current draw" and "Current-Draw" one field. It also flattens
+ * the labels that had a value baked into them - "Current Draw: 7mA" keys as
+ * "current draw 7ma", which is listed as an alias.
  */
 function key(label: string): string {
   return label
@@ -313,8 +249,6 @@ for (const field of SPEC_FIELDS) {
   }
 }
 
-export const FIELD_BY_ID = new Map(SPEC_FIELDS.map((field) => [field.id, field]));
-
 /** The canonical field a stored label belongs to, if any. */
 export function fieldFor(label: string): SpecField | undefined {
   return FIELD_BY_KEY.get(key(label));
@@ -322,17 +256,12 @@ export function fieldFor(label: string): SpecField | undefined {
 
 /* ------------------------------------------------------------------ */
 
-/**
- * A spec resolved against the vocabulary.
- *
- * `value` stays the text as written - "9V DC centre-negative (2.1mm)" says more
- * than any structured decomposition of it would. `amount` is the same fact as a
- * number when there is one, and only exists so two of them can be subtracted.
- */
+/** A spec resolved against the vocabulary. */
 export interface ResolvedSpec {
-  field: SpecField | null;
+  field: SpecField;
   label: string;
   value: string;
+  /** The value as a number in the field's own unit, where there is one. */
   amount: number | null;
 }
 
@@ -340,23 +269,20 @@ export interface ResolvedSpec {
  * Pulls a quantity out of a spec value.
  *
  * Unit-aware because the catalogue mixes them: weight arrives as "400g" and as
- * "1.2 kg", impedance as "1M" and "1000000", delay as "600ms" and "1.2 s". All
- * are converted to the field's own unit so the numbers are commensurable.
+ * "0.16 kg", current as "10 mA" and "1A". All are converted to the field's own
+ * unit so two of them can be subtracted.
  *
- * Returns null rather than guessing when the value is a range or a list -
- * "9V-18V" is genuinely two numbers, and picking one would silently misreport
- * it. The text still shows; only the arithmetic is skipped.
+ * Returns null rather than guessing when the value is a range - "60mA to 100mA"
+ * is genuinely two numbers and picking one would misreport it. The text still
+ * displays; only the arithmetic is skipped.
  */
 export function parseAmount(field: SpecField, value: string): number | null {
   if (!field.numeric) return null;
 
   const text = value.toLowerCase().replace(/,/g, "");
-
-  // A dash between two numbers means a range. Hyphens inside words ("centre-
-  // negative") and negative signs are not ranges, hence the digit on both sides.
   if (/\d\s*(?:-|–|to)\s*\d/.test(text)) return null;
 
-  const match = text.match(/(-?\d+(?:\.\d+)?)\s*([a-zµkmgω%"]*)/);
+  const match = text.match(/(-?\d+(?:\.\d+)?)\s*([a-zµω]*)/);
   if (!match) return null;
 
   const raw = Number.parseFloat(match[1]);
@@ -365,11 +291,6 @@ export function parseAmount(field: SpecField, value: string): number | null {
   const unit = match[2] ?? "";
 
   switch (field.numeric.unit) {
-    case "mm":
-      if (unit.startsWith("cm")) return raw * 10;
-      if (unit.startsWith("m") && !unit.startsWith("mm")) return raw * 1000;
-      if (unit.startsWith('"') || unit.startsWith("in")) return raw * 25.4;
-      return raw;
     case "g":
       if (unit.startsWith("kg")) return raw * 1000;
       if (unit.startsWith("lb")) return raw * 453.592;
@@ -377,14 +298,6 @@ export function parseAmount(field: SpecField, value: string): number | null {
       return raw;
     case "mA":
       if (unit.startsWith("a") && !unit.startsWith("ma")) return raw * 1000;
-      if (unit.startsWith("µa") || unit.startsWith("ua")) return raw / 1000;
-      return raw;
-    case "ms":
-      if (unit.startsWith("s") && !unit.startsWith("sa")) return raw * 1000;
-      return raw;
-    case "Ω":
-      if (unit.startsWith("m")) return raw * 1_000_000;
-      if (unit.startsWith("k")) return raw * 1000;
       return raw;
     case "W":
       if (unit.startsWith("kw")) return raw * 1000;
@@ -395,138 +308,120 @@ export function parseAmount(field: SpecField, value: string): number | null {
 }
 
 /**
- * Splits a combined dimensions row into width, depth and height.
+ * The three numbers inside a dimensions value.
  *
- * "73 x 129 x 59 mm" is one row in the data and three comparable numbers. The
- * unit is usually written once at the end, so it is applied to all three.
- * Returns null unless it finds exactly three numbers, because two could be
- * width × depth or depth × height and there is no way to tell.
+ * Returns null unless it finds exactly three separated by × or x - two could be
+ * width × depth or depth × height and there is no way to tell which. Units are
+ * usually written once at the end, so one unit applies to all three.
  */
-export function splitDimensions(value: string): Spec[] | null {
+export function parseDimensions(
+  value: string,
+): { width: number; depth: number; height: number } | null {
   const text = value.toLowerCase().replace(/,/g, "");
-  const numbers = text.match(/\d+(?:\.\d+)?/g);
-  if (!numbers || numbers.length !== 3) return null;
   if (!/\d\s*(?:x|×|\*)\s*\d/.test(text)) return null;
 
-  const unit = text.match(/(mm|cm|in|")\s*$/)?.[1] ?? "mm";
+  const numbers = text.match(/\d+(?:\.\d+)?/g);
+  if (!numbers || numbers.length < 3) return null;
 
-  // W × D × H is the order every retailer in the catalogue quotes.
-  return [
-    { label: "Width", value: `${numbers[0]}${unit}` },
-    { label: "Depth", value: `${numbers[1]}${unit}` },
-    { label: "Height", value: `${numbers[2]}${unit}` },
-  ];
+  const scale = /\bcm\b/.test(text) ? 10 : /\bin\b|"/.test(text) ? 25.4 : 1;
+  const [width, depth, height] = numbers.slice(0, 3).map(Number);
+
+  return { width: width * scale, depth: depth * scale, height: height * scale };
+}
+
+/** Board space in cm², the number that answers "will this fit". */
+export function footprintOf(dimensions: string): number | null {
+  const parsed = parseDimensions(dimensions);
+  if (!parsed) return null;
+  return (parsed.width / 10) * (parsed.depth / 10);
 }
 
 /**
- * Every spec for one item, canonicalised.
+ * Every spec for one item, resolved to the vocabulary and put in order.
  *
- * Combined "Dimensions" rows are expanded first, so a pedal that quotes one row
- * and a pedal that quotes three end up with the same three fields. Board space
- * is then derived from width and depth - it is the number that actually answers
- * "will this fit", and no retailer publishes it.
+ * Rows stored as separate Width / Depth / Height are recombined into one
+ * Dimensions value here, so an item saved before this change reads the same as
+ * one saved after it without the stored data having to be migrated first.
  *
- * Anything with no canonical home is kept verbatim in `extras` rather than
- * dropped: an unrecognised label is a fact we haven't catalogued yet, not
- * noise, and losing it would make the spec sheet worse than the raw data.
+ * Anything resolving to a field that is already filled is appended to that
+ * field's value rather than dropped - two rows landing on one field usually
+ * means both said something true, and silently deleting the second is how a
+ * real spec goes missing.
  */
-export function resolveSpecs(specs: readonly Spec[]): {
-  byField: Map<string, ResolvedSpec>;
-  extras: ResolvedSpec[];
-} {
-  const byField = new Map<string, ResolvedSpec>();
-  const extras: ResolvedSpec[] = [];
+export function resolveSpecs(specs: readonly Spec[]): ResolvedSpec[] {
+  const values = new Map<string, string>();
+  const dimensionParts = new Map<string, string>();
 
-  const expanded: Spec[] = [];
   for (const spec of specs) {
-    if (!spec.label?.trim() || !spec.value?.trim()) continue;
+    let label = spec.label?.trim();
+    let value = spec.value?.trim();
+    if (!label) continue;
 
-    const isDimensions = key(spec.label) === "dimensions" || key(spec.label) === "size";
-    const parts = isDimensions ? splitDimensions(spec.value) : null;
-
-    if (parts) {
-      expanded.push(...parts);
-    } else {
-      expanded.push(spec);
+    // Rows entered as "Current Draw: 7mA" in the label with nothing in the
+    // value. The fact is real and only the data entry was wrong, so it is
+    // split here rather than thrown away for being shaped oddly.
+    if (!value && label.includes(":")) {
+      const [head, ...rest] = label.split(":");
+      const tail = rest.join(":").trim();
+      if (head.trim() && tail) {
+        label = head.trim();
+        value = tail;
+      }
     }
+
+    if (!value) continue;
+
+    const k = key(label);
+
+    // Held aside and recombined below, in width/depth/height order rather than
+    // whatever order they happened to be stored in.
+    if (k === "width" || k === "depth" || k === "height" || k === "length") {
+      dimensionParts.set(k === "length" ? "depth" : k, value);
+      continue;
+    }
+
+    const field = fieldFor(label);
+    if (!field) continue;
+
+    const existing = values.get(field.id);
+    values.set(field.id, existing ? `${existing} · ${value}` : value);
   }
 
-  for (const spec of expanded) {
-    const field = fieldFor(spec.label);
-    const value = spec.value.trim();
+  if (!values.has("dimensions") && dimensionParts.size >= 3) {
+    const strip = (part?: string) => (part ?? "").replace(/[^\d.]/g, "");
+    values.set(
+      "dimensions",
+      `${strip(dimensionParts.get("width"))} × ${strip(dimensionParts.get("depth"))} × ${strip(dimensionParts.get("height"))} mm`,
+    );
+  }
 
-    if (!field) {
-      extras.push({ field: null, label: spec.label.trim(), value, amount: null });
-      continue;
-    }
-
-    // First one wins, so a canonical row beats a duplicate alias of it. The
-    // loser is kept as an extra rather than dropped: two rows resolving to one
-    // field usually means the vocabulary is too coarse for that pedal, and
-    // silently deleting the second is how a real spec goes missing.
-    if (byField.has(field.id)) {
-      extras.push({ field: null, label: spec.label.trim(), value, amount: null });
-      continue;
-    }
-
-    byField.set(field.id, {
+  return SPEC_FIELDS.filter((field) => values.has(field.id)).map((field) => {
+    const value = values.get(field.id)!;
+    return {
       field,
       label: field.label,
       value,
       amount: parseAmount(field, value),
-    });
-  }
-
-  const width = byField.get("width")?.amount;
-  const depth = byField.get("depth")?.amount;
-  if (width && depth && !byField.has("footprint")) {
-    const cm2 = (width / 10) * (depth / 10);
-    byField.set("footprint", {
-      field: FIELD_BY_ID.get("footprint")!,
-      label: "Board space",
-      value: `${cm2.toFixed(0)} cm²`,
-      amount: cm2,
-    });
-  }
-
-  return { byField, extras };
+    };
+  });
 }
 
-/**
- * The spec sheet for one item, in canonical order, grouped for display.
- *
- * Used by the pedal and clone pages so an individual page and the comparison
- * present the same facts in the same sequence - the comparison reads the pedals'
- * own data rather than holding a second copy of it.
- */
-export function groupedSpecs(
+/** Resolved specs keyed by field id, for the comparison's row lookups. */
+export function specsByField(
   specs: readonly Spec[],
-): { group: SpecGroup; label: string; specs: ResolvedSpec[] }[] {
-  const { byField, extras } = resolveSpecs(specs);
-
-  const groups = SPEC_GROUPS.map(({ id, label }) => ({
-    group: id,
-    label,
-    specs: SPEC_FIELDS.filter((field) => field.group === id)
-      .map((field) => byField.get(field.id))
-      .filter((spec): spec is ResolvedSpec => spec !== undefined),
-  })).filter((group) => group.specs.length > 0);
-
-  if (extras.length > 0) {
-    groups.push({ group: "build", label: "Also listed", specs: extras });
-  }
-
-  return groups;
+): Map<string, ResolvedSpec> {
+  return new Map(resolveSpecs(specs).map((spec) => [spec.field.id, spec]));
 }
 
-/** How many canonical fields an item has filled in - drives "how complete". */
-export function specCompleteness(specs: readonly Spec[]): {
-  filled: number;
-  total: number;
-} {
-  const { byField } = resolveSpecs(specs);
-  // Board space is derived, so counting it would flatter an item that only
-  // listed width and depth.
-  const filled = [...byField.keys()].filter((id) => id !== "footprint").length;
-  return { filled, total: SPEC_FIELDS.length - 1 };
+/** How many of the fields that apply to this item are filled in. */
+export function specCompleteness(
+  specs: readonly Spec[],
+  type: "pedal" | "amp" = "pedal",
+): { filled: number; total: number } {
+  const present = new Set(resolveSpecs(specs).map((spec) => spec.field.id));
+  const applicable = fieldsFor(type);
+  return {
+    filled: applicable.filter((field) => present.has(field.id)).length,
+    total: applicable.length,
+  };
 }

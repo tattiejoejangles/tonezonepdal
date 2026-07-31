@@ -10,6 +10,7 @@ import {
   passwordMatches,
   sessionToken,
 } from "@/lib/admin-auth";
+import { SPEC_FIELDS } from "@/lib/specs";
 import { getAdminSupabase } from "@/lib/supabase-admin";
 import { CATEGORIES, type Category } from "@/lib/types";
 
@@ -42,15 +43,23 @@ const lines = (form: FormData, key: string) =>
     .filter(Boolean);
 
 /**
- * Specs, one per line as "Label | value".
- * Lines without a pipe are kept with an empty value rather than dropped, so a
- * half-filled entry is visible and fixable instead of silently vanishing.
+ * Specs, read from one input per vocabulary field.
+ *
+ * Was a textarea of "Label | value" lines, which is how the catalogue ended up
+ * with around sixty labels for what is really a dozen facts - "Current Draw"
+ * beside "Current draw", dimensions split three ways, and values typed into the
+ * label. The form now offers the fields themselves, named `spec_<id>`, so the
+ * vocabulary is enforced at the point of entry rather than repaired afterwards.
+ *
+ * Blanks are dropped: an empty field means "not confirmed", and the site says so
+ * rather than printing an empty row. Order follows SPEC_FIELDS, so every item
+ * is stored in the same sequence it is displayed in.
  */
 function specs(form: FormData, key: string) {
-  return lines(form, key).map((line) => {
-    const [label, ...rest] = line.split("|");
-    return { label: label.trim(), value: rest.join("|").trim() };
-  });
+  return SPEC_FIELDS.map((field) => ({
+    label: field.label,
+    value: text(form, `${key}_${field.id}`),
+  })).filter((spec) => spec.value.length > 0);
 }
 
 function number(form: FormData, key: string, fallback: number): number {

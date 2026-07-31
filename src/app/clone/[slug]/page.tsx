@@ -209,40 +209,52 @@ export default async function ClonePage({
             <AdminTools kind="alternative" slug={alternative.slug} />
           </div>
         </div>
-      </section>
 
-      <div className="mt-6 grid gap-6 sm:grid-cols-2">
-        {/* The "real deal" cross-sell - deliberately a different colour to the
-            rest of the page so it reads as a distinct route out. */}
-        <div className="tz-chamfer flex flex-col border border-indigo-200 bg-linear-to-br from-indigo-50 to-violet-50 p-5">
-          <p className="tz-eyebrow text-indigo-700">Looking for the real deal?</p>
-          <p className="tz-body mt-1.5 text-sm text-indigo-950">
-            This is a budget alternative to the{" "}
-            <span className="font-bold">{original.name}</span>, which sells for
-            about {formatPrice(original.priceGBP)}.
-          </p>
-          <Link
-            href={`/pedal/${original.slug}`}
-            className="mt-4 inline-flex w-fit items-center gap-2 rounded-full bg-linear-to-b from-indigo-600 to-indigo-800 px-5 py-2.5 text-sm font-bold text-white shadow-md transition-transform hover:-translate-y-0.5"
+        {/* Our verdict and the cross-sell, as a band inside the hero rather
+            than two cards floating under it. They were a separate row of boxes
+            that read as unrelated to the product above them, and left the hero
+            card ending abruptly on a thin strip of white. Inside the same card
+            they read as part of the pitch, which is what they are - and the two
+            of them fill the width the hero already occupies. Tinted panels
+            rather than bordered cards, because a card inside a card is one
+            frame too many. */}
+        <div className="grid gap-px border-t border-stone-200/70 bg-stone-200/70 sm:grid-cols-2">
+          {detail.verdict && (
+            <div className="bg-amber-50/80 p-6 sm:p-7">
+              {/* "Our verdict", not "What players say" - that heading belongs to
+                  the community review section further down, and having both on
+                  one page read the same made our editorial line look like a
+                  quote from a reviewer. */}
+              <p className="tz-eyebrow mb-1.5 text-amber-800">Our verdict</p>
+              <p className="tz-body text-sm text-stone-700">{detail.verdict}</p>
+            </div>
+          )}
+
+          <div
+            className={`flex flex-col bg-linear-to-br from-indigo-50 to-violet-50 p-6 sm:p-7 ${
+              // Spans both columns when there is no verdict beside it, so the
+              // band never ends on a half-width panel.
+              detail.verdict ? "" : "sm:col-span-2"
+            }`}
           >
-            See the original
-            <svg viewBox="0 0 24 24" className="h-4 w-4" fill="none" stroke="currentColor" strokeWidth="3">
-              <path d="m9 6 6 6-6 6" />
-            </svg>
-          </Link>
-        </div>
-
-        {detail.verdict && (
-          <div className="tz-chamfer border border-amber-200 bg-amber-50/70 p-5">
-            {/* "Our verdict", not "What players say" - that heading now belongs
-                to the community review section further down, and having both on
-                one page read the same made our editorial line look like a quote
-                from a reviewer. */}
-            <p className="tz-eyebrow mb-1 text-amber-800">Our verdict</p>
-            <p className="tz-body text-sm text-stone-700">{detail.verdict}</p>
+            <p className="tz-eyebrow text-indigo-700">Looking for the real deal?</p>
+            <p className="tz-body mt-1.5 text-sm text-indigo-950">
+              This is a budget alternative to the{" "}
+              <span className="font-bold">{original.name}</span>, which sells for
+              about {formatPrice(original.priceGBP)}.
+            </p>
+            <Link
+              href={`/pedal/${original.slug}`}
+              className="mt-4 inline-flex w-fit items-center gap-2 rounded-full bg-linear-to-b from-indigo-600 to-indigo-800 px-5 py-2.5 text-sm font-bold text-white shadow-md transition-transform hover:-translate-y-0.5"
+            >
+              See the original
+              <svg viewBox="0 0 24 24" className="h-4 w-4" fill="none" stroke="currentColor" strokeWidth="3">
+                <path d="m9 6 6 6-6 6" />
+              </svg>
+            </Link>
           </div>
-        )}
-      </div>
+        </div>
+      </section>
 
       {/* Three panels on one row rather than one tall panel beside a stack of
           two: pros/cons, specs and players are siblings, and reading them as
@@ -258,7 +270,7 @@ export default async function ClonePage({
         <section className="tz-chamfer bg-white p-6 tz-card ring-1 ring-stone-200/60">
           <h2 className="tz-heading mb-4 text-xl text-stone-900">Specs</h2>
           {detail.specsKnown ? (
-            <SpecList specs={detail.specs} grouped />
+            <SpecList specs={detail.specs} />
           ) : (
             <p className="tz-body text-sm text-stone-500">Not confirmed yet.</p>
           )}
