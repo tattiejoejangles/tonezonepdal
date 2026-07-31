@@ -92,7 +92,7 @@ export function PriceRangeFilter({
           <span className="absolute inset-x-0 top-1/2 h-1 -translate-y-1/2 rounded-full bg-stone-200" />
           {/* Selected span */}
           <span
-            className="absolute top-1/2 h-1 -translate-y-1/2 rounded-full bg-linear-to-r from-amber-500 to-orange-600"
+            className="absolute top-1/2 h-1 -translate-y-1/2 rounded-full bg-amber-500"
             style={{ left: `${pct(low)}%`, right: `${100 - pct(high)}%` }}
           />
 

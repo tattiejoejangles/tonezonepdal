@@ -78,6 +78,11 @@ export default async function EditPedalPage({
       searchQuery: alternative.searchQuery ?? "",
       specs: alternative.specs ?? [],
       originalId: alternative.originalId,
+      // The extra pairings, so re-saving doesn't quietly drop them: the form
+      // submits the complete set and the action replaces what's stored.
+      alsoOriginalIds: (alternative.clonesOf ?? [])
+        .filter((entry) => !entry.primary)
+        .map((entry) => entry.id),
       matchQuality: alternative.matchQuality,
       pros: alternative.pros,
       cons: alternative.cons,

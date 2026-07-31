@@ -40,7 +40,7 @@ export function Directory({
           <h1 className="text-5xl font-bold tracking-tight text-white sm:text-7xl">
             Great tone,
             <br />
-            <span className="bg-linear-to-r from-amber-300 via-orange-400 to-rose-400 bg-clip-text text-transparent">
+            <span className="bg-amber-400 bg-clip-text text-transparent">
               not boutique prices
             </span>
           </h1>

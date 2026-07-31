@@ -56,7 +56,7 @@ export function DeletePedal({
       <button
         type="submit"
         disabled={pending}
-        className="tz-btn bg-linear-to-b from-rose-600 to-rose-800 px-5 py-2.5 text-xs tracking-wider text-white uppercase disabled:opacity-40"
+        className="tz-btn bg-rose-700 px-5 py-2.5 text-xs tracking-wider text-white uppercase disabled:opacity-40"
       >
         {pending ? "Deleting..." : "Yes, delete"}
       </button>

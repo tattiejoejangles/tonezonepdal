@@ -173,7 +173,7 @@ function ArtistAvatar({
       className={`absolute inset-0 flex items-center justify-center text-lg font-bold tracking-tight ${
         muted
           ? "bg-stone-200 text-stone-500"
-          : "bg-linear-to-br from-stone-700 via-stone-900 to-black text-amber-300/90"
+          : "bg-stone-800 text-amber-300/90"
       }`}
     >
       {initials}

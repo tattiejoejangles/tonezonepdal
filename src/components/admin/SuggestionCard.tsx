@@ -33,7 +33,7 @@ export function SuggestionCard({ suggestion }: { suggestion: Suggestion }) {
     <article className="tz-chamfer bg-white p-5 tz-card ring-1 ring-stone-200/60">
       <div className="flex flex-wrap items-center gap-2">
         <span
-          className={`tz-eyebrow rounded-full px-2.5 py-1 ${
+          className={`tz-eyebrow rounded px-2.5 py-1 ${
             KIND_TONE[suggestion.kind] ?? "bg-stone-100 text-stone-700"
           }`}
         >
@@ -92,7 +92,7 @@ export function SuggestionCard({ suggestion }: { suggestion: Suggestion }) {
               name="decision"
               value="approved"
               disabled={pending}
-              className="tz-btn bg-linear-to-b from-emerald-600 to-emerald-700 px-5 py-2 text-xs tracking-wider text-white uppercase disabled:opacity-40"
+              className="tz-btn bg-emerald-600 px-5 py-2 text-xs tracking-wider text-white uppercase disabled:opacity-40"
             >
               Approve
             </button>
@@ -109,7 +109,7 @@ export function SuggestionCard({ suggestion }: { suggestion: Suggestion }) {
         ) : (
           <>
             <span
-              className={`tz-eyebrow rounded-full px-2.5 py-1 ${
+              className={`tz-eyebrow rounded px-2.5 py-1 ${
                 suggestion.status === "approved"
                   ? "bg-emerald-100 text-emerald-800"
                   : "bg-stone-100 text-stone-600"

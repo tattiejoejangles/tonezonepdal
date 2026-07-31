@@ -277,12 +277,65 @@ export async function createPedal(
 
   if (error) return fail(`Supabase refused it: ${error.message}`);
 
+  await savePairings(supabase, id, originalId, form);
+
   revalidatePath("/", "layout");
   return {
     ok: true,
     message: `Added “${name}” as an alternative.`,
     href: `/clone/${slug}`,
   };
+}
+
+/**
+ * Writes which originals a clone is an alternative to.
+ *
+ * The primary always gets position 0 and is written whether or not it was
+ * ticked - it is chosen by the select above, not the checkboxes, and a clone
+ * with no primary pairing would vanish from the page it belongs to.
+ *
+ * Replaces the whole set rather than diffing it: the form submits the complete
+ * list every time, so anything absent was deliberately unticked. Deleting
+ * first and inserting second is safe here because a failed insert leaves the
+ * clone reachable through its `original_id` column, which the catalogue falls
+ * back to.
+ *
+ * Failures are logged and swallowed. The pedal itself has already saved by the
+ * time this runs, and reporting "couldn't save" for a pairing would suggest the
+ * whole edit was lost.
+ */
+async function savePairings(
+  supabase: NonNullable<ReturnType<typeof getAdminSupabase>>,
+  alternativeId: string,
+  primaryId: string,
+  form: FormData,
+) {
+  const also = form
+    .getAll("also_original_ids")
+    .map((value) => String(value))
+    .filter((value) => value && value !== primaryId);
+
+  const rows = [
+    { alternative_id: alternativeId, original_id: primaryId, position: 0 },
+    ...[...new Set(also)].map((originalId, index) => ({
+      alternative_id: alternativeId,
+      original_id: originalId,
+      position: index + 1,
+    })),
+  ];
+
+  const { error: clearError } = await supabase
+    .from("alternative_originals")
+    .delete()
+    .eq("alternative_id", alternativeId);
+
+  if (clearError) {
+    console.error("[pairings] couldn't clear:", clearError.message);
+    return;
+  }
+
+  const { error } = await supabase.from("alternative_originals").insert(rows);
+  if (error) console.error("[pairings] couldn't save:", error.message);
 }
 
 /* -------------------------------------------------------------------------
@@ -617,6 +670,8 @@ export async function updatePedal(
     .eq("id", id);
 
   if (error) return fail(`Supabase refused it: ${error.message}`);
+
+  await savePairings(supabase, id, originalId, form);
 
   revalidatePath("/", "layout");
   return { ok: true, message: `Saved “${name}”.`, href: `/clone/${slug}` };

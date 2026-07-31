@@ -37,7 +37,7 @@ export function AlternativeCard({
   return (
     <article className="tz-chamfer tz-card-hover group relative overflow-hidden bg-white tz-card ring-1 ring-stone-200/60 hover:ring-amber-400/50">
       {/* Accent edge that fills in on hover. */}
-      <span className="absolute inset-x-0 top-0 h-1 origin-left scale-x-0 bg-linear-to-r from-amber-400 via-orange-500 to-rose-500 transition-transform duration-300 group-hover:scale-x-100" />
+      <span className="absolute inset-x-0 top-0 h-1 origin-left scale-x-0 bg-amber-500 transition-transform duration-300 group-hover:scale-x-100" />
 
       {/* Stretched link: covers the card, sits under the controls below. */}
       <Link
@@ -99,7 +99,7 @@ export function AlternativeCard({
               <button
                 type="button"
                 onClick={onOpen}
-                className="tz-btn relative z-20 ml-auto bg-linear-to-b from-stone-800 to-stone-950 px-3 py-1.5 text-[11px] tracking-wider text-white uppercase"
+                className="tz-btn relative z-20 ml-auto bg-stone-900 px-3 py-1.5 text-[11px] tracking-wider text-white uppercase"
               >
                 More info
                 <svg viewBox="0 0 24 24" className="h-3 w-3" fill="none" stroke="currentColor" strokeWidth="3">

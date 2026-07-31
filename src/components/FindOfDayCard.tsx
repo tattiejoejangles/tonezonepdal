@@ -43,7 +43,7 @@ export function FindOfDayCard({
   return (
     <section aria-labelledby="find-of-day">
       <div className="mb-4 flex items-center gap-3">
-        <span className="flex h-9 w-9 items-center justify-center rounded-xl bg-linear-to-br from-amber-400 to-orange-600">
+        <span className="flex h-9 w-9 items-center justify-center rounded-xl bg-amber-500">
           <svg
             viewBox="0 0 24 24"
             aria-hidden
@@ -63,8 +63,8 @@ export function FindOfDayCard({
         </div>
       </div>
 
-      <div className="group tz-chamfer relative isolate overflow-hidden bg-linear-to-br from-stone-900 via-[#141b2e] to-stone-800 text-white shadow-xl transition-shadow hover:shadow-2xl">
-        <div className="pointer-events-none absolute -top-20 -right-20 h-64 w-64 rounded-full bg-amber-500/20 blur-3xl" />
+      <div className="group tz-chamfer relative isolate overflow-hidden bg-stone-900 text-white">
+        
 
         {/* Three columns on desktop: photo, the pitch, then the buy stack in a
             lane of its own. Collapses to one column on narrow screens. */}
@@ -118,7 +118,7 @@ export function FindOfDayCard({
             </div>
 
             <div className="flex flex-wrap items-center gap-3">
-              <p className="inline-flex w-fit items-baseline gap-2 rounded-full bg-linear-to-r from-emerald-600 to-emerald-500 px-4 py-2.5 text-base font-bold text-white">
+              <p className="inline-flex w-fit items-baseline gap-2 rounded bg-emerald-600 px-4 py-2.5 text-base font-bold text-white">
                 <span className="tabular-nums">
                   Save {formatPrice(saving.amount)} · {saving.percent}%
                 </span>

@@ -183,7 +183,7 @@ export function ReviewForm({
                       }`}
                       className={`h-9 w-9 rounded-lg text-xs font-bold transition-colors ${
                         active
-                          ? "bg-linear-to-b from-stone-800 to-stone-950 text-white shadow-sm"
+                          ? "bg-stone-900 text-white shadow-sm"
                           : "bg-white text-stone-500 ring-1 ring-stone-200 hover:text-stone-900"
                       }`}
                     >
@@ -231,7 +231,7 @@ export function ReviewForm({
           type="button"
           onClick={submit}
           disabled={saving || rating < 1}
-          className="tz-btn bg-linear-to-b from-stone-800 to-stone-950 px-6 py-2.5 text-xs tracking-wider text-white uppercase disabled:opacity-40"
+          className="tz-btn bg-stone-900 px-6 py-2.5 text-xs tracking-wider text-white uppercase disabled:opacity-40"
         >
           {saving ? "Sending…" : "Submit review"}
         </button>

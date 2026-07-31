@@ -29,7 +29,7 @@ export function CloneCard({
   const { alternative, original, saving } = result;
 
   const shell =
-    "tz-chamfer group relative flex flex-col overflow-hidden bg-white text-left ring-1 ring-stone-200 transition-all duration-300 hover:-translate-y-1 hover:ring-stone-300 focus-visible:ring-2 focus-visible:ring-amber-500 focus-visible:outline-none";
+    "tz-chamfer group relative flex flex-col overflow-hidden bg-white text-left ring-1 ring-stone-200 transition-all duration-300  hover:ring-stone-300 focus-visible:ring-2 focus-visible:ring-amber-500 focus-visible:outline-none";
 
   const body = (
     <>
@@ -47,7 +47,7 @@ export function CloneCard({
         <span className="tz-ribbon tz-ribbon--green top-[14%]">Budget</span>
 
         {saving.percent > 0 && (
-          <span className="absolute right-0 bottom-0 rounded-tl-lg bg-linear-to-r from-emerald-700 to-emerald-600 px-3 py-1.5 text-sm font-bold text-white tabular-nums">
+          <span className="absolute right-0 bottom-0 rounded-tl-lg bg-emerald-700 px-3 py-1.5 text-sm font-bold text-white tabular-nums">
             −{saving.percent}%
           </span>
         )}

@@ -119,7 +119,7 @@ export function PedalDemos({
             href={searchUrl}
             target="_blank"
             rel="noopener noreferrer"
-            className="tz-btn mt-4 inline-flex bg-linear-to-b from-stone-800 to-stone-950 px-6 py-2.5 text-xs tracking-wider text-white uppercase"
+            className="tz-btn mt-4 inline-flex bg-stone-900 px-6 py-2.5 text-xs tracking-wider text-white uppercase"
           >
             Search YouTube for demos
           </a>

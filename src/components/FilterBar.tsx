@@ -57,7 +57,7 @@ export function FilterBar<L extends string>({
       <div
         role="radiogroup"
         aria-label="What to show"
-        className="flex shrink-0 items-center gap-1 rounded-full bg-stone-100 p-1"
+        className="flex shrink-0 items-center gap-1 rounded bg-stone-100 p-1"
       >
         {lenses.map((option) => {
           const selected = option.id === activeLens;
@@ -68,7 +68,7 @@ export function FilterBar<L extends string>({
               role="radio"
               aria-checked={selected}
               onClick={() => onLensChange(option.id)}
-              className={`rounded-full px-3.5 py-1.5 text-xs font-bold tracking-wide whitespace-nowrap transition-colors focus-visible:ring-2 focus-visible:ring-amber-500 focus-visible:outline-none ${
+              className={`rounded px-3.5 py-1.5 text-xs font-bold tracking-wide whitespace-nowrap transition-colors focus-visible:ring-2 focus-visible:ring-amber-500 focus-visible:outline-none ${
                 selected
                   ? "bg-white text-stone-900 shadow-sm"
                   : "text-stone-500 hover:text-stone-800"

@@ -19,7 +19,7 @@ export const metadata: Metadata = {
 export default function BoardsPage() {
   return (
     <div className="tz-page tz-page--narrow py-20 text-center">
-      <span className="tz-eyebrow inline-flex rounded-full bg-amber-100 px-3 py-1.5 text-amber-800">
+      <span className="tz-eyebrow inline-flex rounded bg-amber-100 px-3 py-1.5 text-amber-800">
         Coming soon
       </span>
 
@@ -33,7 +33,7 @@ export default function BoardsPage() {
       <div className="mt-8 flex flex-wrap items-center justify-center gap-3">
         <Link
           href="/pedals"
-          className="tz-btn bg-linear-to-b from-stone-800 to-stone-950 px-6 py-3 text-xs tracking-wider text-white uppercase"
+          className="tz-btn bg-stone-900 px-6 py-3 text-xs tracking-wider text-white uppercase"
         >
           Browse pedals
         </Link>

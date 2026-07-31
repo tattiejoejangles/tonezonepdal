@@ -1,6 +1,5 @@
 import type { Metadata, Viewport } from "next";
-import { GeistMono } from "geist/font/mono";
-import { GeistSans } from "geist/font/sans";
+import { Archivo, Inter } from "next/font/google";
 import Link from "next/link";
 
 import { siteUrl } from "./sitemap";
@@ -13,6 +12,31 @@ import { getSearchIndex } from "@/data/catalogue";
 import type { SearchIndex } from "@/lib/search-index";
 import { AMP_GENRES, GENRES } from "@/lib/sections";
 import "./globals.css";
+
+/**
+ * Type: Archivo for anything that shouts, Inter for anything you read.
+ *
+ * Replaces Geist, which is Vercel's own face and turns up on so much generated
+ * work that it reads as a default rather than a choice. Both of these are among
+ * the most-used families on Google Fonts, so neither is exotic - the difference
+ * is that Archivo is a grotesque with genuinely heavy weights, which is what
+ * the solid-block look needs. Inter carries the small print, where its larger
+ * x-height and open apertures are worth more than personality.
+ *
+ * Variable fonts, so the whole weight range costs one file each.
+ */
+const display = Archivo({
+  subsets: ["latin"],
+  variable: "--font-display",
+  weight: ["500", "600", "700", "800"],
+  display: "swap",
+});
+
+const body = Inter({
+  subsets: ["latin"],
+  variable: "--font-body",
+  display: "swap",
+});
 
 const TITLE = "The Tone Zone - Budget alternatives to expensive pedals and amps";
 const DESCRIPTION =
@@ -56,7 +80,7 @@ export default async function RootLayout({
   return (
     <html
       lang="en"
-      className={`${GeistSans.variable} ${GeistMono.variable} h-full antialiased`}
+      className={`${display.variable} ${body.variable} h-full antialiased`}
     >
       <body className="flex min-h-full flex-col font-sans">
         <AmbientBackground />
@@ -155,11 +179,32 @@ function SiteFooter() {
             </Link>
             .
           </p>
+          {/* Added once the site started taking reviews. Ratings are now
+              published from members of the public and feed the tonal match
+              figure, so who wrote them - and who is responsible for them - has
+              to be stated where anyone reading one can see it. */}
+          <p className="tz-body max-w-3xl text-xs">
+            Reviews, ratings and comments are submitted by visitors and are their
+            opinions, not ours. They are checked before publication, but we
+            don&apos;t verify that anyone owns what they review, and star ratings
+            adjust the tonal match figure shown on a page. Spot something that
+            shouldn&apos;t be here?{" "}
+            <Link
+              href="/legal"
+              className="font-bold text-amber-700 underline underline-offset-2 hover:text-amber-900"
+            >
+              Tell us and we&apos;ll remove it
+            </Link>
+            .
+          </p>
           <p className="max-w-3xl text-xs text-stone-400">
             All product and brand names are trademarks of their respective owners, used
             here for identification and comparison only. The Tone Zone is not affiliated
             with, endorsed by or authorised by any manufacturer or retailer named on this
-            site. Tonal match figures and comparisons are editorial opinion.
+            site. Tonal match figures, spec comparisons and pros and cons are editorial
+            opinion. Product photography belongs to the manufacturers and retailers it
+            came from and is used to identify the product being linked to; artist
+            photographs are credited where a licence requires it.
           </p>
           <p className="text-xs text-stone-400">
             © {new Date().getFullYear()} The Tone Zone.

@@ -299,7 +299,7 @@ function ScoreColumn({ name, points }: { name: string; points: ScorePoint[] }) {
                 aria-hidden
                 className={`mt-0.5 flex h-4 w-4 shrink-0 items-center justify-center rounded-full text-[10px] font-bold text-white ${
                   point.headline
-                    ? "bg-linear-to-br from-emerald-600 to-emerald-700"
+                    ? "bg-emerald-600"
                     : "bg-stone-400"
                 }`}
               >
@@ -352,7 +352,7 @@ function SpecValue({
   return (
     <span className="inline-flex flex-wrap items-baseline gap-x-2">
       <span className="font-bold text-stone-900">{value}</span>
-      <span className="inline-flex items-baseline gap-1 rounded-full bg-emerald-100 px-2 py-0.5 text-[11px] font-bold text-emerald-800">
+      <span className="inline-flex items-baseline gap-1 rounded bg-emerald-100 px-2 py-0.5 text-[11px] font-bold text-emerald-800">
         <span aria-hidden>✓</span>
         {margin ? <span className="tabular-nums">{margin} better</span> : "Better"}
       </span>
@@ -448,7 +448,7 @@ function ItemHead({
 
         <div className="mt-1.5 flex flex-wrap items-center gap-1.5">
           {cheapest && (
-            <span className="tz-tag bg-linear-to-r from-emerald-700 to-emerald-600 text-white">
+            <span className="tz-tag bg-emerald-700 text-white">
               Cheaper
             </span>
           )}

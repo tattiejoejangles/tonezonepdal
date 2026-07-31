@@ -43,7 +43,7 @@ export function BookmarkButton({
         full ? "flex w-full px-5 py-2.5 text-xs" : "px-4 py-2 text-[11px]"
       } ${
         saved
-          ? "bg-linear-to-b from-amber-500 to-orange-600 text-white shadow-md"
+          ? "bg-amber-500 text-white shadow-md"
           : tone === "dark"
             ? "bg-amber-300/15 text-amber-200 ring-1 ring-amber-300/30 hover:bg-amber-300/25"
             : "bg-amber-100 text-amber-900 ring-1 ring-amber-300/70 hover:bg-amber-200"

@@ -26,7 +26,7 @@ export function SavingsBadge({
 
   return (
     <span
-      className={`inline-flex flex-wrap items-center rounded-full bg-linear-to-r from-emerald-600 to-emerald-500 font-bold tracking-wide text-white ${sizeClasses}`}
+      className={`inline-flex flex-wrap items-center rounded bg-emerald-600 font-bold tracking-wide text-white ${sizeClasses}`}
     >
       <span className="uppercase">
         Save {formatPrice(saving.amount)} · {saving.percent}%

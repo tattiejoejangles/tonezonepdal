@@ -21,7 +21,7 @@ export default function NotFound() {
       <div className="mt-8 flex flex-wrap items-center justify-center gap-3">
         <Link
           href="/pedals"
-          className="tz-btn bg-linear-to-b from-stone-800 to-stone-950 px-6 py-3 text-xs tracking-wider text-white uppercase"
+          className="tz-btn bg-stone-900 px-6 py-3 text-xs tracking-wider text-white uppercase"
         >
           Browse everything
         </Link>

@@ -8,9 +8,8 @@ import type { DirectoryResult } from "@/lib/filter";
 /**
  * An original in a listing - the expensive, sought-after thing.
  *
- * Deliberately the richer of the two cards. Originals are the pedals people
- * already revere, so the card carries a warm tint, a gilt edge, a gradient rule
- * and a sheen that crosses it on hover, while CloneCard is left plain white.
+ * Deliberately the richer of the two cards. An original carries a warm surface,
+ * an amber edge and a solid rule along the top; CloneCard is left plain white.
  * The clone is not styled *differently*, it is styled *less* - that's what
  * makes the pair read as a hierarchy rather than as two colour schemes.
  */
@@ -33,7 +32,7 @@ export function OriginalCard({
   const noun = gearNoun(result.category, alternatives.length);
 
   const shell =
-    "tz-chamfer tz-legend tz-legend-edge group relative flex flex-col overflow-hidden text-left transition-all duration-300 hover:-translate-y-1.5 focus-visible:ring-2 focus-visible:ring-amber-500 focus-visible:outline-none";
+    "tz-chamfer tz-legend tz-legend-edge group relative flex flex-col overflow-hidden text-left transition-all duration-300  focus-visible:ring-2 focus-visible:ring-amber-500 focus-visible:outline-none";
 
   /* The card's insides, rendered into either a button or a link below. Held in
      a variable rather than a little wrapper component, because defining a
@@ -42,7 +41,7 @@ export function OriginalCard({
   const body = (
     <>
       {/* Always lit, not hover-only: this is the mark of an original. */}
-      <span className="absolute inset-x-0 top-0 z-10 h-1 bg-linear-to-r from-amber-400 via-orange-500 to-rose-500" />
+      <span className="absolute inset-x-0 top-0 z-10 h-1 bg-amber-500" />
 
       {/* Plain white behind the photo - the warm tint is carried by the card
           body instead, so the pedal itself sits on the same white it was shot
@@ -60,7 +59,7 @@ export function OriginalCard({
         <span className="tz-ribbon tz-ribbon--dark top-[14%]">Original</span>
 
         {bestSaving && bestSaving.percent > 0 && (
-          <span className="absolute right-0 bottom-0 rounded-tl-lg bg-linear-to-r from-emerald-700 to-emerald-600 px-3 py-1.5 text-sm font-bold text-white tabular-nums">
+          <span className="absolute right-0 bottom-0 rounded-tl-lg bg-emerald-700 px-3 py-1.5 text-sm font-bold text-white tabular-nums">
             −{bestSaving.percent}%
           </span>
         )}

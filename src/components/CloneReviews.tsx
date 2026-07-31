@@ -86,9 +86,9 @@ export function CloneReviews({
                               </span>
                             </dd>
                           </div>
-                          <div className="mt-1.5 h-1.5 overflow-hidden rounded-full bg-stone-200">
+                          <div className="mt-1.5 h-1.5 overflow-hidden rounded bg-stone-200">
                             <div
-                              className="h-full rounded-full bg-linear-to-r from-amber-500 to-orange-600"
+                              className="h-full rounded bg-amber-500"
                               style={{ width: `${(score.average / 5) * 100}%` }}
                             />
                           </div>
@@ -168,7 +168,7 @@ export function CloneReviews({
                       return (
                         <span
                           key={question.id}
-                          className="rounded-full bg-stone-100 px-2.5 py-1 text-[11px] font-medium text-stone-600"
+                          className="rounded bg-stone-100 px-2.5 py-1 text-[11px] font-medium text-stone-600"
                         >
                           {question.short}{" "}
                           <span className="font-bold text-stone-900 tabular-nums">

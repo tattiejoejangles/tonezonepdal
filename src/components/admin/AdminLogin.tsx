@@ -45,7 +45,7 @@ export function AdminLogin({ configured }: { configured: boolean }) {
         <button
           type="submit"
           disabled={pending || !configured}
-          className="tz-btn w-full bg-linear-to-b from-stone-800 to-stone-950 px-6 py-3 text-sm tracking-wider text-white uppercase disabled:opacity-40"
+          className="tz-btn w-full bg-stone-900 px-6 py-3 text-sm tracking-wider text-white uppercase disabled:opacity-40"
         >
           {pending ? "Checking…" : "Sign in"}
         </button>

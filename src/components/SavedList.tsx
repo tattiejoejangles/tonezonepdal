@@ -44,7 +44,7 @@ export function SavedList({ index }: { index: SearchIndex }) {
         </p>
         <Link
           href="/"
-          className="tz-btn mt-5 inline-flex bg-linear-to-b from-stone-800 to-stone-950 px-6 py-3 text-sm tracking-wide text-white"
+          className="tz-btn mt-5 inline-flex bg-stone-900 px-6 py-3 text-sm tracking-wide text-white"
         >
           Browse gear
         </Link>

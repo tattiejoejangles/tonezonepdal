@@ -96,12 +96,45 @@ export interface Original {
   specs?: Spec[];
 }
 
+/**
+ * One original a clone is an alternative to.
+ *
+ * A clone can copy more than one thing - a Sub 'N' Up stands in for a POG and
+ * for an OC-5 - and how close it gets depends on which one you hold it against,
+ * so the match belongs here rather than on the clone.
+ */
+export interface ClonedOriginal {
+  id: string;
+  slug: string;
+  name: string;
+  brand: string;
+  priceGBP: number;
+  imageUrl: string | null;
+  category: Category;
+  /** This pairing's match, falling back to the clone's own. */
+  matchQuality: number;
+  /** True for the original the clone's own page leads with. */
+  primary: boolean;
+}
+
 /** A budget pedal that gets you close to an `Original` for less money. */
 export interface Alternative {
   id: string;
   slug: string;
-  /** FK to `Original.id`. */
+  /**
+   * FK to `Original.id` - the PRIMARY original.
+   *
+   * Decides the clone's category and which pedal its page leads with. Further
+   * pairings live in `clonesOf`.
+   */
   originalId: string;
+  /**
+   * Every original this is an alternative to, primary first.
+   *
+   * Attached by the catalogue loader. Empty in the bundled fallback data, where
+   * the single `originalId` is all there is.
+   */
+  clonesOf?: ClonedOriginal[];
   name: string;
   brand: string;
   /** Typical UK street price in GBP. Estimate - verify before launch. */

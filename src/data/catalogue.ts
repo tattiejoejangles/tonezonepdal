@@ -95,10 +95,48 @@ const pickImage = (row: { image_url: string | null; auto_image_url: string | nul
 const num = (value: number | string) =>
   typeof value === "number" ? value : Number.parseFloat(value);
 
+/** One row of `alternative_originals`. */
+interface PairingRow {
+  alternative_id: string;
+  original_id: string;
+  position: number;
+  match_quality: number | null;
+}
+
+/**
+ * Reads the pairings table into two lookups.
+ *
+ * `byAlternative` drives the "copies" row on a clone page. `byOriginal` is what
+ * lets a clone appear under every original it is an alternative to, not just
+ * the one named in its `original_id` column.
+ */
+function indexPairings(rows: PairingRow[]) {
+  const byAlternative = new Map<string, PairingRow[]>();
+  const byOriginal = new Map<string, PairingRow[]>();
+
+  for (const row of rows) {
+    const forAlt = byAlternative.get(row.alternative_id) ?? [];
+    forAlt.push(row);
+    byAlternative.set(row.alternative_id, forAlt);
+
+    const forOriginal = byOriginal.get(row.original_id) ?? [];
+    forOriginal.push(row);
+    byOriginal.set(row.original_id, forOriginal);
+  }
+
+  for (const list of byAlternative.values()) {
+    list.sort((a, b) => a.position - b.position);
+  }
+
+  return { byAlternative, byOriginal };
+}
+
 function mapOriginal(
   row: OriginalRow,
   alts: AlternativeRow[],
   reviews: Map<string, ReviewSummary>,
+  pairings: ReturnType<typeof indexPairings>,
+  originalsById: Map<string, OriginalRow>,
 ): OriginalWithAlternatives {
   return {
     id: row.id,
@@ -118,9 +156,25 @@ function mapOriginal(
     searchQuery: row.search_query ?? undefined,
     controls: row.controls ?? [],
     specs: row.specs ?? [],
-    alternatives: alts
-      .filter((alt) => alt.original_id === row.id)
-      .map((alt) => mapAlternative(alt, reviews.get(alt.id)))
+    // Every clone paired with this original, not just the ones whose
+    // `original_id` column names it. That is what makes a clone of two pedals
+    // show up on both their pages rather than only the first.
+    alternatives: (pairings.byOriginal.get(row.id) ?? [])
+      .map((pairing) => {
+        const alt = alts.find((candidate) => candidate.id === pairing.alternative_id);
+        if (!alt) return null;
+        return mapAlternative(
+          alt,
+          reviews.get(alt.id),
+          pairings.byAlternative.get(alt.id) ?? [],
+          originalsById,
+          // The pairing's own match where it has one: the same box can be a
+          // close copy of the pedal it was cloned from and a loose stand-in
+          // for another, and one number cannot say both.
+          pairing.match_quality ?? undefined,
+        );
+      })
+      .filter((alt): alt is Alternative => alt !== null)
       .sort((a, b) => a.priceGBP - b.priceGBP),
   };
 }
@@ -128,7 +182,30 @@ function mapOriginal(
 function mapAlternative(
   row: AlternativeRow,
   reviewSummary?: ReviewSummary,
+  pairings: PairingRow[] = [],
+  originalsById?: Map<string, OriginalRow>,
+  matchOverride?: number,
 ): Alternative {
+  const clonesOf = originalsById
+    ? pairings
+        .map((pairing) => {
+          const original = originalsById.get(pairing.original_id);
+          if (!original) return null;
+          return {
+            id: original.id,
+            slug: original.slug,
+            name: original.name,
+            brand: original.brand,
+            priceGBP: num(original.price_gbp),
+            imageUrl: pickImage(original),
+            category: original.category,
+            matchQuality: pairing.match_quality ?? row.match_quality,
+            primary: original.id === row.original_id,
+          };
+        })
+        .filter((entry): entry is NonNullable<typeof entry> => entry !== null)
+    : [];
+
   return {
     id: row.id,
     slug: row.slug,
@@ -142,7 +219,8 @@ function mapAlternative(
     cons: row.cons ?? [],
     aliases: row.aliases ?? [],
     popularity: row.popularity,
-    matchQuality: row.match_quality,
+    matchQuality: matchOverride ?? row.match_quality,
+    clonesOf,
     reviewSummary,
     searchQuery: row.search_query ?? undefined,
     verdict: row.verdict ?? undefined,
@@ -205,11 +283,13 @@ async function loadCatalogue(): Promise<OriginalWithAlternatives[]> {
     // Reviews are fetched alongside rather than after: they resolve to an empty
     // map on any failure, so they can never be the reason the catalogue falls
     // back to the bundled copy.
-    const [originalsResult, alternativesResult, reviews] = await Promise.all([
-      supabase.from("originals").select("*").order("popularity", { ascending: false }),
-      supabase.from("alternatives").select("*"),
-      getReviewSummaries(),
-    ]);
+    const [originalsResult, alternativesResult, pairingsResult, reviews] =
+      await Promise.all([
+        supabase.from("originals").select("*").order("popularity", { ascending: false }),
+        supabase.from("alternatives").select("*"),
+        supabase.from("alternative_originals").select("*"),
+        getReviewSummaries(),
+      ]);
 
     if (originalsResult.error) throw originalsResult.error;
     if (alternativesResult.error) throw alternativesResult.error;
@@ -218,9 +298,33 @@ async function loadCatalogue(): Promise<OriginalWithAlternatives[]> {
     if (rows.length === 0) return localCatalogue();
 
     const alts = (alternativesResult.data ?? []) as AlternativeRow[];
+
+    /**
+     * Pairings, falling back to each clone's own `original_id`.
+     *
+     * The fallback matters: it means the whole feature degrades to exactly the
+     * old single-original behaviour if 13-multi-original.sql hasn't been
+     * applied, rather than every clone vanishing from every pedal page.
+     */
+    const pairingRows = pairingsResult.error
+      ? alts.map((alt) => ({
+          alternative_id: alt.id,
+          original_id: alt.original_id,
+          position: 0,
+          match_quality: null,
+        }))
+      : ((pairingsResult.data ?? []) as PairingRow[]);
+
+    if (pairingsResult.error) {
+      console.error("[catalogue] pairings unavailable:", pairingsResult.error.message);
+    }
+
+    const pairings = indexPairings(pairingRows);
+    const originalsById = new Map(rows.map((row) => [row.id, row]));
+
     return rows
       .filter((row) => !HIDDEN_SLUGS.has(row.slug))
-      .map((row) => mapOriginal(row, alts, reviews));
+      .map((row) => mapOriginal(row, alts, reviews, pairings, originalsById));
   } catch (error) {
     console.error("[catalogue] Supabase unavailable, using bundled data:", error);
     return localCatalogue();
@@ -299,21 +403,52 @@ export interface AlternativeWithOriginal {
   original: OriginalWithAlternatives;
 }
 
+/**
+ * A clone and the original its own page leads with.
+ *
+ * Prefers the primary pairing. A clone now appears under every original it is
+ * an alternative to, so without this it would be paired with whichever of them
+ * happened to sort first by popularity - and the clone's page would open
+ * comparing it to the wrong pedal, with the wrong saving.
+ */
 export async function getAlternativeBySlug(
   slug: string,
 ): Promise<AlternativeWithOriginal | undefined> {
   const catalogue = await getCatalogue();
+  let fallback: AlternativeWithOriginal | undefined;
+
   for (const original of catalogue) {
     const alternative = original.alternatives.find((alt) => alt.slug === slug);
-    if (alternative) return { alternative, original };
+    if (!alternative) continue;
+    if (alternative.originalId === original.id) return { alternative, original };
+    fallback ??= { alternative, original };
   }
-  return undefined;
+
+  return fallback;
 }
 
-/** Every clone, flattened, for search and static params. */
+/**
+ * Every clone, once, for search and static params.
+ *
+ * Deduplicated on slug: a clone paired with three originals appears three times
+ * in the catalogue tree, and feeding those duplicates to `generateStaticParams`
+ * would ask Next to build the same route repeatedly. Each keeps its primary
+ * original, by the same rule as `getAlternativeBySlug`.
+ */
 export async function getAllAlternatives(): Promise<AlternativeWithOriginal[]> {
   const catalogue = await getCatalogue();
-  return catalogue.flatMap((original) =>
-    original.alternatives.map((alternative) => ({ alternative, original })),
-  );
+  const bySlug = new Map<string, AlternativeWithOriginal>();
+
+  for (const original of catalogue) {
+    for (const alternative of original.alternatives) {
+      const existing = bySlug.get(alternative.slug);
+      // Primary wins; otherwise first seen.
+      if (existing && existing.alternative.originalId === existing.original.id) {
+        continue;
+      }
+      bySlug.set(alternative.slug, { alternative, original });
+    }
+  }
+
+  return [...bySlug.values()];
 }

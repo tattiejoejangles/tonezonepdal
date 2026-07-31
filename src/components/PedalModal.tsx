@@ -187,7 +187,7 @@ role="presentation"
                 >
                   {label}
                   {index === slide && (
-                    <span className="absolute inset-x-2 -bottom-px h-0.5 bg-linear-to-r from-amber-500 to-orange-600" />
+                    <span className="absolute inset-x-2 -bottom-px h-0.5 bg-amber-500" />
                   )}
                 </button>
               ))}
@@ -270,7 +270,7 @@ role="presentation"
                 <Link
                   href={href}
                   onClick={onClose}
-                  className="tz-btn flex w-full items-center justify-center gap-2 bg-linear-to-b from-stone-800 to-stone-950 px-5 py-2.5 text-xs tracking-wider text-white uppercase"
+                  className="tz-btn flex w-full items-center justify-center gap-2 bg-stone-900 px-5 py-2.5 text-xs tracking-wider text-white uppercase"
                 >
                   Go to {noun}
                   <svg viewBox="0 0 24 24" className="h-3.5 w-3.5" fill="none" stroke="currentColor" strokeWidth="3">

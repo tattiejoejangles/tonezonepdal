@@ -141,9 +141,9 @@ export default async function ReviewsPage({
                 ? "/admin/reviews"
                 : `/admin/reviews?status=${value}`
             }
-            className={`rounded-full px-3.5 py-2 text-xs font-bold tracking-wide capitalize transition-colors ${
+            className={`rounded px-3.5 py-2 text-xs font-bold tracking-wide capitalize transition-colors ${
               activeStatus === value
-                ? "bg-linear-to-b from-stone-800 to-stone-950 text-white shadow-sm"
+                ? "bg-stone-900 text-white shadow-sm"
                 : "bg-white text-stone-600 ring-1 ring-stone-200 hover:text-stone-900"
             }`}
           >

@@ -43,7 +43,7 @@ export function ReviewCard({ review }: { review: PendingReview }) {
     <article className="tz-chamfer bg-white p-5 tz-card ring-1 ring-stone-200/60">
       <div className="flex flex-wrap items-center gap-2">
         <span
-          className={`tz-eyebrow rounded-full px-2.5 py-1 ${
+          className={`tz-eyebrow rounded px-2.5 py-1 ${
             STATUS_TONE[review.status] ?? "bg-stone-100 text-stone-700"
           }`}
         >
@@ -87,7 +87,7 @@ export function ReviewCard({ review }: { review: PendingReview }) {
           return (
             <span
               key={question.id}
-              className={`rounded-full px-2.5 py-1 text-[11px] font-medium ${
+              className={`rounded px-2.5 py-1 text-[11px] font-medium ${
                 score === undefined
                   ? "bg-stone-50 text-stone-400"
                   : "bg-stone-100 text-stone-600"
@@ -127,7 +127,7 @@ export function ReviewCard({ review }: { review: PendingReview }) {
                 name="decision"
                 value="approved"
                 disabled={busy}
-                className="tz-btn bg-linear-to-b from-emerald-600 to-emerald-700 px-5 py-2 text-xs tracking-wider text-white uppercase disabled:opacity-40"
+                className="tz-btn bg-emerald-600 px-5 py-2 text-xs tracking-wider text-white uppercase disabled:opacity-40"
               >
                 Approve
               </button>

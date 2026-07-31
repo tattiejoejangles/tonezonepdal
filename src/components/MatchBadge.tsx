@@ -24,34 +24,34 @@ function bandFor(match: number): Band {
   if (match >= 90) {
     return {
       label: "Near identical",
-      fill: "bg-linear-to-r from-emerald-700 to-emerald-600",
+      fill: "bg-emerald-700",
       meter: "bg-white",
     };
   }
   if (match >= 80) {
     return {
       label: "Very close",
-      fill: "bg-linear-to-r from-emerald-600 to-emerald-500",
+      fill: "bg-emerald-600",
       meter: "bg-white",
     };
   }
   if (match >= 70) {
     return {
       label: "Close",
-      fill: "bg-linear-to-r from-amber-600 to-amber-500",
+      fill: "bg-amber-600",
       meter: "bg-white",
     };
   }
   if (match >= 55) {
     return {
       label: "In the ballpark",
-      fill: "bg-linear-to-r from-orange-600 to-orange-500",
+      fill: "bg-orange-600",
       meter: "bg-white",
     };
   }
   return {
     label: "Its own thing",
-    fill: "bg-linear-to-r from-stone-600 to-stone-500",
+    fill: "bg-stone-600",
     meter: "bg-white",
   };
 }
@@ -73,7 +73,7 @@ export function MatchBadge({
 
   return (
     <span
-      className={`inline-flex items-center gap-2 rounded-full font-bold text-white shadow-sm ${band.fill} ${pad}`}
+      className={`inline-flex items-center gap-2 rounded font-bold text-white ${band.fill} ${pad}`}
       title={`${band.label} - ${clamped}% tonal match to the original`}
     >
       <span className="tracking-wide whitespace-nowrap">
@@ -83,7 +83,7 @@ export function MatchBadge({
       {/* The meter is a picture of the number beside it, so it's decorative. */}
       <span
         aria-hidden
-        className={`relative h-1 shrink-0 overflow-hidden rounded-full bg-black/25 ${meterWidth}`}
+        className={`relative h-1 shrink-0 overflow-hidden rounded bg-black/25 ${meterWidth}`}
       >
         <span
           className={`absolute inset-y-0 left-0 rounded-full ${band.meter}`}

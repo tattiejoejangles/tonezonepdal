@@ -83,7 +83,7 @@ export function BrandFilter({
         onClick={() => setOpen((value) => !value)}
         className={`tz-btn flex items-center gap-2 px-4 py-2 text-xs tracking-wider whitespace-nowrap uppercase focus-visible:ring-2 focus-visible:ring-amber-500 focus-visible:ring-offset-2 focus-visible:outline-none ${
           value
-            ? "bg-linear-to-b from-stone-800 to-stone-950 text-white shadow-md"
+            ? "bg-stone-900 text-white shadow-md"
             : "bg-white text-stone-600 ring-1 ring-stone-200 hover:text-stone-900"
         }`}
       >

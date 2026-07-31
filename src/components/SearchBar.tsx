@@ -59,7 +59,7 @@ export function SearchBar({
         {/* Glow that wakes up on focus. */}
         <div
           aria-hidden
-          className="absolute -inset-0.5 rounded-full bg-linear-to-r from-amber-400 via-orange-500 to-rose-500 opacity-0 blur transition-opacity duration-300 group-focus-within:opacity-70"
+          className="absolute -inset-0.5 rounded bg-amber-500 opacity-0 blur transition-opacity duration-300 group-focus-within:opacity-70"
         />
 
         <div className="relative">
@@ -87,7 +87,7 @@ export function SearchBar({
             placeholder={placeholder}
             autoComplete="off"
             {...suggest.inputProps}
-            className={`w-full rounded-full border-0 py-4 pr-24 pl-14 text-base font-medium outline-none ${
+            className={`w-full rounded-md border-0 py-4 pr-24 pl-14 text-base font-medium outline-none ${
               dark
                 ? "bg-[#151c30] text-white placeholder:text-stone-500"
                 : "bg-white text-stone-900 shadow-sm ring-1 ring-stone-200 placeholder:text-stone-400"

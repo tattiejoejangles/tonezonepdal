@@ -20,7 +20,7 @@ export function Wordmark() {
       className="group flex items-center gap-3 rounded-lg focus-visible:ring-2 focus-visible:ring-amber-500 focus-visible:ring-offset-2 focus-visible:outline-none"
       aria-label="The Tone Zone - home"
     >
-      <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-linear-to-br from-stone-800 via-stone-900 to-black text-white shadow-sm transition-transform duration-300 group-hover:scale-105">
+      <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-stone-900 text-white shadow-sm transition-transform duration-300 group-hover:scale-105">
         {/* The wave picks up the accent; it shifts to the "signal found" green
             on hover, which is what the old footswitch LED used to do. */}
         <TzMark
@@ -35,7 +35,7 @@ export function Wordmark() {
         </span>
         <span className="block text-xl font-bold tracking-tight text-stone-900">
           Tone
-          <span className="bg-linear-to-r from-amber-500 to-orange-600 bg-clip-text text-transparent">
+          <span className="bg-amber-500 bg-clip-text text-transparent">
             Zone
           </span>
         </span>

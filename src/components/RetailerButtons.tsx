@@ -24,7 +24,7 @@ const BRANDS: Record<
   { accent: string; iconTone: "light" | "dark"; cta: string; icon: React.ReactNode }
 > = {
   amazon: {
-    accent: "bg-linear-to-br from-amber-300 to-amber-500",
+    accent: "bg-amber-400",
     iconTone: "dark",
     // "Search on", not "Buy on": the link goes to Amazon's search results for
     // this pedal, not to a product page, so "Buy" promised something the
@@ -33,13 +33,13 @@ const BRANDS: Record<
     icon: <AmazonMark />,
   },
   reverb: {
-    accent: "bg-linear-to-br from-orange-500 to-rose-600",
+    accent: "bg-orange-600",
     iconTone: "light",
     cta: "Search",
     icon: <ReverbMark />,
   },
   gear4music: {
-    accent: "bg-linear-to-br from-slate-600 to-slate-800",
+    accent: "bg-slate-700",
     iconTone: "light",
     cta: "Shop",
     icon: <Gear4MusicMark />,

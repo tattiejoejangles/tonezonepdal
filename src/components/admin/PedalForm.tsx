@@ -38,6 +38,8 @@ export interface PedalDraft {
   tags?: string[];
   /** Alternatives only. */
   originalId?: string;
+  /** Alternatives only: additional originals this is also an alternative to. */
+  alsoOriginalIds?: string[];
   matchQuality?: number;
   pros?: string[];
   cons?: string[];
@@ -139,6 +141,12 @@ export function PedalForm({
    */
   const [gear, setGear] = useState<GearType>(() => initialGear(draft, originals));
 
+  // Tracked so the "also an alternative to" list can drop whichever original
+  // is currently the primary - offering it twice would let the same pairing be
+  // stored as both, and the checkbox would silently do nothing.
+  const [primaryId, setPrimaryId] = useState(draft?.originalId ?? "");
+  const alsoIds = draft?.alsoOriginalIds ?? [];
+
   const isOriginal = kind === "original";
   const categories = categoriesFor(gear, CATEGORIES);
   const linkable = originals.filter(
@@ -167,7 +175,7 @@ export function PedalForm({
                 key={value}
                 className={`tz-btn cursor-pointer px-5 py-2.5 text-xs tracking-wider uppercase ${
                   gear === value
-                    ? "bg-linear-to-b from-amber-500 to-orange-600 text-white shadow-md"
+                    ? "bg-amber-500 text-white shadow-md"
                     : "bg-white text-stone-600 ring-1 ring-stone-200"
                 }`}
               >
@@ -198,7 +206,7 @@ export function PedalForm({
                 key={value}
                 className={`tz-btn cursor-pointer px-5 py-2.5 text-xs tracking-wider uppercase ${
                   kind === value
-                    ? "bg-linear-to-b from-stone-800 to-stone-950 text-white shadow-md"
+                    ? "bg-stone-900 text-white shadow-md"
                     : "bg-white text-stone-600 ring-1 ring-stone-200"
                 }`}
               >
@@ -232,7 +240,8 @@ export function PedalForm({
             <select
               name="original_id"
               required
-              defaultValue={draft?.originalId ?? ""}
+              value={primaryId}
+              onChange={(event) => setPrimaryId(event.target.value)}
               className={inputClass}
             >
               <option value="" disabled>
@@ -252,6 +261,51 @@ export function PedalForm({
             <p className="mt-2 text-xs text-rose-700">
               No {gear}s in the catalogue yet - add the original {gear} first.
             </p>
+          )}
+
+          {/* Additional originals.
+
+              A clone often stands in for more than one thing - a Sub 'N' Up
+              for a POG and an OC-5 - and it appears on every one of their
+              pages. Ticked ones are stored in `alternative_originals`; the
+              primary above is always included and is what this clone's own
+              page leads with, so it isn't offered here. */}
+          {linkable.length > 1 && (
+            <div className="mt-4 border-t border-amber-500/30 pt-4">
+              <p className="tz-eyebrow mb-1.5 text-stone-500">
+                Also an alternative to
+              </p>
+              <p className="mb-3 text-xs text-stone-500">
+                Optional. It will be listed on these pages too.
+              </p>
+
+              <div className="grid max-h-56 gap-1 overflow-y-auto rounded border border-stone-200 bg-white p-2 sm:grid-cols-2">
+                {linkable
+                  .filter((original) => original.id !== primaryId)
+                  .map((original) => (
+                    <label
+                      key={original.id}
+                      className="flex items-start gap-2 rounded p-1.5 text-xs hover:bg-stone-50"
+                    >
+                      <input
+                        type="checkbox"
+                        name="also_original_ids"
+                        value={original.id}
+                        defaultChecked={alsoIds.includes(original.id)}
+                        className="mt-0.5 h-4 w-4 shrink-0 accent-amber-600"
+                      />
+                      <span className="min-w-0">
+                        <span className="font-bold text-stone-800">
+                          {original.name}
+                        </span>
+                        <span className="block text-stone-500">
+                          {original.brand}
+                        </span>
+                      </span>
+                    </label>
+                  ))}
+              </div>
+            </div>
           )}
         </div>
       )}
@@ -495,7 +549,7 @@ export function PedalForm({
         <button
           type="submit"
           disabled={pending}
-          className="tz-btn bg-linear-to-b from-stone-800 to-stone-950 px-8 py-3 text-sm tracking-wider text-white uppercase disabled:opacity-40"
+          className="tz-btn bg-stone-900 px-8 py-3 text-sm tracking-wider text-white uppercase disabled:opacity-40"
         >
           {pending
             ? "Saving..."

@@ -4,6 +4,7 @@ import { notFound } from "next/navigation";
 
 import { AdminTools } from "@/components/admin/AdminTools";
 import { BookmarkButton } from "@/components/BookmarkButton";
+import { ClonesOf, type ClonedOriginalView } from "@/components/ClonesOf";
 import { CloneReviews } from "@/components/CloneReviews";
 import { MatchBadge } from "@/components/MatchBadge";
 import { PedalDemos } from "@/components/PedalDemos";
@@ -16,6 +17,7 @@ import { getArtistIndex } from "@/data/artists";
 import {
   getAllAlternatives,
   getAlternativeBySlug,
+  getCatalogue,
   getDetail,
 } from "@/data/catalogue";
 import { getApprovedReviews } from "@/data/reviews";
@@ -61,11 +63,8 @@ export default async function ClonePage({
 
   const { alternative, original } = found;
   const saving = calculateSavings(original.priceGBP, alternative.priceGBP);
-  const detail = getDetail(
-    alternative,
-    original.artists ?? [],
-    await getArtistIndex(),
-  );
+  const artistIndex = await getArtistIndex();
+  const detail = getDetail(alternative, original.artists ?? [], artistIndex);
   // A clone has no category of its own - it is whatever it copies.
   const noun = gearNoun(original.category);
 
@@ -74,6 +73,37 @@ export default async function ClonePage({
   const summary = alternative.reviewSummary ?? null;
   const effective = displayMatch(alternative);
   const reviews = await getApprovedReviews(alternative.id);
+
+  // Every original this clone stands in for, with the detail each popup needs
+  // resolved here so opening one costs no round trip. Falls back to the single
+  // original when the pairings table is empty, so the row never disappears.
+  const catalogue = await getCatalogue();
+  const pairings =
+    alternative.clonesOf && alternative.clonesOf.length > 0
+      ? alternative.clonesOf
+      : [
+          {
+            id: original.id,
+            slug: original.slug,
+            name: original.name,
+            brand: original.brand,
+            priceGBP: original.priceGBP,
+            imageUrl: original.imageUrl,
+            category: original.category,
+            matchQuality: alternative.matchQuality,
+            primary: true,
+          },
+        ];
+
+  const clonedOriginals: ClonedOriginalView[] = pairings.map((entry) => {
+    const full = catalogue.find((candidate) => candidate.id === entry.id);
+    return {
+      original: entry,
+      detail: getDetail(full ?? { slug: entry.slug, imageUrl: entry.imageUrl }, [], artistIndex),
+      description: full?.description ?? "",
+      blurb: full?.blurb ?? "",
+    };
+  });
 
   return (
     <div className="tz-page py-8 sm:py-10">
@@ -230,22 +260,40 @@ export default async function ClonePage({
             </div>
           )}
 
+          {/* The cross-sell now leads with the original's photo rather than
+              just naming it - you recognise a Tube Screamer on sight long
+              before you read the words - and opens the same detail popup the
+              row below uses, so "more info" and "go to pedal" are two steps
+              rather than one blind jump onto another product page. */}
           <div
-            className={`flex flex-col bg-linear-to-br from-indigo-50 to-violet-50 p-6 sm:p-7 ${
+            className={`flex flex-col bg-indigo-50 p-6 sm:p-7 ${
               // Spans both columns when there is no verdict beside it, so the
               // band never ends on a half-width panel.
               detail.verdict ? "" : "sm:col-span-2"
             }`}
           >
             <p className="tz-eyebrow text-indigo-700">Looking for the real deal?</p>
-            <p className="tz-body mt-1.5 text-sm text-indigo-950">
-              This is a budget alternative to the{" "}
-              <span className="font-bold">{original.name}</span>, which sells for
-              about {formatPrice(original.priceGBP)}.
-            </p>
+
+            <div className="mt-3 flex items-center gap-4">
+              <div className="tz-well relative h-20 w-20 shrink-0 rounded bg-white">
+                <PedalImage
+                  src={original.imageUrl}
+                  name={original.name}
+                  brand={original.brand}
+                  sizes="80px"
+                />
+              </div>
+
+              <p className="tz-body min-w-0 text-sm text-indigo-950">
+                This is a budget alternative to the{" "}
+                <span className="font-bold">{original.name}</span>, which sells
+                for about {formatPrice(original.priceGBP)}.
+              </p>
+            </div>
+
             <Link
               href={`/pedal/${original.slug}`}
-              className="mt-4 inline-flex w-fit items-center gap-2 rounded-full bg-linear-to-b from-indigo-600 to-indigo-800 px-5 py-2.5 text-sm font-bold text-white shadow-md transition-transform hover:-translate-y-0.5"
+              className="tz-btn mt-4 w-fit bg-indigo-700 px-5 py-2.5 text-sm text-white"
             >
               See the original
               <svg viewBox="0 0 24 24" className="h-4 w-4" fill="none" stroke="currentColor" strokeWidth="3">
@@ -255,6 +303,8 @@ export default async function ClonePage({
           </div>
         </div>
       </section>
+
+      <ClonesOf items={clonedOriginals} clonePrice={alternative.priceGBP} />
 
       {/* Three panels on one row rather than one tall panel beside a stack of
           two: pros/cons, specs and players are siblings, and reading them as

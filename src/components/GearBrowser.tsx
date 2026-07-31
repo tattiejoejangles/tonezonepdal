@@ -144,7 +144,7 @@ export function GearBrowser({
               onClick={() => setFamily(entry.id)}
               className={`min-h-11 shrink-0 rounded-full px-4 text-xs font-bold tracking-wide whitespace-nowrap transition-colors focus-visible:ring-2 focus-visible:ring-amber-500 focus-visible:outline-none ${
                 selected
-                  ? "bg-linear-to-b from-stone-800 to-stone-950 text-white shadow-sm"
+                  ? "bg-stone-900 text-white shadow-sm"
                   : "bg-white text-stone-600 ring-1 ring-stone-200 hover:text-stone-900"
               }`}
             >
@@ -228,7 +228,7 @@ export function GearBrowser({
           <button
             type="button"
             onClick={reset}
-            className="tz-btn mt-5 bg-linear-to-b from-stone-800 to-stone-950 px-6 py-3 text-sm tracking-wide text-white"
+            className="tz-btn mt-5 bg-stone-900 px-6 py-3 text-sm tracking-wide text-white"
           >
             Reset filters
           </button>
